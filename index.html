@@ -119,6 +119,42 @@
       color: #6e7681;
     }
 
+    /* Resteküche Schnellklick-Chips */
+    .reste-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 0 4px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .reste-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .chip-btn.active {
+      background: rgba(46, 160, 67, 0.2);
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
     .category-divider {
       display: flex;
       align-items: center;
@@ -463,6 +499,57 @@
       margin-bottom: 4px;
     }
 
+    /* Formular */
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-group input, 
+    .form-group textarea, 
+    .form-group select {
+      background: var(--card-sub);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-save {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    /* Horizontale Daumen-Leiste unten */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -528,7 +615,19 @@
     </button>
     <div class="search-box">
       <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Resteküche: z. B. Kohlrabi, Quark, Huhn..." oninput="filterRecipes()">
+      <input type="text" id="searchInput" placeholder="Resteküche: tippen oder Chip wählen..." oninput="onSearchManual()">
+    </div>
+    
+    <!-- Schnellauswahl für typische Reste -->
+    <div class="reste-chips" id="resteChips">
+      <button type="button" class="chip-btn" onclick="toggleChip('hähnchen', this)">🍗 Hähnchen</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('hackfleisch', this)">🥩 Hack</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('ei', this)">🥚 Eier</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('quark', this)">🥣 Quark</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('brokkoli', this)">🥦 Brokkoli</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('kohlrabi', this)">🥬 Kohlrabi</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('zucchini', this)">🥒 Zucchini</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('sahne', this)">🥛 Sahne</button>
     </div>
   </div>
 
@@ -566,9 +665,9 @@
               <option value="gemuese">Gemüse</option>
               <option value="dessert">Dessert / Süßes</option>
               <option value="lowcarb">Low-Carb</option>
-              <option value="fettarm">Fettarm</option>
               <option value="fettverbrennung">Fettverbrennung</option>
               <option value="stoffwechsel">Stoffwechsel aktiv</option>
+              <option value="fettarm">Fettarm</option>
             </select>
           </div>
         </div>
@@ -643,6 +742,7 @@
     </div>
   </div>
 
+  <!-- Horizontale Daumen-Navigation -->
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -682,6 +782,7 @@
     </button>
   </nav>
 
+  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
@@ -704,22 +805,16 @@
       'gemuese': { label: 'Gemüse & Pfannen', icon: '🥦' },
       'dessert': { label: 'Desserts & Süßes', icon: '🧁' },
       'lowcarb': { label: 'Low-Carb Klassiker', icon: '🥗' },
-      'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
       'fettverbrennung': { label: 'Fettverbrennung', icon: '🔥' },
       'stoffwechsel': { label: 'Stoffwechsel aktiv', icon: '⚡' },
+      'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
       'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
     };
 
     let recipes = [];
     let currentCategory = 'all';
     let openedRecipeId = null;
-
-    window.addEventListener('scroll', () => {
-      if (openedRecipeId !== null) {
-        openedRecipeId = null;
-        document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
-      }
-    }, { passive: true });
+    let selectedChip = null;
 
     function checkIsDessert(r) {
       if (!r) return false;
@@ -845,6 +940,29 @@
       }
     }
 
+    function toggleChip(ingredient, btn) {
+      const searchInput = document.getElementById('searchInput');
+
+      if (selectedChip === ingredient) {
+        selectedChip = null;
+        btn.classList.remove('active');
+        searchInput.value = '';
+      } else {
+        document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedChip = ingredient;
+        searchInput.value = ingredient;
+      }
+
+      filterRecipes();
+    }
+
+    function onSearchManual() {
+      selectedChip = null;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      filterRecipes();
+    }
+
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r);
       const isOpen = openedRecipeId === r.id;
@@ -934,12 +1052,12 @@
           groups['fleisch'].push(r);
         } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) {
           groups['gemuese'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) {
-          groups['lowcarb'].push(r);
         } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettverbrennung'))) {
           groups['fettverbrennung'].push(r);
         } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('stoffwechsel'))) {
           groups['stoffwechsel'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) {
+          groups['lowcarb'].push(r);
         } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettarm'))) {
           groups['fettarm'].push(r);
         } else {
