@@ -119,7 +119,24 @@
       color: #6e7681;
     }
 
-    /* Akkordeon Kacheln */
+    .category-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #3fb950;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 16px 0 6px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+    }
+
+    .category-divider:first-of-type {
+      margin-top: 4px;
+    }
+
     .recipe-list {
       display: flex;
       flex-direction: column;
@@ -198,7 +215,6 @@
       color: #3fb950;
     }
 
-    /* Aufklappbarer Body */
     .card-body {
       display: none;
       flex-direction: column;
@@ -334,7 +350,6 @@
       background: #30363d;
     }
 
-    /* Modal / Popup */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -368,7 +383,6 @@
       to { transform: translateY(0); }
     }
 
-    /* Sticky Schließen Button */
     .close-sheet {
       position: sticky;
       top: 0;
@@ -449,57 +463,6 @@
       margin-bottom: 4px;
     }
 
-    /* Formular */
-    .form-group {
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .form-group label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .form-group input, 
-    .form-group textarea, 
-    .form-group select {
-      background: var(--card-sub);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: #fff;
-      padding: 9px 12px;
-      font-size: 0.88rem;
-      outline: none;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn-save {
-      background: #238636;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 1rem;
-      font-weight: bold;
-      width: 100%;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    /* Bottom Nav */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -510,11 +473,19 @@
       border-top: 1px solid var(--border);
       padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px;
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-start;
       align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
       z-index: 500;
       max-width: 650px;
       margin: 0 auto;
+    }
+
+    .bottom-bar::-webkit-scrollbar {
+      display: none;
     }
 
     .nav-btn {
@@ -528,7 +499,9 @@
       font-size: 0.68rem;
       font-weight: 500;
       cursor: pointer;
-      flex: 1;
+      flex: 0 0 auto;
+      min-width: 64px;
+      scroll-snap-align: start;
     }
 
     .nav-btn .icon {
@@ -550,12 +523,9 @@
   </header>
 
   <div class="top-actions">
-    <button class="btn-add-recipe" onclick="openAddModal()">
-      <span>➕</span> Neues Rezept hinzufügen
-    </button>
     <div class="search-box">
       <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Resteküche: z. B. Kohlrabi, Hackfleisch, Huhn..." oninput="filterRecipes()">
+      <input type="text" id="searchInput" placeholder="Resteküche: z. B. Kohlrabi, Quark, Huhn..." oninput="filterRecipes()">
     </div>
   </div>
 
@@ -569,105 +539,7 @@
     </div>
   </div>
 
-  <!-- Formular Modal -->
-  <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
-    <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
-      <h2 style="font-size: 1.2rem; margin-bottom: 14px; color: #3fb950;">Neues Rezept anlegen</h2>
-      
-      <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
-        <div class="form-group">
-          <label>Rezept-Titel</label>
-          <input type="text" id="newTitle" required placeholder="z. B. Hähnchen-Gemüse Pfanne">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Icon / Emoji</label>
-            <input type="text" id="newEmoji" value="🍲" required>
-          </div>
-          <div class="form-group">
-            <label>Kategorie</label>
-            <select id="newCategory">
-              <option value="fleisch">Fleisch</option>
-              <option value="gemuese">Gemüse</option>
-              <option value="lowcarb">Low-Carb</option>
-              <option value="fettarm">Fettarm</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Für Airfryer geeignet?</label>
-          <select id="newAirfryer">
-            <option value="true">Ja</option>
-            <option value="false">Nein</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Zutatenliste mit Mengen (für das Rezept)</label>
-          <textarea id="newZutatenListe" placeholder="• 400 g Hähnchen&#10;• 200 g Brokkoli&#10;• 1 EL Öl"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Schlagwörter für Resteküche (kommagetrennt)</label>
-          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, radieschen, pute"></input>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kalorien (kcal)</label>
-            <input type="number" id="newKcal" required placeholder="z. B. 250">
-          </div>
-          <div class="form-group">
-            <label>Eiweiß (g)</label>
-            <input type="number" step="0.1" id="newProt" required placeholder="z. B. 30">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kohlenhydrate (g)</label>
-            <input type="number" step="0.1" id="newKh" required placeholder="z. B. 8">
-          </div>
-          <div class="form-group">
-            <label>Fett (g)</label>
-            <input type="number" step="0.1" id="newFat" required placeholder="z. B. 5">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>1. Vorbereitung & Schnippeln</label>
-          <textarea id="newPrep" placeholder="Wie wird vorbereitet..." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>2. Zubereitung Herd / Pfanne</label>
-          <textarea id="newStove" placeholder="Pfannenstufe, Minuten..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>3. Zubereitung Backofen</label>
-          <textarea id="newOven" placeholder="Grad, Umluft, Minuten..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>4. Zubereitung Airfryer (Ninja)</label>
-          <textarea id="newAirfryerStep" placeholder="Grad, Minuten, schütteln..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Tipps & Tricks</label>
-          <textarea id="newTipps" placeholder="z. B. 1-2 EL Frischkäse für extra Cremigkeit..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-save" id="btnSubmit">Rezept in Supabase speichern</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Bottom Nav -->
+  <!-- Daumen-Navigation -->
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -680,6 +552,10 @@
     <button class="nav-btn" onclick="setCategory('gemuese', this)">
       <span class="icon">🥦</span>
       <span>Gemüse</span>
+    </button>
+    <button class="nav-btn" onclick="setCategory('dessert', this)">
+      <span class="icon">🧁</span>
+      <span>Dessert</span>
     </button>
     <button class="nav-btn" onclick="setCategory('lowcarb', this)">
       <span class="icon">🥗</span>
@@ -695,7 +571,6 @@
     </button>
   </nav>
 
-  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
@@ -713,17 +588,34 @@
       "klassik_nudeln": { name: "Klassische Hartweizennudeln", kcal: 155, kh: 31, sugar: 1.2, fat: 0.9, satFat: 0.2, fiber: 1.8, prot: 5.0, salt: 0.01, gl: "Hoch", insulin: "Hoher Insulin-Peak" }
     };
 
+    const CATEGORY_NAMES = {
+      'fleisch': { label: 'Fleischgerichte', icon: '🍗' },
+      'gemuese': { label: 'Gemüse & Pfannen', icon: '🥦' },
+      'dessert': { label: 'Desserts & Süßes', icon: '🧁' },
+      'lowcarb': { label: 'Low-Carb Klassiker', icon: '🥗' },
+      'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
+      'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
+    };
+
     let recipes = [];
     let currentCategory = 'all';
     let openedRecipeId = null;
 
-    // Schließt geöffnete Kachel beim Scrollen
-    window.addEventListener('scroll', () => {
-      if (openedRecipeId !== null) {
-        openedRecipeId = null;
-        document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
+    // HILFSFUNKTION: Erkennt zuverlässig, ob ein Rezept ein Dessert ist
+    function checkIsDessert(r) {
+      if (!r) return false;
+      const titleLower = (r.title || '').toLowerCase();
+      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
+        return true;
       }
-    }, { passive: true });
+      if (Array.isArray(r.category)) {
+        return r.category.some(c => String(c).toLowerCase().includes('dessert'));
+      }
+      if (typeof r.category === 'string') {
+        return r.category.toLowerCase().includes('dessert');
+      }
+      return false;
+    }
 
     async function loadRecipesFromSupabase() {
       const status = document.getElementById('syncStatus');
@@ -738,8 +630,6 @@
             let cat = [];
             if (item.category) {
               cat = Array.isArray(item.category) ? item.category : [item.category];
-            } else {
-              cat = ['fleisch', 'gemuese'];
             }
 
             let ing = [];
@@ -759,14 +649,14 @@
               ingredients: ing,
               zutatenListe: item.zutaten_liste || (Array.isArray(item.ingredients) ? item.ingredients.join(', ') : item.ingredients),
               tipps: item.tipps || '',
-              baseNutri: item.baseNutri || {
-                kcal: Number(item.kcal) || 220,
+              baseNutri: {
+                kcal: Number(item.kcal) || 200,
                 kh: Number(item.kh) || 5,
                 sugar: 2.0,
                 fat: Number(item.fat) || 4,
                 satFat: 1.0,
                 fiber: 3.5,
-                prot: Number(item.prot) || 28,
+                prot: Number(item.prot) || 25,
                 salt: 0.5
               },
               docCheck: item.doc_check || item.docCheck || 'Ausgewogene Nährstoffe für optimalen Blutzucker.',
@@ -781,7 +671,7 @@
           status.innerText = '⚡ Supabase bereit (keine Rezepte vorhanden)';
         }
       } catch (err) {
-        console.warn('Supabase Offline / Fallback aktiv:', err);
+        console.warn('Supabase Offline / Fallback:', err);
         status.innerText = '⚡ Offline-Modus aktiv';
       }
 
@@ -789,6 +679,23 @@
     }
 
     function calculateTotalNutri(recipe) {
+      const isDessert = checkIsDessert(recipe);
+
+      if (isDessert) {
+        return {
+          kcal: Math.round(recipe.baseNutri.kcal),
+          kh: Number(recipe.baseNutri.kh).toFixed(1),
+          sugar: "1.5",
+          fat: Number(recipe.baseNutri.fat).toFixed(1),
+          satFat: "1.0",
+          fiber: "1.0",
+          prot: Number(recipe.baseNutri.prot).toFixed(1),
+          salt: "0.05",
+          insulin: "Stabil (Zuckerfrei)",
+          gl: "Sehr niedrig"
+        };
+      }
+
       const side = sideOptions[recipe.selectedSide] || sideOptions["protein_nudeln"];
       return {
         kcal: Math.round(recipe.baseNutri.kcal + side.kcal),
@@ -809,8 +716,6 @@
       if (!targetCard) return;
 
       const isAlreadyOpen = targetCard.classList.contains('open');
-
-      // Schließt alle anderen geöffneten Kacheln
       document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
 
       if (!isAlreadyOpen) {
@@ -821,68 +726,106 @@
       }
     }
 
+    function buildCardHtml(r) {
+      const total = calculateTotalNutri(r);
+      const isOpen = openedRecipeId === r.id;
+      const isDessert = checkIsDessert(r);
+
+      let sideSelectHtml = '';
+      if (!isDessert) {
+        sideSelectHtml = `
+          <div class="swap-row">
+            <label>Beilage:</label>
+            <select onchange="updateSide('${r.id}', this.value)">
+        `;
+        for (const [key, side] of Object.entries(sideOptions)) {
+          sideSelectHtml += `<option value="${key}" ${r.selectedSide === key ? 'selected' : ''}>${side.name}</option>`;
+        }
+        sideSelectHtml += `</select></div>`;
+      }
+
+      return `
+        <div class="recipe-card ${isOpen ? 'open' : ''}" id="recipe-card-${r.id}">
+          <div class="card-head" onclick="toggleAccordion('${r.id}')">
+            <div class="card-icon">${r.emoji || '🍲'}</div>
+            <div class="card-meta">
+              <h3>${r.title}</h3>
+              <div class="card-tags">
+                <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
+                ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}
+              </div>
+            </div>
+            <div class="chevron-icon">▼</div>
+          </div>
+
+          <div class="card-body">
+            ${sideSelectHtml}
+
+            <div class="nutri-carousel">
+              <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
+              <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
+              <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
+              <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
+              <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
+              <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
+              <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
+              <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
+            </div>
+
+            <div class="health-indicator">
+              <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
+              <span class="status-text">${total.insulin}</span>
+            </div>
+
+            <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung & Zutaten ansehen ➔</button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderList(list) {
       const container = document.getElementById('recipeList');
       container.innerHTML = '';
 
       if (list.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine Rezepte für diese Zutat oder Kategorie gefunden.</div>`;
+        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine Rezepte gefunden.</div>`;
         return;
       }
 
+      if (currentCategory !== 'all') {
+        container.innerHTML = list.map(r => buildCardHtml(r)).join('');
+        return;
+      }
+
+      const groups = {
+        'fleisch': [],
+        'gemuese': [],
+        'dessert': [],
+        'andere': []
+      };
+
       list.forEach(r => {
-        const total = calculateTotalNutri(r);
-        const isOpen = openedRecipeId === r.id;
-        
-        let sideSelectHtml = `<select onchange="updateSide('${r.id}', this.value)">`;
-        for (const [key, side] of Object.entries(sideOptions)) {
-          sideSelectHtml += `<option value="${key}" ${r.selectedSide === key ? 'selected' : ''}>${side.name}</option>`;
+        if (checkIsDessert(r)) {
+          groups['dessert'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fleisch'))) {
+          groups['fleisch'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) {
+          groups['gemuese'].push(r);
+        } else {
+          groups['andere'].push(r);
         }
-        sideSelectHtml += `</select>`;
-
-        container.innerHTML += `
-          <div class="recipe-card ${isOpen ? 'open' : ''}" id="recipe-card-${r.id}">
-            <!-- Klickbarer Header: öffnet / schließt Kachel -->
-            <div class="card-head" onclick="toggleAccordion('${r.id}')">
-              <div class="card-icon">${r.emoji || '🍲'}</div>
-              <div class="card-meta">
-                <h3>${r.title}</h3>
-                <div class="card-tags">
-                  <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
-                  ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}
-                </div>
-              </div>
-              <div class="chevron-icon">▼</div>
-            </div>
-
-            <!-- Aufklappbarer Bereich -->
-            <div class="card-body">
-              <div class="swap-row">
-                <label>Beilage:</label>
-                ${sideSelectHtml}
-              </div>
-
-              <div class="nutri-carousel">
-                <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
-                <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
-                <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
-                <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
-                <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
-                <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
-                <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
-                <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
-              </div>
-
-              <div class="health-indicator">
-                <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
-                <span class="status-text">${total.insulin}</span>
-              </div>
-
-              <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung & Zutaten ansehen ➔</button>
-            </div>
-          </div>
-        `;
       });
+
+      let html = '';
+      for (const [key, items] of Object.entries(groups)) {
+        if (items.length > 0) {
+          const cfg = CATEGORY_NAMES[key] || CATEGORY_NAMES['andere'];
+          html += `<div class="category-divider">${cfg.icon} ${cfg.label} (${items.length})</div>`;
+          html += items.map(r => buildCardHtml(r)).join('');
+        }
+      }
+
+      container.innerHTML = html;
     }
 
     function updateSide(recipeId, newSide) {
@@ -904,11 +847,25 @@
     function filterRecipes() {
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = recipes.filter(r => {
-        const matchesCategory = currentCategory === 'all' || 
-          (currentCategory === 'airfryer' ? r.airfryer : (r.category && r.category.includes(currentCategory)));
+        let matchesCategory = false;
+        if (currentCategory === 'all') {
+          matchesCategory = true;
+        } else if (currentCategory === 'airfryer') {
+          matchesCategory = r.airfryer === true;
+        } else if (currentCategory === 'dessert') {
+          matchesCategory = checkIsDessert(r);
+        } else {
+          if (Array.isArray(r.category)) {
+            matchesCategory = r.category.some(c => String(c).toLowerCase().includes(currentCategory));
+          } else if (typeof r.category === 'string') {
+            matchesCategory = r.category.toLowerCase().includes(currentCategory);
+          }
+        }
+
         const matchesSearch = search === '' || 
           r.title.toLowerCase().includes(search) || 
           (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
+
         return matchesCategory && matchesSearch;
       });
       renderList(filtered);
@@ -918,16 +875,19 @@
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       const sheet = document.getElementById('sheetContent');
+      const isDessert = checkIsDessert(r);
       const sideName = sideOptions[r.selectedSide]?.name || "Protein-Nudeln";
+      
+      const sideRowHtml = !isDessert ? `<p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>` : '';
 
       sheet.innerHTML = `
-        <div style="font-size: 2.2rem; margin-bottom: 8px;">${r.emoji || '🍲'}</div>
+        <div style="font-size: 2.2rem; margin-bottom: 8px;">${r.emoji || '🧁'}</div>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom: 8px;">
           <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
           ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer geeignet</span>' : ''}
         </div>
         <h2 style="font-size: 1.3rem; margin-bottom: 6px;">${r.title}</h2>
-        <p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>
+        ${sideRowHtml}
 
         <div style="background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.3); border-radius: 8px; padding: 10px; font-size: 0.8rem; line-height: 1.45; color: #e6edf3; margin-bottom: 14px;">
           <strong style="color: #3fb950; display:block; margin-bottom: 3px;">🩺 Doc's Ernährungs-Check:</strong>
@@ -940,7 +900,7 @@
         <div class="section-title">👩‍🍳 Exakte Zubereitungsschritte:</div>
 
         <div class="step-section">
-          <h4>🔪 1. Vorbereitung & Schnippeln</h4>
+          <h4>🔪 1. Vorbereitung & Zubereitung</h4>
           <p>${r.prep}</p>
         </div>
 
@@ -984,76 +944,6 @@
 
     function closeSheetForce() {
       document.getElementById('modalBackdrop').classList.remove('active');
-    }
-
-    function openAddModal() {
-      document.getElementById('addBackdrop').classList.add('active');
-    }
-
-    function closeAddModal(e) {
-      if (e.target.id === 'addBackdrop') {
-        document.getElementById('addBackdrop').classList.remove('active');
-      }
-    }
-
-    function closeAddModalForce() {
-      document.getElementById('addBackdrop').classList.remove('active');
-    }
-
-    async function saveNewRecipe(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnSubmit');
-      btn.innerText = 'Speichere in Supabase...';
-      btn.disabled = true;
-
-      const title = document.getElementById('newTitle').value;
-      const emoji = document.getElementById('newEmoji').value || '🍲';
-      const category = [document.getElementById('newCategory').value];
-      const airfryer = document.getElementById('newAirfryer').value === 'true';
-      const zutaten_liste = document.getElementById('newZutatenListe').value;
-      const tipps = document.getElementById('newTipps').value;
-      const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
-      const prep = document.getElementById('newPrep').value;
-      const stove_step = document.getElementById('newStove').value;
-      const airfryer_step = document.getElementById('newAirfryerStep').value;
-      const oven_step = document.getElementById('newOven').value;
-
-      const kcal = parseFloat(document.getElementById('newKcal').value) || 200;
-      const kh = parseFloat(document.getElementById('newKh').value) || 5;
-      const fat = parseFloat(document.getElementById('newFat').value) || 4;
-      const prot = parseFloat(document.getElementById('newProt').value) || 25;
-
-      try {
-        const { error } = await supabaseClient.from('Rezepte').insert([
-          {
-            title,
-            emoji,
-            category,
-            airfryer,
-            kcal,
-            kh,
-            fat,
-            prot,
-            ingredients: ingredients.join(', '),
-            zutaten_liste,
-            tipps,
-            prep,
-            stove_step,
-            oven_step,
-            airfryer_step,
-            doc_check: "Selbst erstelltes Rezept. Hohe Proteindichte und blutzuckerregulierend."
-          }
-        ]);
-        if (error) throw error;
-        await loadRecipesFromSupabase();
-      } catch (err) {
-        console.error('Fehler beim Speichern:', err);
-      }
-
-      document.getElementById('newRecipeForm').reset();
-      btn.innerText = 'Rezept in Supabase speichern';
-      btn.disabled = false;
-      closeAddModalForce();
     }
 
     loadRecipesFromSupabase();
