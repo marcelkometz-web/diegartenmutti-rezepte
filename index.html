@@ -335,17 +335,23 @@
     }
 
     .close-sheet {
-      position: absolute;
-      top: 14px;
-      right: 16px;
+      position: sticky;
+      top: 0;
+      float: right;
+      margin-bottom: -32px;
       background: #21262d;
-      border: none;
+      border: 1px solid var(--border);
       color: #fff;
       font-size: 1.2rem;
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       cursor: pointer;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }
 
     .section-title {
