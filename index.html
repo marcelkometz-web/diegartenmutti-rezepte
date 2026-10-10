@@ -523,6 +523,9 @@
   </header>
 
   <div class="top-actions">
+    <button class="btn-add-recipe" onclick="openAddModal()">
+      <span>➕</span> Neues Rezept hinzufügen
+    </button>
     <div class="search-box">
       <span>🔍</span>
       <input type="text" id="searchInput" placeholder="Resteküche: z. B. Kohlrabi, Quark, Huhn..." oninput="filterRecipes()">
@@ -539,7 +542,107 @@
     </div>
   </div>
 
-  <!-- Daumen-Navigation -->
+  <!-- Formular Modal -->
+  <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
+    <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
+      <h2 style="font-size: 1.2rem; margin-bottom: 14px; color: #3fb950;">Neues Rezept anlegen</h2>
+      
+      <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
+        <div class="form-group">
+          <label>Rezept-Titel</label>
+          <input type="text" id="newTitle" required placeholder="z. B. Hähnchen-Gemüse Pfanne">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Icon / Emoji</label>
+            <input type="text" id="newEmoji" value="🍲" required>
+          </div>
+          <div class="form-group">
+            <label>Kategorie</label>
+            <select id="newCategory">
+              <option value="fleisch">Fleisch</option>
+              <option value="gemuese">Gemüse</option>
+              <option value="dessert">Dessert / Süßes</option>
+              <option value="lowcarb">Low-Carb</option>
+              <option value="fettarm">Fettarm</option>
+              <option value="fettverbrennung">Fettverbrennung</option>
+              <option value="stoffwechsel">Stoffwechsel aktiv</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Für Airfryer geeignet?</label>
+          <select id="newAirfryer">
+            <option value="true">Ja</option>
+            <option value="false">Nein</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Zutatenliste mit Mengen (für das Rezept)</label>
+          <textarea id="newZutatenListe" placeholder="• 400 g Hähnchen&#10;• 200 g Brokkoli&#10;• 1 EL Öl"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Schlagwörter für Resteküche (kommagetrennt)</label>
+          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, sahne, pute"></input>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kalorien (kcal)</label>
+            <input type="number" id="newKcal" required placeholder="z. B. 250">
+          </div>
+          <div class="form-group">
+            <label>Eiweiß (g)</label>
+            <input type="number" step="0.1" id="newProt" required placeholder="z. B. 30">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kohlenhydrate (g)</label>
+            <input type="number" step="0.1" id="newKh" required placeholder="z. B. 8">
+          </div>
+          <div class="form-group">
+            <label>Fett (g)</label>
+            <input type="number" step="0.1" id="newFat" required placeholder="z. B. 5">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>1. Vorbereitung & Schnippeln</label>
+          <textarea id="newPrep" placeholder="Wie wird vorbereitet..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>2. Zubereitung Herd / Pfanne</label>
+          <textarea id="newStove" placeholder="Pfannenstufe, Minuten..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>3. Zubereitung Backofen</label>
+          <textarea id="newOven" placeholder="Grad, Umluft, Minuten..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>4. Zubereitung Airfryer (Ninja)</label>
+          <textarea id="newAirfryerStep" placeholder="Grad, Minuten, schütteln..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Tipps & Tricks</label>
+          <textarea id="newTipps" placeholder="z. B. 1-2 EL Frischkäse für extra Cremigkeit..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-save" id="btnSubmit">Rezept in Supabase speichern</button>
+      </form>
+    </div>
+  </div>
+
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -560,6 +663,14 @@
     <button class="nav-btn" onclick="setCategory('lowcarb', this)">
       <span class="icon">🥗</span>
       <span>Low-Carb</span>
+    </button>
+    <button class="nav-btn" onclick="setCategory('fettverbrennung', this)">
+      <span class="icon">🔥</span>
+      <span>Fettverbrennung</span>
+    </button>
+    <button class="nav-btn" onclick="setCategory('stoffwechsel', this)">
+      <span class="icon">⚡</span>
+      <span>Stoffwechsel</span>
     </button>
     <button class="nav-btn" onclick="setCategory('fettarm', this)">
       <span class="icon">⚖️</span>
@@ -594,6 +705,8 @@
       'dessert': { label: 'Desserts & Süßes', icon: '🧁' },
       'lowcarb': { label: 'Low-Carb Klassiker', icon: '🥗' },
       'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
+      'fettverbrennung': { label: 'Fettverbrennung', icon: '🔥' },
+      'stoffwechsel': { label: 'Stoffwechsel aktiv', icon: '⚡' },
       'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
     };
 
@@ -601,7 +714,13 @@
     let currentCategory = 'all';
     let openedRecipeId = null;
 
-    // HILFSFUNKTION: Erkennt zuverlässig, ob ein Rezept ein Dessert ist
+    window.addEventListener('scroll', () => {
+      if (openedRecipeId !== null) {
+        openedRecipeId = null;
+        document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
+      }
+    }, { passive: true });
+
     function checkIsDessert(r) {
       if (!r) return false;
       const titleLower = (r.title || '').toLowerCase();
@@ -801,6 +920,10 @@
         'fleisch': [],
         'gemuese': [],
         'dessert': [],
+        'lowcarb': [],
+        'fettverbrennung': [],
+        'stoffwechsel': [],
+        'fettarm': [],
         'andere': []
       };
 
@@ -811,6 +934,14 @@
           groups['fleisch'].push(r);
         } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) {
           groups['gemuese'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) {
+          groups['lowcarb'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettverbrennung'))) {
+          groups['fettverbrennung'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('stoffwechsel'))) {
+          groups['stoffwechsel'].push(r);
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettarm'))) {
+          groups['fettarm'].push(r);
         } else {
           groups['andere'].push(r);
         }
@@ -944,6 +1075,76 @@
 
     function closeSheetForce() {
       document.getElementById('modalBackdrop').classList.remove('active');
+    }
+
+    function openAddModal() {
+      document.getElementById('addBackdrop').classList.add('active');
+    }
+
+    function closeAddModal(e) {
+      if (e.target.id === 'addBackdrop') {
+        document.getElementById('addBackdrop').classList.remove('active');
+      }
+    }
+
+    function closeAddModalForce() {
+      document.getElementById('addBackdrop').classList.remove('active');
+    }
+
+    async function saveNewRecipe(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.innerText = 'Speichere in Supabase...';
+      btn.disabled = true;
+
+      const title = document.getElementById('newTitle').value;
+      const emoji = document.getElementById('newEmoji').value || '🍲';
+      const category = [document.getElementById('newCategory').value];
+      const airfryer = document.getElementById('newAirfryer').value === 'true';
+      const zutaten_liste = document.getElementById('newZutatenListe').value;
+      const tipps = document.getElementById('newTipps').value;
+      const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
+      const prep = document.getElementById('newPrep').value;
+      const stove_step = document.getElementById('newStove').value;
+      const airfryer_step = document.getElementById('newAirfryerStep').value;
+      const oven_step = document.getElementById('newOven').value;
+
+      const kcal = parseFloat(document.getElementById('newKcal').value) || 200;
+      const kh = parseFloat(document.getElementById('newKh').value) || 5;
+      const fat = parseFloat(document.getElementById('newFat').value) || 4;
+      const prot = parseFloat(document.getElementById('newProt').value) || 25;
+
+      try {
+        const { error } = await supabaseClient.from('Rezepte').insert([
+          {
+            title,
+            emoji,
+            category,
+            airfryer,
+            kcal,
+            kh,
+            fat,
+            prot,
+            ingredients: ingredients.join(', '),
+            zutaten_liste,
+            tipps,
+            prep,
+            stove_step,
+            oven_step,
+            airfryer_step,
+            doc_check: "Selbst erstelltes Rezept. Hohe Proteindichte und blutzuckerregulierend."
+          }
+        ]);
+        if (error) throw error;
+        await loadRecipesFromSupabase();
+      } catch (err) {
+        console.error('Fehler beim Speichern:', err);
+      }
+
+      document.getElementById('newRecipeForm').reset();
+      btn.innerText = 'Rezept in Supabase speichern';
+      btn.disabled = false;
+      closeAddModalForce();
     }
 
     loadRecipesFromSupabase();
