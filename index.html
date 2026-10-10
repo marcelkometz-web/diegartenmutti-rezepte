@@ -37,7 +37,6 @@
       margin: 0 auto;
     }
 
-    /* Header */
     header {
       padding: 10px 0 16px 0;
       text-align: center;
@@ -59,7 +58,6 @@
       margin-top: 3px;
     }
 
-    /* Statusanzeige */
     .sync-status {
       font-size: 0.72rem;
       color: #3fb950;
@@ -70,7 +68,6 @@
       gap: 5px;
     }
 
-    /* Top Action Bar */
     .top-actions {
       display: flex;
       flex-direction: column;
@@ -122,11 +119,11 @@
       color: #6e7681;
     }
 
-    /* Rezeptliste */
+    /* Akkordeon Kacheln */
     .recipe-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .recipe-card {
@@ -136,22 +133,28 @@
       padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .recipe-card.open {
+      border-color: #3fb950;
+      background: #19202a;
     }
 
     .card-head {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       cursor: pointer;
+      user-select: none;
     }
 
     .card-icon {
-      font-size: 1.9rem;
+      font-size: 1.8rem;
       background: var(--card-sub);
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -165,7 +168,7 @@
     }
 
     .card-meta h3 {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -177,9 +180,42 @@
       display: flex;
       gap: 6px;
       align-items: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       margin-top: 3px;
+    }
+
+    .chevron-icon {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+      padding: 4px;
+    }
+
+    .recipe-card.open .chevron-icon {
+      transform: rotate(180deg);
+      color: #3fb950;
+    }
+
+    /* Aufklappbarer Body */
+    .card-body {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(48, 54, 61, 0.7);
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .recipe-card.open .card-body {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .badge-ampel {
@@ -201,7 +237,6 @@
       font-weight: 600;
     }
 
-    /* Beilagen Selector */
     .swap-row {
       background: var(--card-sub);
       border: 1px solid var(--border);
@@ -231,7 +266,6 @@
       max-width: 65%;
     }
 
-    /* Nährwerte */
     .nutri-carousel {
       display: flex;
       gap: 8px;
@@ -289,8 +323,8 @@
       border: 1px solid var(--border);
       color: #c9d1d9;
       border-radius: 8px;
-      padding: 8px;
-      font-size: 0.82rem;
+      padding: 9px;
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
       text-align: center;
@@ -300,7 +334,7 @@
       background: #30363d;
     }
 
-    /* Modals / Sheets */
+    /* Modal / Popup */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -334,11 +368,12 @@
       to { transform: translateY(0); }
     }
 
+    /* Sticky Schließen Button */
     .close-sheet {
       position: sticky;
       top: 0;
       float: right;
-      margin-bottom: -32px;
+      margin-bottom: -34px;
       background: #21262d;
       border: 1px solid var(--border);
       color: #fff;
@@ -414,7 +449,7 @@
       margin-bottom: 4px;
     }
 
-    /* Formular Styles */
+    /* Formular */
     .form-group {
       margin-bottom: 12px;
       display: flex;
@@ -464,7 +499,7 @@
       cursor: pointer;
     }
 
-    /* Bottom Navigation Bar */
+    /* Bottom Nav */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -526,7 +561,7 @@
 
   <div class="recipe-list" id="recipeList"></div>
 
-  <!-- Detail-Sheet / Pop-up -->
+  <!-- Detail Modal -->
   <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
     <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
@@ -534,7 +569,7 @@
     </div>
   </div>
 
-  <!-- Formular-Sheet / Rezept hinzufügen -->
+  <!-- Formular Modal -->
   <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
     <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
@@ -577,7 +612,7 @@
 
         <div class="form-group">
           <label>Schlagwörter für Resteküche (kommagetrennt)</label>
-          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, radieschen, pute">
+          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, radieschen, pute"></input>
         </div>
 
         <div class="form-row">
@@ -632,7 +667,7 @@
     </div>
   </div>
 
-  <!-- Daumen-Navigation -->
+  <!-- Bottom Nav -->
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -660,7 +695,7 @@
     </button>
   </nav>
 
-  <!-- Supabase JS Client -->
+  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
@@ -680,8 +715,16 @@
 
     let recipes = [];
     let currentCategory = 'all';
+    let openedRecipeId = null;
 
-    // Rezepte aus Supabase laden
+    // Schließt geöffnete Kachel beim Scrollen
+    window.addEventListener('scroll', () => {
+      if (openedRecipeId !== null) {
+        openedRecipeId = null;
+        document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
+      }
+    }, { passive: true });
+
     async function loadRecipesFromSupabase() {
       const status = document.getElementById('syncStatus');
       status.innerText = '⏳ Lade Rezepte aus Supabase...';
@@ -735,7 +778,7 @@
           });
           status.innerText = `⚡ Supabase synchronisiert (${recipes.length} Rezepte)`;
         } else {
-          status.innerText = '⚡ Supabase bereit (noch keine Rezepte)';
+          status.innerText = '⚡ Supabase bereit (keine Rezepte vorhanden)';
         }
       } catch (err) {
         console.warn('Supabase Offline / Fallback aktiv:', err);
@@ -761,6 +804,23 @@
       };
     }
 
+    function toggleAccordion(recipeId) {
+      const targetCard = document.getElementById(`recipe-card-${recipeId}`);
+      if (!targetCard) return;
+
+      const isAlreadyOpen = targetCard.classList.contains('open');
+
+      // Schließt alle anderen geöffneten Kacheln
+      document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
+
+      if (!isAlreadyOpen) {
+        targetCard.classList.add('open');
+        openedRecipeId = recipeId;
+      } else {
+        openedRecipeId = null;
+      }
+    }
+
     function renderList(list) {
       const container = document.getElementById('recipeList');
       container.innerHTML = '';
@@ -772,6 +832,7 @@
 
       list.forEach(r => {
         const total = calculateTotalNutri(r);
+        const isOpen = openedRecipeId === r.id;
         
         let sideSelectHtml = `<select onchange="updateSide('${r.id}', this.value)">`;
         for (const [key, side] of Object.entries(sideOptions)) {
@@ -780,8 +841,9 @@
         sideSelectHtml += `</select>`;
 
         container.innerHTML += `
-          <div class="recipe-card">
-            <div class="card-head" onclick="openDetails('${r.id}')">
+          <div class="recipe-card ${isOpen ? 'open' : ''}" id="recipe-card-${r.id}">
+            <!-- Klickbarer Header: öffnet / schließt Kachel -->
+            <div class="card-head" onclick="toggleAccordion('${r.id}')">
               <div class="card-icon">${r.emoji || '🍲'}</div>
               <div class="card-meta">
                 <h3>${r.title}</h3>
@@ -790,30 +852,34 @@
                   ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}
                 </div>
               </div>
+              <div class="chevron-icon">▼</div>
             </div>
 
-            <div class="swap-row">
-              <label>Beilage:</label>
-              ${sideSelectHtml}
-            </div>
+            <!-- Aufklappbarer Bereich -->
+            <div class="card-body">
+              <div class="swap-row">
+                <label>Beilage:</label>
+                ${sideSelectHtml}
+              </div>
 
-            <div class="nutri-carousel">
-              <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
-              <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
-              <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
-              <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
-              <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
-              <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
-              <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
-              <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
-            </div>
+              <div class="nutri-carousel">
+                <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
+                <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
+                <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
+                <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
+                <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
+                <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
+                <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
+                <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
+              </div>
 
-            <div class="health-indicator">
-              <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
-              <span class="status-text">${total.insulin}</span>
-            </div>
+              <div class="health-indicator">
+                <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
+                <span class="status-text">${total.insulin}</span>
+              </div>
 
-            <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung & Zutaten ansehen ➔</button>
+              <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung & Zutaten ansehen ➔</button>
+            </div>
           </div>
         `;
       });
@@ -831,6 +897,7 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentCategory = cat;
+      openedRecipeId = null;
       filterRecipes();
     }
 
@@ -989,7 +1056,6 @@
       closeAddModalForce();
     }
 
-    // Beim Laden direkt aus Supabase abrufen
     loadRecipesFromSupabase();
   </script>
 </body>
