@@ -70,7 +70,7 @@
       gap: 5px;
     }
 
-    /* Top Action Bar: Suche & Rezept Hinzufügen */
+    /* Top Action Bar */
     .top-actions {
       display: flex;
       flex-direction: column;
@@ -122,7 +122,7 @@
       color: #6e7681;
     }
 
-    /* Rezeptliste Kompakt */
+    /* Rezeptliste */
     .recipe-list {
       display: flex;
       flex-direction: column;
@@ -231,7 +231,7 @@
       max-width: 65%;
     }
 
-    /* Daumen-Karussell für Nährwerte */
+    /* Nährwerte */
     .nutri-carousel {
       display: flex;
       gap: 8px;
@@ -268,7 +268,6 @@
       color: #fff;
     }
 
-    /* Insulin- / Stoffwechselstatus */
     .health-indicator {
       display: flex;
       align-items: center;
@@ -349,8 +348,29 @@
       cursor: pointer;
     }
 
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 16px 0 8px 0;
+      color: #f0f6fc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ingredients-box {
+      background: var(--card-sub);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #e6edf3;
+      white-space: pre-line;
+    }
+
     .step-section {
-      margin-top: 14px;
+      margin-top: 10px;
       background: var(--card-sub);
       border-radius: 10px;
       padding: 12px;
@@ -369,6 +389,23 @@
       font-size: 0.83rem;
       line-height: 1.45;
       color: #c9d1d9;
+    }
+
+    .tip-box {
+      background: rgba(210, 153, 34, 0.1);
+      border: 1px solid rgba(210, 153, 34, 0.35);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.83rem;
+      line-height: 1.45;
+      color: #f0f6fc;
+    }
+
+    .tip-box strong {
+      color: #d29922;
+      display: block;
+      margin-bottom: 4px;
     }
 
     /* Formular Styles */
@@ -445,562 +482,4 @@
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 0.68rem;
-      font-weight: 500;
-      cursor: pointer;
-      flex: 1;
-    }
-
-    .nav-btn .icon {
-      font-size: 1.25rem;
-    }
-
-    .nav-btn.active {
-      color: #3fb950;
-      font-weight: 700;
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <div class="brand-title">DieGartenMutti86</div>
-    <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
-    <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
-  </header>
-
-  <!-- Obere Aktionsleiste: Button & Resteküche-Suche -->
-  <div class="top-actions">
-    <button class="btn-add-recipe" onclick="openAddModal()">
-      <span>➕</span> Neues Rezept hinzufügen
-    </button>
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Resteküche: z. B. Kohlrabi, Radieschen, Huhn..." oninput="filterRecipes()">
-    </div>
-  </div>
-
-  <!-- Rezeptliste -->
-  <div class="recipe-list" id="recipeList"></div>
-
-  <!-- Detail-Sheet / Pop-up -->
-  <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
-    <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
-      <div id="sheetContent"></div>
-    </div>
-  </div>
-
-  <!-- Formular-Sheet / Rezept hinzufügen -->
-  <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
-    <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
-      <h2 style="font-size: 1.2rem; margin-bottom: 14px; color: #3fb950;">Neues Rezept anlegen</h2>
-      
-      <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
-        <div class="form-group">
-          <label>Rezept-Titel</label>
-          <input type="text" id="newTitle" required placeholder="z. B. Hähnchen-Gemüse Pfanne">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Icon / Emoji</label>
-            <input type="text" id="newEmoji" value="🍲" required>
-          </div>
-          <div class="form-group">
-            <label>Kategorie</label>
-            <select id="newCategory">
-              <option value="fleisch">Fleisch</option>
-              <option value="gemuese">Gemüse</option>
-              <option value="lowcarb">Low-Carb</option>
-              <option value="fettarm">Fettarm</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Für Airfryer geeignet?</label>
-          <select id="newAirfryer">
-            <option value="true">Ja</option>
-            <option value="false">Nein</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Zutaten für Resteküche (kommagetrennt)</label>
-          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, radieschen, pute">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kalorien (kcal)</label>
-            <input type="number" id="newKcal" required placeholder="z. B. 250">
-          </div>
-          <div class="form-group">
-            <label>Eiweiß (g)</label>
-            <input type="number" step="0.1" id="newProt" required placeholder="z. B. 30">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kohlenhydrate (g)</label>
-            <input type="number" step="0.1" id="newKh" required placeholder="z. B. 8">
-          </div>
-          <div class="form-group">
-            <label>Fett (g)</label>
-            <input type="number" step="0.1" id="newFat" required placeholder="z. B. 5">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Vorbereitung / Schneiden</label>
-          <textarea id="newPrep" placeholder="Wie wird vorbereitet..." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Zubereitung Herd</label>
-          <textarea id="newStove" placeholder="Pfannenstufe, Minuten..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Zubereitung Airfryer (falls vorhanden)</label>
-          <textarea id="newAirfryerStep" placeholder="Grad, Minuten, schütteln..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Zubereitung Backofen</label>
-          <textarea id="newOven" placeholder="Grad, Umluft, Minuten..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-save" id="btnSubmit">Rezept in Supabase speichern</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Daumen-Navigation ganz unten -->
-  <nav class="bottom-bar">
-    <button class="nav-btn active" onclick="setCategory('all', this)">
-      <span class="icon">✨</span>
-      <span>Alle</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('fleisch', this)">
-      <span class="icon">🍗</span>
-      <span>Fleisch</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('gemuese', this)">
-      <span class="icon">🥦</span>
-      <span>Gemüse</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('lowcarb', this)">
-      <span class="icon">🥗</span>
-      <span>Low-Carb</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('fettarm', this)">
-      <span class="icon">⚖️</span>
-      <span>Fettarm</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('airfryer', this)">
-      <span class="icon">🌪️</span>
-      <span>Airfryer</span>
-    </button>
-  </nav>
-
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_8-MkCdXRxN-GagE0g4GYrQ_TY3I6RmD';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const sideOptions = {
-      "protein_nudeln": { name: "Protein-Nudeln", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, satFat: 0.3, fiber: 6.5, prot: 14.0, salt: 0.02, gl: "Niedrig", insulin: "Stabil (Optimal)" },
-      "zoodles": { name: "Zucchini-Nudeln (Zoodles)", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, satFat: 0.1, fiber: 1.6, prot: 1.8, salt: 0.01, gl: "Sehr niedrig", insulin: "Ketogen / Stabil" },
-      "basmati_reis": { name: "Basmati-Reis", kcal: 130, kh: 28, sugar: 0.1, fat: 0.3, satFat: 0.1, fiber: 0.6, prot: 2.7, salt: 0.01, gl: "Mittel", insulin: "Mäßig erhöht" },
-      "vollkorn_reis": { name: "Vollkorn-Reis", kcal: 123, kh: 25, sugar: 0.2, fat: 1.0, satFat: 0.2, fiber: 2.4, prot: 2.8, salt: 0.01, gl: "Niedrig bis mittel", insulin: "Langsamer Anstieg" },
-      "wildreis": { name: "Wildreis", kcal: 101, kh: 21, sugar: 0.7, fat: 0.3, satFat: 0.1, fiber: 1.8, prot: 4.0, salt: 0.01, gl: "Niedrig", insulin: "Sehr stabil" },
-      "kartoffeln": { name: "Salzkartoffeln", kcal: 77, kh: 16, sugar: 0.8, fat: 0.1, satFat: 0.0, fiber: 1.5, prot: 2.0, salt: 0.01, gl: "Mittel", insulin: "Kurzer Peak" },
-      "vollkorn_nudeln": { name: "Vollkorn-Nudeln", kcal: 138, kh: 26, sugar: 1.1, fat: 1.2, satFat: 0.2, fiber: 4.2, prot: 5.5, salt: 0.01, gl: "Mittel", insulin: "Langsamer Anstieg" },
-      "klassik_nudeln": { name: "Klassische Hartweizennudeln", kcal: 155, kh: 31, sugar: 1.2, fat: 0.9, satFat: 0.2, fiber: 1.8, prot: 5.0, salt: 0.01, gl: "Hoch", insulin: "Hoher Insulin-Peak" }
-    };
-
-    const initialRecipes = [
-      {
-        id: 1,
-        title: "Kohlrabi-Radieschen-Pfanne mit Geflügel",
-        category: ["fleisch", "gemuese", "lowcarb", "fettarm"],
-        emoji: "🥗",
-        airfryer: true,
-        score: "A",
-        scoreClass: "var(--score-a)",
-        selectedSide: "protein_nudeln",
-        ingredients: ["kohlrabi", "radieschen", "haehnchen", "pute", "frischkaese", "kraeuter"],
-        baseNutri: { kcal: 230, kh: 6.2, sugar: 3.1, fat: 4.8, satFat: 1.2, fiber: 4.1, prot: 32.0, salt: 0.8 },
-        docCheck: "Hervorragende Schwefel- & Bitterstoffdichte (Glukosinolate) zur Unterstützung der Leberentgiftung. Durch das magere Geflügel maximaler Sättigungseffekt bei minimaler Belastung der Bauchspeicheldrüse.",
-        prep: "Kohlrabi schälen und in ca. 5mm dicke Stifte schneiden. Radieschen putzen und vierteln. Hähnchenbrustfilet trocken tupfen und in mundgerechte Streifen schneiden.",
-        airfryerStep: "Hähnchenstreifen leicht mit 1 TL Olivenöl marinieren. Im Airfryer bei 180°C für 10-12 Minuten garen (nach 6 Min. Korb einmal kräftig durchschütteln). Radieschen für die letzten 4 Min. mit rein.",
-        stoveStep: "Beschichtete Pfanne auf Stufe 7 (von 9) vorheizen. Geflügel 3 Min. scharf anbraten, herausnehmen. Hitze auf Stufe 5 reduzieren, Kohlrabistifte mit 2 EL Wasser 5 Min. dünsten. Radieschen zugeben, Fleisch zurück in die Pfanne und mit 1 EL Kräuterfrischkäse binden.",
-        ovenStep: "Backofen auf 180°C Umluft vorheizen. Kohlrabi und Radieschen auf ein Blech geben und 15 Minuten garen."
-      },
-      {
-        id: 2,
-        title: "Zucchini-Paprika Schiffchen (Airfryer-Style)",
-        category: ["gemuese", "lowcarb", "fettarm", "airfryer"],
-        emoji: "🫑",
-        airfryer: true,
-        score: "A",
-        scoreClass: "var(--score-a)",
-        selectedSide: "wildreis",
-        ingredients: ["zucchini", "paprika", "feta", "light feta", "knoblauch", "oregano"],
-        baseNutri: { kcal: 180, kh: 7.5, sugar: 4.2, fat: 5.2, satFat: 2.1, fiber: 3.8, prot: 14.5, salt: 0.9 },
-        docCheck: "Reich an bioaktivem Lycopin und Vitamin C. Der enthaltene Light-Feta liefert bioverfügbares Calcium, ohne die Fettverbrennung durch überschüssige Lipide zu bremsen.",
-        prep: "Zucchini längs halbieren und mit einem Teelöffel das Kerngehäuse ausschaben. Paprika fein würfeln. Light-Feta mit Knoblauch und Kräutern zerdrücken.",
-        airfryerStep: "Die gefüllten Schiffchen direkt in den Garkorb setzen. Bei 170°C für 12 Minuten backen, bis der Käse goldbraun gratiniert ist.",
-        stoveStep: "Pfanne mit Deckel auf Stufe 4 vorheizen. 1 EL Wasser auf den Pfannenboden geben, Schiffchen hineinsetzen und bei geschlossenem Deckel 14 Min. dämpfen.",
-        ovenStep: "Bei 190°C Ober-/Unterhitze im mittleren Einschub für 20 Minuten backen."
-      },
-      {
-        id: 3,
-        title: "Puten-Gemüse-Spieße Mediterran",
-        category: ["fleisch", "gemuese", "fettarm", "airfryer"],
-        emoji: "🍢",
-        airfryer: true,
-        score: "A",
-        scoreClass: "var(--score-a)",
-        selectedSide: "vollkorn_reis",
-        ingredients: ["pute", "rote zwiebel", "paprika", "zucchini", "rosmarin"],
-        baseNutri: { kcal: 210, kh: 4.0, sugar: 2.8, fat: 3.5, satFat: 0.8, fiber: 2.5, prot: 36.0, salt: 0.6 },
-        docCheck: "Sehr hohe Protein-Dichte. Hohe Thermogenese: Der Körper verbrennt rund 25% der Eiweiß-Kalorien bereits bei der Verstoffwechselung.",
-        prep: "Putenbrust in 3x3 cm große Würfel schneiden. Gemüse in passende Scheiben schneiden und abwechselnd auf Holzspieße stecken.",
-        airfryerStep: "Spieße nebeneinander in den Airfryer legen. 180°C für 12 Minuten garen. Nach 6 Minuten Spieße einmal um 180 Grad wenden.",
-        stoveStep: "Grillpfanne auf Stufe 8 erhitzen, leicht einpinseln und Spieße von allen 4 Seiten jeweils 2,5 Minuten anbraten.",
-        ovenStep: "Im vorgeheizten Backofen bei 200°C Oberhitze/Grillfunktion 15 Min. rösten."
-      }
-    ];
-
-    let recipes = [];
-    let currentCategory = 'all';
-
-    // 1. Rezepte aus Supabase laden
-    async function loadRecipesFromSupabase() {
-      const status = document.getElementById('syncStatus');
-      status.innerText = '⏳ Lade Rezepte aus Supabase...';
-
-      try {
-        const { data, error } = await supabaseClient.from('Rezepte').select('*');
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          // Rezepte aus Supabase formatieren
-          recipes = data.map(item => {
-            let cat = [];
-            if (item.category) {
-              cat = Array.isArray(item.category) ? item.category : [item.category];
-            } else {
-              cat = ['fleisch', 'gemuese'];
-            }
-
-            let ing = [];
-            if (item.ingredients) {
-              ing = Array.isArray(item.ingredients) ? item.ingredients : item.ingredients.split(',').map(s => s.trim().toLowerCase());
-            }
-
-            return {
-              id: item.id,
-              title: item.title || item.titel || 'Rezept',
-              emoji: item.emoji || '🍲',
-              category: cat,
-              airfryer: item.airfryer === true || item.airfryer === 'true',
-              score: item.score || 'A',
-              scoreClass: 'var(--score-a)',
-              selectedSide: item.selectedSide || 'protein_nudeln',
-              ingredients: ing,
-              baseNutri: item.baseNutri || {
-                kcal: Number(item.kcal) || 220,
-                kh: Number(item.kh) || 5,
-                sugar: 2.0,
-                fat: Number(item.fat) || 4,
-                satFat: 1.0,
-                fiber: 3.5,
-                prot: Number(item.prot) || 28,
-                salt: 0.5
-              },
-              docCheck: item.docCheck || item.description || 'Ausgewogene Nährstoffe für optimalen Blutzucker.',
-              prep: item.prep || item.description || 'Zutaten waschen und zubereiten.',
-              airfryerStep: item.airfryerStep || '',
-              stoveStep: item.stoveStep || '',
-              ovenStep: item.ovenStep || ''
-            };
-          });
-          status.innerText = `⚡ Supabase synchronisiert (${recipes.length} Rezepte)`;
-        } else {
-          // Fallback, wenn Tabelle noch leer ist
-          recipes = initialRecipes;
-          status.innerText = '⚡ Supabase bereit (zeige Vorlagen)';
-        }
-      } catch (err) {
-        console.warn('Supabase Offline / Fallback aktiv:', err);
-        recipes = initialRecipes;
-        status.innerText = '⚡ Offline-Modus aktiv (Vorlagen geladen)';
-      }
-
-      filterRecipes();
-    }
-
-    function calculateTotalNutri(recipe) {
-      const side = sideOptions[recipe.selectedSide] || sideOptions["protein_nudeln"];
-      return {
-        kcal: Math.round(recipe.baseNutri.kcal + side.kcal),
-        kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
-        sugar: (recipe.baseNutri.sugar + side.sugar).toFixed(1),
-        fat: (recipe.baseNutri.fat + side.fat).toFixed(1),
-        satFat: (recipe.baseNutri.satFat + side.satFat).toFixed(1),
-        fiber: (recipe.baseNutri.fiber + side.fiber).toFixed(1),
-        prot: (recipe.baseNutri.prot + side.prot).toFixed(1),
-        salt: (recipe.baseNutri.salt + side.salt).toFixed(2),
-        insulin: side.insulin,
-        gl: side.gl
-      };
-    }
-
-    function renderList(list) {
-      const container = document.getElementById('recipeList');
-      container.innerHTML = '';
-
-      if (list.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine Rezepte für diese Zutat oder Kategorie gefunden.</div>`;
-        return;
-      }
-
-      list.forEach(r => {
-        const total = calculateTotalNutri(r);
-        
-        let sideSelectHtml = `<select onchange="updateSide('${r.id}', this.value)">`;
-        for (const [key, side] of Object.entries(sideOptions)) {
-          sideSelectHtml += `<option value="${key}" ${r.selectedSide === key ? 'selected' : ''}>${side.name}</option>`;
-        }
-        sideSelectHtml += `</select>`;
-
-        container.innerHTML += `
-          <div class="recipe-card">
-            <div class="card-head" onclick="openDetails('${r.id}')">
-              <div class="card-icon">${r.emoji || '🍲'}</div>
-              <div class="card-meta">
-                <h3>${r.title}</h3>
-                <div class="card-tags">
-                  <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
-                  ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}
-                </div>
-              </div>
-            </div>
-
-            <div class="swap-row">
-              <label>Beilage:</label>
-              ${sideSelectHtml}
-            </div>
-
-            <div class="nutri-carousel">
-              <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
-              <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
-              <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
-              <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
-              <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
-              <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
-              <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
-              <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
-            </div>
-
-            <div class="health-indicator">
-              <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
-              <span class="status-text">${total.insulin}</span>
-            </div>
-
-            <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung ansehen (Herd / Ofen / Airfryer) ➔</button>
-          </div>
-        `;
-      });
-    }
-
-    function updateSide(recipeId, newSide) {
-      const rec = recipes.find(x => String(x.id) === String(recipeId));
-      if (rec) {
-        rec.selectedSide = newSide;
-        filterRecipes();
-      }
-    }
-
-    function setCategory(cat, btn) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentCategory = cat;
-      filterRecipes();
-    }
-
-    function filterRecipes() {
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const filtered = recipes.filter(r => {
-        const matchesCategory = currentCategory === 'all' || 
-          (currentCategory === 'airfryer' ? r.airfryer : (r.category && r.category.includes(currentCategory)));
-        const matchesSearch = search === '' || 
-          r.title.toLowerCase().includes(search) || 
-          (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
-        return matchesCategory && matchesSearch;
-      });
-      renderList(filtered);
-    }
-
-    function openDetails(recipeId) {
-      const r = recipes.find(x => String(x.id) === String(recipeId));
-      if (!r) return;
-      const sheet = document.getElementById('sheetContent');
-      const sideName = sideOptions[r.selectedSide]?.name || "Protein-Nudeln";
-
-      sheet.innerHTML = `
-        <div style="font-size: 2.2rem; margin-bottom: 8px;">${r.emoji || '🍲'}</div>
-        <div style="display:flex; gap:8px; align-items:center; margin-bottom: 8px;">
-          <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
-          ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer geeignet</span>' : ''}
-        </div>
-        <h2 style="font-size: 1.3rem; margin-bottom: 6px;">${r.title}</h2>
-        <p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>
-
-        <div style="background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.3); border-radius: 8px; padding: 10px; font-size: 0.8rem; line-height: 1.45; color: #e6edf3; margin-bottom: 14px;">
-          <strong style="color: #3fb950; display:block; margin-bottom: 3px;">🩺 Doc's Ernährungs-Check:</strong>
-          ${r.docCheck || 'Ausgewogene Nährstoffverteilung für einen stabilen Blutzuckerspiegel und optimale Thermogenese.'}
-        </div>
-
-        <h3 style="font-size: 0.95rem; margin-top: 10px;">Exakte Zubereitungsschritte:</h3>
-
-        <div class="step-section">
-          <h4>🔪 1. Vorbereitung & Schnippeln</h4>
-          <p>${r.prep}</p>
-        </div>
-
-        ${r.airfryerStep ? `
-        <div class="step-section" style="border-left: 3px solid #d29922;">
-          <h4 style="color: #d29922;">🌪️ Im Airfryer (Heißluftfritteuse)</h4>
-          <p>${r.airfryerStep}</p>
-        </div>
-        ` : ''}
-
-        ${r.stoveStep ? `
-        <div class="step-section">
-          <h4>🍳 Auf dem Herd</h4>
-          <p>${r.stoveStep}</p>
-        </div>
-        ` : ''}
-
-        ${r.ovenStep ? `
-        <div class="step-section">
-          <h4>🔥 Im Backofen</h4>
-          <p>${r.ovenStep}</p>
-        </div>
-        ` : ''}
-      `;
-
-      document.getElementById('modalBackdrop').classList.add('active');
-    }
-
-    function closeSheet(e) {
-      if (e.target.id === 'modalBackdrop') {
-        document.getElementById('modalBackdrop').classList.remove('active');
-      }
-    }
-
-    function closeSheetForce() {
-      document.getElementById('modalBackdrop').classList.remove('active');
-    }
-
-    function openAddModal() {
-      document.getElementById('addBackdrop').classList.add('active');
-    }
-
-    function closeAddModal(e) {
-      if (e.target.id === 'addBackdrop') {
-        document.getElementById('addBackdrop').classList.remove('active');
-      }
-    }
-
-    function closeAddModalForce() {
-      document.getElementById('addBackdrop').classList.remove('active');
-    }
-
-    // 2. Neues Rezept speichern und zu Supabase hochladen
-    async function saveNewRecipe(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnSubmit');
-      btn.innerText = 'Speichere in Supabase...';
-      btn.disabled = true;
-
-      const title = document.getElementById('newTitle').value;
-      const emoji = document.getElementById('newEmoji').value || '🍲';
-      const category = [document.getElementById('newCategory').value];
-      const airfryer = document.getElementById('newAirfryer').value === 'true';
-      const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
-      const prep = document.getElementById('newPrep').value;
-      const stoveStep = document.getElementById('newStove').value;
-      const airfryerStep = document.getElementById('newAirfryerStep').value;
-      const ovenStep = document.getElementById('newOven').value;
-
-      const baseNutri = {
-        kcal: parseFloat(document.getElementById('newKcal').value) || 200,
-        kh: parseFloat(document.getElementById('newKh').value) || 5,
-        sugar: 2.0,
-        fat: parseFloat(document.getElementById('newFat').value) || 4,
-        satFat: 1.0,
-        fiber: 3.5,
-        prot: parseFloat(document.getElementById('newProt').value) || 25,
-        salt: 0.5
-      };
-
-      const newRec = {
-        id: Date.now(),
-        title,
-        emoji,
-        category,
-        airfryer,
-        score: "A",
-        scoreClass: "var(--score-a)",
-        selectedSide: "protein_nudeln",
-        ingredients,
-        baseNutri,
-        docCheck: "Selbst erstelltes Rezept. Hohe Proteindichte und blutzuckerregulierend.",
-        prep,
-        stoveStep,
-        airfryerStep,
-        ovenStep
-      };
-
-      try {
-        // Schreibt den Eintrag in die Supabase Tabelle "Rezepte"
-        const { error } = await supabaseClient.from('Rezepte').insert([
-          {
-            title: title,
-            titel: title,
-            ingredients: ingredients.join(', '),
-            description: prep + (airfryerStep ? ' | Airfryer: ' + airfryerStep : '') + (stoveStep ? ' | Herd: ' + stoveStep : ''),
-            airfryer: airfryer
-          }
-        ]);
-        if (error) console.error('Supabase Insert Fehler:', error);
-      } catch (err) {
-        console.error('Fehler beim Speichern:', err);
-      }
-
-      // Lokal zur schnellen Ansicht hinzufügen
-      recipes.unshift(newRec);
-      document.getElementById('newRecipeForm').reset();
-      btn.innerText = 'Rezept in Supabase speichern';
-      btn.disabled = false;
-      closeAddModalForce();
-      filterRecipes();
-    }
-
-    // Beim Laden direkt aus Supabase abrufen
-    loadRecipesFromSupabase();
-  </script>
-</body>
-</html>
+      align-items:
