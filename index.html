@@ -38,7 +38,7 @@
     }
 
     header {
-      padding: 10px 0 16px 0;
+      padding: 6px 0 14px 0;
       text-align: center;
     }
 
@@ -73,27 +73,19 @@
       flex-direction: column;
       gap: 10px;
       margin-bottom: 16px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
 
-    .btn-add-recipe {
-      background: #238636;
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
+    /* Neue kompakte Such- und Hinzufügen-Leiste */
+    .search-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 14px rgba(35, 134, 54, 0.3);
-    }
-
-    .btn-add-recipe:active {
-      background: #2ea043;
-      transform: scale(0.98);
+      align-items: center;
     }
 
     .search-box {
@@ -104,6 +96,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: 1;
     }
 
     .search-box input {
@@ -117,6 +110,29 @@
 
     .search-box input::placeholder {
       color: #6e7681;
+    }
+
+    .btn-add-compact {
+      background: #238636;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 0 14px;
+      height: 42px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(35, 134, 54, 0.3);
+      white-space: nowrap;
+    }
+
+    .btn-add-compact:active {
+      background: #2ea043;
+      transform: scale(0.96);
     }
 
     /* Resteküche Schnellklick-Chips */
@@ -164,7 +180,7 @@
       border: 1px solid #3fb950;
       border-radius: 10px;
       padding: 8px 12px;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
       font-size: 0.82rem;
       color: #3fb950;
     }
@@ -187,117 +203,78 @@
       color: #3fb950;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin: 16px 0 6px 0;
+      margin: 16px 0 10px 0;
       padding-bottom: 4px;
       border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+      grid-column: 1 / -1; /* Geht im Grid über die volle Breite */
     }
 
-    .category-divider:first-of-type {
-      margin-top: 4px;
-    }
-
+    /* NEUES GRID-LAYOUT FÜR REZEPTE */
     .recipe-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
     .recipe-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
+      border-radius: 16px;
+      padding: 14px 10px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-
-    .recipe-card.open {
-      border-color: #3fb950;
-      background: #19202a;
-    }
-
-    .card-head {
-      display: flex;
       align-items: center;
-      gap: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       cursor: pointer;
-      user-select: none;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+
+    .recipe-card:active {
+      transform: scale(0.96);
+      border-color: #3fb950;
     }
 
     .card-icon {
-      font-size: 1.8rem;
+      font-size: 2.2rem;
       background: var(--card-sub);
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .card-meta {
-      flex-grow: 1;
-      min-width: 0;
+      margin-bottom: 10px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .card-meta h3 {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       color: #fff;
+      line-height: 1.25;
+      height: 2.5em; /* Exakt 2 Zeilen Platz */
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin-bottom: 8px;
     }
 
-    .card-tags {
+    .card-badges {
       display: flex;
       gap: 6px;
       align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
-
-    .chevron-icon {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      transition: transform 0.25s ease;
-      flex-shrink: 0;
-      padding: 4px;
-    }
-
-    .recipe-card.open .chevron-icon {
-      transform: rotate(180deg);
-      color: #3fb950;
-    }
-
-    .card-body {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(48, 54, 61, 0.7);
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .recipe-card.open .card-body {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+      justify-content: center;
+      margin-bottom: 8px;
     }
 
     .badge-ampel {
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 6px;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: #fff;
       display: inline-block;
     }
@@ -306,110 +283,31 @@
       background: rgba(210, 153, 34, 0.15);
       color: #d29922;
       border: 1px solid rgba(210, 153, 34, 0.4);
-      padding: 1px 6px;
+      padding: 1px 5px;
       border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-
-    .swap-row {
-      background: var(--card-sub);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .swap-row label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .swap-row select {
-      background: #121418;
-      color: #3fb950;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      outline: none;
-      max-width: 65%;
-    }
-
-    .nutri-carousel {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .nutri-carousel::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nutri-pill {
-      scroll-snap-align: start;
-      flex: 0 0 auto;
-      background: #11141a;
-      border: 1px solid #282f3a;
-      border-radius: 8px;
-      padding: 6px 10px;
-      text-align: center;
-      min-width: 72px;
-    }
-
-    .nutri-pill span {
-      display: block;
       font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
+      font-weight: 600;
     }
 
-    .nutri-pill strong {
-      font-size: 0.88rem;
-      color: #fff;
-    }
-
-    .health-indicator {
+    /* Makro-Leiste auf der Kachel (Coach-Feature) */
+    .card-quick-macros {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(46, 160, 67, 0.08);
-      border: 1px dashed rgba(46, 160, 67, 0.35);
+      gap: 8px;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 4px 8px;
       border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
+      width: 100%;
     }
 
-    .health-indicator .status-text {
+    .card-quick-macros .prot {
       color: #3fb950;
-      font-weight: 600;
     }
 
-    .btn-detail {
-      background: #21262d;
-      border: 1px solid var(--border);
-      color: #c9d1d9;
-      border-radius: 8px;
-      padding: 9px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .btn-detail:active {
-      background: #30363d;
-    }
-
-    /* Modals */
+    /* Modals & Detail-Ansicht */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -429,13 +327,13 @@
       background: var(--card-bg);
       width: 100%;
       max-width: 650px;
-      max-height: 90vh;
+      max-height: 92vh;
       border-radius: 20px 20px 0 0;
       border: 1px solid var(--border);
       overflow-y: auto;
       padding: 20px 16px 36px 16px;
       position: relative;
-      animation: slideUp 0.25s ease-out;
+      animation: slideUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     @keyframes slideUp {
@@ -461,6 +359,91 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .swap-row {
+      background: var(--card-sub);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .swap-row label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .swap-row select {
+      background: #121418;
+      color: #3fb950;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      max-width: 65%;
+    }
+
+    .nutri-carousel {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 4px;
+      margin: 14px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nutri-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nutri-pill {
+      scroll-snap-align: start;
+      flex: 0 0 auto;
+      background: #11141a;
+      border: 1px solid #282f3a;
+      border-radius: 8px;
+      padding: 8px 12px;
+      text-align: center;
+      min-width: 78px;
+    }
+
+    .nutri-pill span {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .nutri-pill strong {
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .health-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(46, 160, 67, 0.08);
+      border: 1px dashed rgba(46, 160, 67, 0.35);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      margin-bottom: 14px;
+    }
+
+    .health-indicator .status-text {
+      color: #3fb950;
+      font-weight: 700;
     }
 
     .section-title {
@@ -501,8 +484,8 @@
     }
 
     .step-section p {
-      font-size: 0.83rem;
-      line-height: 1.45;
+      font-size: 0.85rem;
+      line-height: 1.5;
       color: #c9d1d9;
     }
 
@@ -558,62 +541,13 @@
       font-weight: 700;
     }
 
-    .subfilter-card:active {
-      transform: scale(0.96);
-      border-color: #3fb950;
-      background: #238636;
-      color: #fff;
-    }
-
     /* Formular */
-    .form-group {
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .form-group label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .form-group input, 
-    .form-group textarea, 
-    .form-group select {
-      background: var(--card-sub);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: #fff;
-      padding: 9px 12px;
-      font-size: 0.88rem;
-      outline: none;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn-save {
-      background: #238636;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 1rem;
-      font-weight: bold;
-      width: 100%;
-      margin-top: 10px;
-      cursor: pointer;
-    }
+    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+    .form-group input, .form-group textarea, .form-group select { background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 9px 12px; font-size: 0.88rem; outline: none; }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-save { background: #238636; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
 
     /* Schwebender Aktualisieren-Button (FAB) */
     .fab-refresh {
@@ -674,123 +608,24 @@
       margin: 0 auto;
     }
 
-    .bottom-bar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 0.68rem;
-      font-weight: 500;
-      cursor: pointer;
-      flex: 0 0 auto;
-      min-width: 64px;
-      scroll-snap-align: start;
-    }
-
-    .nav-btn .icon {
-      font-size: 1.25rem;
-    }
-
-    .nav-btn.active {
-      color: #3fb950;
-      font-weight: 700;
-    }
+    .bottom-bar::-webkit-scrollbar { display: none; }
+    .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.68rem; font-weight: 500; cursor: pointer; flex: 0 0 auto; min-width: 64px; scroll-snap-align: start; }
+    .nav-btn .icon { font-size: 1.25rem; }
+    .nav-btn.active { color: #3fb950; font-weight: 700; }
 
     /* Notizen Ansicht */
-    .notes-container {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .note-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      transition: opacity 0.2s ease, border-color 0.2s ease;
-    }
-
-    .note-card.done {
-      opacity: 0.55;
-      border-color: #21262d;
-    }
-
-    .note-content {
-      flex: 1;
-      min-width: 0;
-      word-break: break-word;
-    }
-
-    .note-author-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-bottom: 4px;
-    }
-
-    .note-author-ramona {
-      background: rgba(236, 72, 153, 0.18);
-      color: #f472b6;
-      border: 1px solid rgba(236, 72, 153, 0.35);
-    }
-
-    .note-author-matze {
-      background: rgba(59, 130, 246, 0.18);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.35);
-    }
-
-    .note-text {
-      font-size: 0.92rem;
-      color: #f0f6fc;
-      line-height: 1.4;
-    }
-
-    .note-card.done .note-text {
-      text-decoration: line-through;
-      color: #8b949e;
-    }
-
-    .note-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-
-    .note-btn-action {
-      background: var(--card-sub);
-      border: 1px solid var(--border);
-      color: #fff;
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .note-btn-action:active {
-      transform: scale(0.92);
-      background: #30363d;
-    }
+    .notes-container { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.2s ease-out; }
+    .note-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: opacity 0.2s ease, border-color 0.2s ease; }
+    .note-card.done { opacity: 0.55; border-color: #21262d; }
+    .note-content { flex: 1; min-width: 0; word-break: break-word; }
+    .note-author-badge { font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; display: inline-block; margin-bottom: 4px; }
+    .note-author-ramona { background: rgba(236, 72, 153, 0.18); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.35); }
+    .note-author-matze { background: rgba(59, 130, 246, 0.18); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); }
+    .note-text { font-size: 0.92rem; color: #f0f6fc; line-height: 1.4; }
+    .note-card.done .note-text { text-decoration: line-through; color: #8b949e; }
+    .note-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .note-btn-action { background: var(--card-sub); border: 1px solid var(--border); color: #fff; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; }
+    .note-btn-action:active { transform: scale(0.92); background: #30363d; }
   </style>
 </head>
 <body>
@@ -803,13 +638,17 @@
 
   <!-- REZEPTE-BEREICH -->
   <div id="recipesSection">
+    
+    <!-- Komprimierte Top-Actions -->
     <div class="top-actions">
-      <button class="btn-add-recipe" onclick="openAddModal()">
-        <span>➕</span> Neues Rezept hinzufügen
-      </button>
-      <div class="search-box">
-        <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Resteküche: tippen oder Chip wählen..." oninput="onSearchManual()">
+      <div class="search-row">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Resteküche (Zutaten)..." oninput="onSearchManual()">
+        </div>
+        <button class="btn-add-compact" onclick="openAddModal()">
+          <span>➕ Neu</span>
+        </button>
       </div>
       
       <!-- Schnellauswahl für typische Reste -->
@@ -831,6 +670,7 @@
       </div>
     </div>
 
+    <!-- Das neue Kachel-Grid -->
     <div class="recipe-list" id="recipeList"></div>
   </div>
 
@@ -841,37 +681,32 @@
         📝 Neue Notiz / Einkaufszettel
       </h3>
 
-      <!-- Zeile 1: Wer schreibt? -->
       <div style="display: flex; gap: 8px; margin-bottom: 10px;">
         <select id="noteAuthor" onchange="toggleCustomAuthorInput(this.value)" style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 10px 12px; border-radius: 8px; font-weight: 600; outline: none;">
           <option value="Ramona">🌸 Ramona</option>
           <option value="Matze">🔧 Matze</option>
           <option value="custom">✏️ Anderer Name...</option>
         </select>
-
-        <!-- Erscheint nur bei "Anderer Name..." daneben -->
         <input type="text" id="customAuthorInput" placeholder="Name..." style="display: none; flex: 1; background: var(--card-sub); border: 1px solid #3fb950; color: #fff; padding: 10px 12px; border-radius: 8px; outline: none;">
       </div>
 
-      <!-- Zeile 2: Der Notiztext (volle Breite!) -->
       <div style="margin-bottom: 10px;">
         <input type="text" id="noteInput" placeholder="Was einkaufen / notieren..." style="width: 100%; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 11px 12px; border-radius: 8px; font-size: 0.95rem; outline: none;" onkeydown="if(event.key === 'Enter') addNote()">
       </div>
 
-      <!-- Zeile 3: Button -->
       <button onclick="addNote()" class="btn-save" style="margin-top: 0; padding: 11px; font-size: 0.95rem;">
         ➕ Notiz speichern
       </button>
     </div>
 
-    <div class="category-divider">
+    <div class="category-divider" style="grid-column: auto;">
       📋 Eure Notizen & Einkäufe
     </div>
 
     <div id="notesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
 
-  <!-- Detail Modal -->
+  <!-- Detail Modal (Bottom Sheet für Rezept-Details) -->
   <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
     <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
@@ -889,7 +724,7 @@
     </div>
   </div>
 
-  <!-- Formular Modal -->
+  <!-- Formular Modal (Neues Rezept anlegen) -->
   <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
     <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
@@ -900,12 +735,8 @@
           <label>Rezept-Titel</label>
           <input type="text" id="newTitle" required placeholder="z. B. Hähnchen-Gemüse Pfanne">
         </div>
-
         <div class="form-row">
-          <div class="form-group">
-            <label>Icon / Emoji</label>
-            <input type="text" id="newEmoji" value="🍲" required>
-          </div>
+          <div class="form-group"><label>Icon / Emoji</label><input type="text" id="newEmoji" value="🍲" required></div>
           <div class="form-group">
             <label>Kategorie</label>
             <select id="newCategory">
@@ -919,124 +750,47 @@
             </select>
           </div>
         </div>
-
         <div class="form-group">
           <label>Für Airfryer geeignet?</label>
-          <select id="newAirfryer">
-            <option value="true">Ja</option>
-            <option value="false">Nein</option>
-          </select>
+          <select id="newAirfryer"><option value="true">Ja</option><option value="false">Nein</option></select>
         </div>
-
-        <div class="form-group">
-          <label>Zutatenliste mit Mengen (für das Rezept)</label>
-          <textarea id="newZutatenListe" placeholder="• 400 g Hähnchen&#10;• 200 g Brokkoli&#10;• 1 EL Öl"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Schlagwörter für Resteküche (kommagetrennt)</label>
-          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, sahne, pute"></input>
-        </div>
-
+        <div class="form-group"><label>Zutatenliste mit Mengen</label><textarea id="newZutatenListe" placeholder="• 400 g Hähnchen..."></textarea></div>
+        <div class="form-group"><label>Schlagwörter (kommagetrennt)</label><input type="text" id="newIngredients" required placeholder="kohlrabi, sahne, pute"></input></div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Kalorien (kcal)</label>
-            <input type="number" id="newKcal" required placeholder="z. B. 250">
-          </div>
-          <div class="form-group">
-            <label>Eiweiß (g)</label>
-            <input type="number" step="0.1" id="newProt" required placeholder="z. B. 30">
-          </div>
+          <div class="form-group"><label>Kcal</label><input type="number" id="newKcal" required></div>
+          <div class="form-group"><label>Eiweiß (g)</label><input type="number" step="0.1" id="newProt" required></div>
         </div>
-
         <div class="form-row">
-          <div class="form-group">
-            <label>Kohlenhydrate (g)</label>
-            <input type="number" step="0.1" id="newKh" required placeholder="z. B. 8">
-          </div>
-          <div class="form-group">
-            <label>Fett (g)</label>
-            <input type="number" step="0.1" id="newFat" required placeholder="z. B. 5">
-          </div>
+          <div class="form-group"><label>KH (g)</label><input type="number" step="0.1" id="newKh" required></div>
+          <div class="form-group"><label>Fett (g)</label><input type="number" step="0.1" id="newFat" required></div>
         </div>
-
-        <div class="form-group">
-          <label>1. Vorbereitung & Schnippeln</label>
-          <textarea id="newPrep" placeholder="Wie wird vorbereitet..." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>2. Zubereitung Herd / Pfanne</label>
-          <textarea id="newStove" placeholder="Pfannenstufe, Minuten..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>3. Zubereitung Backofen</label>
-          <textarea id="newOven" placeholder="Grad, Umluft, Minuten..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>4. Zubereitung Airfryer (Ninja)</label>
-          <textarea id="newAirfryerStep" placeholder="Grad, Minuten, schütteln..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Tipps & Tricks</label>
-          <textarea id="newTipps" placeholder="z. B. 1-2 EL Frischkäse für extra Cremigkeit..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-save" id="btnSubmit">Rezept in Supabase speichern</button>
+        <div class="form-group"><label>1. Vorbereitung</label><textarea id="newPrep" required></textarea></div>
+        <div class="form-group"><label>2. Zubereitung Herd</label><textarea id="newStove"></textarea></div>
+        <div class="form-group"><label>3. Backofen</label><textarea id="newOven"></textarea></div>
+        <div class="form-group"><label>4. Airfryer</label><textarea id="newAirfryerStep"></textarea></div>
+        <div class="form-group"><label>Tipps & Tricks</label><textarea id="newTipps"></textarea></div>
+        <button type="submit" class="btn-save" id="btnSubmit">Rezept speichern</button>
       </form>
     </div>
   </div>
 
-  <!-- Schwebender Aktualisieren-Button (FAB) -->
+  <!-- FAB für Refresh -->
   <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()" aria-label="Aktualisieren">
     <span>🔄</span>
   </button>
 
   <!-- Horizontale Daumen-Navigation -->
   <nav class="bottom-bar">
-    <button class="nav-btn active" id="nav-btn-all" onclick="handleNavCategory('all', this)">
-      <span class="icon">✨</span>
-      <span>Alle</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-fleisch" onclick="handleNavCategory('fleisch', this)">
-      <span class="icon">🍗</span>
-      <span>Fleisch</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-gemuese" onclick="handleNavCategory('gemuese', this)">
-      <span class="icon">🥦</span>
-      <span>Gemüse</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-dessert" onclick="handleNavCategory('dessert', this)">
-      <span class="icon">🧁</span>
-      <span>Dessert</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-lowcarb" onclick="handleNavCategory('lowcarb', this)">
-      <span class="icon">🥗</span>
-      <span>Low-Carb</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-fettverbrennung" onclick="handleNavCategory('fettverbrennung', this)">
-      <span class="icon">🔥</span>
-      <span>Fettverbrennung</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-stoffwechsel" onclick="handleNavCategory('stoffwechsel', this)">
-      <span class="icon">⚡</span>
-      <span>Stoffwechsel</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)">
-      <span class="icon">⚖️</span>
-      <span>Fettarm</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)">
-      <span class="icon">🌪️</span>
-      <span>Airfryer</span>
-    </button>
-    <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)">
-      <span class="icon">📝</span>
-      <span>Notizen</span>
-    </button>
+    <button class="nav-btn active" id="nav-btn-all" onclick="handleNavCategory('all', this)"><span class="icon">✨</span><span>Alle</span></button>
+    <button class="nav-btn" id="nav-btn-fleisch" onclick="handleNavCategory('fleisch', this)"><span class="icon">🍗</span><span>Fleisch</span></button>
+    <button class="nav-btn" id="nav-btn-gemuese" onclick="handleNavCategory('gemuese', this)"><span class="icon">🥦</span><span>Gemüse</span></button>
+    <button class="nav-btn" id="nav-btn-dessert" onclick="handleNavCategory('dessert', this)"><span class="icon">🧁</span><span>Dessert</span></button>
+    <button class="nav-btn" id="nav-btn-lowcarb" onclick="handleNavCategory('lowcarb', this)"><span class="icon">🥗</span><span>Low-Carb</span></button>
+    <button class="nav-btn" id="nav-btn-fettverbrennung" onclick="handleNavCategory('fettverbrennung', this)"><span class="icon">🔥</span><span>Fettverbrennung</span></button>
+    <button class="nav-btn" id="nav-btn-stoffwechsel" onclick="handleNavCategory('stoffwechsel', this)"><span class="icon">⚡</span><span>Stoffwechsel</span></button>
+    <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)"><span class="icon">⚖️</span><span>Fettarm</span></button>
+    <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)"><span class="icon">🌪️</span><span>Airfryer</span></button>
+    <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
   </nav>
 
   <!-- Supabase Client -->
@@ -1048,33 +802,32 @@
 
     const sideOptions = {
       "protein_nudeln": { name: "Protein-Nudeln", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, satFat: 0.3, fiber: 6.5, prot: 14.0, salt: 0.02, gl: "Niedrig", insulin: "Stabil (Optimal)" },
-      "zoodles": { name: "Zucchini-Nudeln (Zoodles)", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, satFat: 0.1, fiber: 1.6, prot: 1.8, salt: 0.01, gl: "Sehr niedrig", insulin: "Ketogen / Stabil" },
+      "zoodles": { name: "Zucchini-Nudeln", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, satFat: 0.1, fiber: 1.6, prot: 1.8, salt: 0.01, gl: "Sehr niedrig", insulin: "Ketogen / Stabil" },
       "basmati_reis": { name: "Basmati-Reis", kcal: 130, kh: 28, sugar: 0.1, fat: 0.3, satFat: 0.1, fiber: 0.6, prot: 2.7, salt: 0.01, gl: "Mittel", insulin: "Mäßig erhöht" },
       "vollkorn_reis": { name: "Vollkorn-Reis", kcal: 123, kh: 25, sugar: 0.2, fat: 1.0, satFat: 0.2, fiber: 2.4, prot: 2.8, salt: 0.01, gl: "Niedrig bis mittel", insulin: "Langsamer Anstieg" },
       "wildreis": { name: "Wildreis", kcal: 101, kh: 21, sugar: 0.7, fat: 0.3, satFat: 0.1, fiber: 1.8, prot: 4.0, salt: 0.01, gl: "Niedrig", insulin: "Sehr stabil" },
       "kartoffeln": { name: "Salzkartoffeln", kcal: 77, kh: 16, sugar: 0.8, fat: 0.1, satFat: 0.0, fiber: 1.5, prot: 2.0, salt: 0.01, gl: "Mittel", insulin: "Kurzer Peak" },
       "vollkorn_nudeln": { name: "Vollkorn-Nudeln", kcal: 138, kh: 26, sugar: 1.1, fat: 1.2, satFat: 0.2, fiber: 4.2, prot: 5.5, salt: 0.01, gl: "Mittel", insulin: "Langsamer Anstieg" },
-      "klassik_nudeln": { name: "Klassische Hartweizennudeln", kcal: 155, kh: 31, sugar: 1.2, fat: 0.9, satFat: 0.2, fiber: 1.8, prot: 5.0, salt: 0.01, gl: "Hoch", insulin: "Hoher Insulin-Peak" }
+      "klassik_nudeln": { name: "Klassische Nudeln", kcal: 155, kh: 31, sugar: 1.2, fat: 0.9, satFat: 0.2, fiber: 1.8, prot: 5.0, salt: 0.01, gl: "Hoch", insulin: "Hoher Insulin-Peak" }
     };
 
     const CATEGORY_NAMES = {
       'fleisch': { label: 'Fleischgerichte', icon: '🍗' },
       'gemuese': { label: 'Gemüse & Pfannen', icon: '🥦' },
-      'dessert': { label: 'Desserts & Süßes', icon: '🧁' },
-      'lowcarb': { label: 'Low-Carb Klassiker', icon: '🥗' },
+      'dessert': { label: 'Desserts & Snacks', icon: '🧁' },
+      'lowcarb': { label: 'Low-Carb', icon: '🥗' },
       'fettverbrennung': { label: 'Fettverbrennung', icon: '🔥' },
-      'stoffwechsel': { label: 'Stoffwechsel aktiv', icon: '⚡' },
+      'stoffwechsel': { label: 'Stoffwechsel', icon: '⚡' },
       'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
       'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
     };
 
-    // Konfiguration für Pop-up-Auswahl (Fleisch & Gemüse)
     const SUB_FILTERS_CONFIG = {
       fleisch: {
         title: '🍗 Fleischart wählen',
         options: [
           { label: '✨ Alle Fleischgerichte', value: 'all_sub', isAll: true },
-          { label: '🍗 Hähnchen / Geflügel', value: 'hähnchen' },
+          { label: '🍗 Hähnchen / Pute', value: 'hähnchen' },
           { label: '🥩 Rind', value: 'rind' },
           { label: '🥓 Schwein', value: 'schwein' },
           { label: '🧆 Hackfleisch', value: 'hack' }
@@ -1087,10 +840,9 @@
           { label: '🥦 Brokkoli', value: 'brokkoli' },
           { label: '🥬 Spinat', value: 'spinat' },
           { label: '🥒 Zucchini', value: 'zucchini' },
-          { label: '🥬 Kohlrabi', value: 'kohlrabi' },
           { label: '🥦 Blumenkohl', value: 'blumenkohl' },
-          { label: '🍄 Pilze', value: 'pilz' },
-          { label: '🫑 Paprika', value: 'paprika' }
+          { label: '🫘 Dicke Bohnen', value: 'dicke bohnen' },
+          { label: '🥬 Bohnen (div.)', value: 'bohnen' }
         ]
       }
     };
@@ -1099,46 +851,29 @@
     let currentCategory = 'all';
     let currentSubFilter = null;
     let currentSubFilterLabel = '';
-    let openedRecipeId = null;
     let selectedChip = null;
     let isNotesViewActive = false;
 
     function hasNoSide(r) {
       if (!r) return false;
       const titleLower = (r.title || '').toLowerCase();
-
-      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
-          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
-        return true;
-      }
-      if (Array.isArray(r.category) && r.category.some(c => String(c).toLowerCase().includes('dessert'))) {
-        return true;
-      }
-
-      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack'];
-      if (noSideKeywords.some(kw => titleLower.includes(kw))) {
-        return true;
-      }
-
+      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) return true;
+      if (Array.isArray(r.category) && r.category.some(c => String(c).toLowerCase().includes('dessert'))) return true;
+      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack', 'pudding', 'creme', 'tartelettes', 'plätzchen', 'kuchen', 'pancakes'];
+      if (noSideKeywords.some(kw => titleLower.includes(kw))) return true;
       return false;
     }
 
     function checkIsDessert(r) {
       if (!r) return false;
-      const titleLower = (r.title || '').toLowerCase();
-      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
-          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
-        return true;
-      }
-      if (Array.isArray(r.category)) {
-        return r.category.some(c => String(c).toLowerCase().includes('dessert'));
-      }
+      if ((r.title || '').toLowerCase().includes('dessert')) return true;
+      if (Array.isArray(r.category)) return r.category.some(c => String(c).toLowerCase().includes('dessert'));
       return false;
     }
 
     async function loadRecipesFromSupabase() {
       const status = document.getElementById('syncStatus');
-      status.innerText = '⏳ Lade Rezepte aus Supabase...';
+      status.innerText = '⏳ Lade Rezepte...';
 
       try {
         const { data, error } = await supabaseClient.from('Rezepte').select('*');
@@ -1146,16 +881,8 @@
 
         if (data && data.length > 0) {
           recipes = data.map(item => {
-            let cat = [];
-            if (item.category) {
-              cat = Array.isArray(item.category) ? item.category : [item.category];
-            }
-
-            let ing = [];
-            if (item.ingredients) {
-              ing = Array.isArray(item.ingredients) ? item.ingredients : item.ingredients.split(',').map(s => s.trim().toLowerCase());
-            }
-
+            let cat = Array.isArray(item.category) ? item.category : (item.category ? [item.category] : []);
+            let ing = Array.isArray(item.ingredients) ? item.ingredients : (item.ingredients ? item.ingredients.split(',').map(s => s.trim().toLowerCase()) : []);
             return {
               id: item.id,
               title: item.title || item.titel || 'Rezept',
@@ -1166,72 +893,50 @@
               scoreClass: 'var(--score-a)',
               selectedSide: item.selectedSide || 'protein_nudeln',
               ingredients: ing,
-              zutatenListe: item.zutaten_liste || (Array.isArray(item.ingredients) ? item.ingredients.join(', ') : item.ingredients),
+              zutatenListe: item.zutaten_liste || ing.join(', '),
               tipps: item.tipps || '',
               baseNutri: {
-                kcal: Number(item.kcal) || 200,
-                kh: Number(item.kh) || 5,
-                sugar: Number(item.sugar) || 2.0,
-                fat: Number(item.fat) || 4,
-                satFat: Number(item.sat_fat) || 1.0,
-                fiber: Number(item.fiber) || 3.5,
-                prot: Number(item.prot) || 25,
-                salt: Number(item.salt) || 0.5
+                kcal: Number(item.kcal) || 200, kh: Number(item.kh) || 5, sugar: Number(item.sugar) || 2.0,
+                fat: Number(item.fat) || 4, satFat: Number(item.sat_fat) || 1.0, fiber: Number(item.fiber) || 3.5,
+                prot: Number(item.prot) || 25, salt: Number(item.salt) || 0.5
               },
-              docCheck: item.doc_check || item.docCheck || 'Ausgewogene Nährstoffe für optimalen Blutzucker.',
-              prep: item.prep || 'Zutaten vorbereiten und schneiden.',
-              airfryerStep: item.airfryer_step || item.airfryerStep || '',
-              stoveStep: item.stove_step || item.stoveStep || '',
-              ovenStep: item.oven_step || item.ovenStep || ''
+              docCheck: item.doc_check || 'Ausgewogene Nährstoffe für optimalen Blutzucker.',
+              prep: item.prep || 'Zutaten vorbereiten.',
+              airfryerStep: item.airfryer_step || '', stoveStep: item.stove_step || '', ovenStep: item.oven_step || ''
             };
           });
-          status.innerText = `⚡ Supabase synchronisiert (${recipes.length} Rezepte)`;
+          status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
         } else {
-          status.innerText = '⚡ Supabase bereit (keine Rezepte vorhanden)';
+          status.innerText = '⚡ Supabase bereit (keine Rezepte)';
         }
       } catch (err) {
         console.warn('Supabase Offline / Fallback:', err);
         status.innerText = '⚡ Offline-Modus aktiv';
       }
-
       filterRecipes();
     }
 
     async function triggerRefresh() {
       const btn = document.getElementById('fabRefresh');
       if (btn) btn.classList.add('spin');
-      
-      if (isNotesViewActive) {
-        await loadNotesFromSupabase();
-      } else {
-        await loadRecipesFromSupabase();
-      }
-      
-      setTimeout(() => {
-        if (btn) btn.classList.remove('spin');
-      }, 700);
+      if (isNotesViewActive) await loadNotesFromSupabase();
+      else await loadRecipesFromSupabase();
+      setTimeout(() => { if (btn) btn.classList.remove('spin'); }, 700);
     }
 
-    function calculateTotalNutri(recipe) {
+    function calculateTotalNutri(recipe, tempSide = null) {
       const withoutSide = hasNoSide(recipe);
-
       if (withoutSide) {
-        const isDessert = checkIsDessert(recipe);
         return {
-          kcal: Math.round(recipe.baseNutri.kcal),
-          kh: Number(recipe.baseNutri.kh).toFixed(1),
-          sugar: Number(recipe.baseNutri.sugar || 1.5).toFixed(1),
-          fat: Number(recipe.baseNutri.fat).toFixed(1),
-          satFat: Number(recipe.baseNutri.satFat || 1.0).toFixed(1),
-          fiber: Number(recipe.baseNutri.fiber || 1.0).toFixed(1),
-          prot: Number(recipe.baseNutri.prot).toFixed(1),
-          salt: Number(recipe.baseNutri.salt || 0.05).toFixed(2),
-          insulin: isDessert ? "Stabil (Zuckerfrei)" : "Ketogen / Optimal stabil",
-          gl: "Sehr niedrig"
+          kcal: Math.round(recipe.baseNutri.kcal), kh: Number(recipe.baseNutri.kh).toFixed(1),
+          sugar: Number(recipe.baseNutri.sugar || 1.5).toFixed(1), fat: Number(recipe.baseNutri.fat).toFixed(1),
+          satFat: Number(recipe.baseNutri.satFat || 1.0).toFixed(1), fiber: Number(recipe.baseNutri.fiber || 1.0).toFixed(1),
+          prot: Number(recipe.baseNutri.prot).toFixed(1), salt: Number(recipe.baseNutri.salt || 0.05).toFixed(2),
+          insulin: checkIsDessert(recipe) ? "Stabil (Zuckerfrei)" : "Optimal stabil", gl: "Sehr niedrig"
         };
       }
-
-      const side = sideOptions[recipe.selectedSide] || sideOptions["protein_nudeln"];
+      const sideKey = tempSide || recipe.selectedSide;
+      const side = sideOptions[sideKey] || sideOptions["protein_nudeln"];
       return {
         kcal: Math.round(recipe.baseNutri.kcal + side.kcal),
         kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
@@ -1241,29 +946,12 @@
         fiber: ((recipe.baseNutri.fiber || 0) + side.fiber).toFixed(1),
         prot: (recipe.baseNutri.prot + side.prot).toFixed(1),
         salt: ((recipe.baseNutri.salt || 0) + side.salt).toFixed(2),
-        insulin: side.insulin,
-        gl: side.gl
+        insulin: side.insulin, gl: side.gl
       };
-    }
-
-    function toggleAccordion(recipeId) {
-      const targetCard = document.getElementById(`recipe-card-${recipeId}`);
-      if (!targetCard) return;
-
-      const isAlreadyOpen = targetCard.classList.contains('open');
-      document.querySelectorAll('.recipe-card.open').forEach(card => card.classList.remove('open'));
-
-      if (!isAlreadyOpen) {
-        targetCard.classList.add('open');
-        openedRecipeId = recipeId;
-      } else {
-        openedRecipeId = null;
-      }
     }
 
     function toggleChip(ingredient, btn) {
       const searchInput = document.getElementById('searchInput');
-
       if (selectedChip === ingredient) {
         selectedChip = null;
         btn.classList.remove('active');
@@ -1274,7 +962,6 @@
         selectedChip = ingredient;
         searchInput.value = ingredient;
       }
-
       filterRecipes();
     }
 
@@ -1284,58 +971,22 @@
       filterRecipes();
     }
 
+    // Die neue, aufgeräumte Coach-Kachel
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r);
-      const isOpen = openedRecipeId === r.id;
-      const withoutSide = hasNoSide(r);
-
-      let sideSelectHtml = '';
-      if (!withoutSide) {
-        sideSelectHtml = `
-          <div class="swap-row">
-            <label>Beilage:</label>
-            <select onchange="updateSide('${r.id}', this.value)">
-        `;
-        for (const [key, side] of Object.entries(sideOptions)) {
-          sideSelectHtml += `<option value="${key}" ${r.selectedSide === key ? 'selected' : ''}>${side.name}</option>`;
-        }
-        sideSelectHtml += `</select></div>`;
-      }
-
       return `
-        <div class="recipe-card ${isOpen ? 'open' : ''}" id="recipe-card-${r.id}">
-          <div class="card-head" onclick="toggleAccordion('${r.id}')">
-            <div class="card-icon">${r.emoji || '🍲'}</div>
-            <div class="card-meta">
-              <h3>${r.title}</h3>
-              <div class="card-tags">
-                <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
-                ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}
-              </div>
+        <div class="recipe-card" onclick="openDetails('${r.id}')">
+          <div class="card-icon">${r.emoji || '🍲'}</div>
+          <div class="card-meta">
+            <h3>${r.title}</h3>
+            <div class="card-badges">
+              <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">${r.score || 'A'}</span>
+              ${r.airfryer ? '<span class="badge-airfryer">🌪️</span>' : ''}
             </div>
-            <div class="chevron-icon">▼</div>
           </div>
-
-          <div class="card-body">
-            ${sideSelectHtml}
-
-            <div class="nutri-carousel">
-              <div class="nutri-pill"><span>Energie</span><strong>${total.kcal} kcal</strong></div>
-              <div class="nutri-pill"><span>Eiweiß</span><strong>${total.prot} g</strong></div>
-              <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
-              <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
-              <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
-              <div class="nutri-pill"><span>ges. Fett</span><strong>${total.satFat} g</strong></div>
-              <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
-              <div class="nutri-pill"><span>Salz</span><strong>${total.salt} g</strong></div>
-            </div>
-
-            <div class="health-indicator">
-              <span style="color: var(--text-muted);">Blutzucker-Reaktion:</span>
-              <span class="status-text">${total.insulin}</span>
-            </div>
-
-            <button class="btn-detail" onclick="openDetails('${r.id}')">Zubereitung & Zutaten ansehen ➔</button>
+          <div class="card-quick-macros">
+            <span>🔥 ${total.kcal} kcal</span>
+            <span class="prot">💪 ${total.prot}g EW</span>
           </div>
         </div>
       `;
@@ -1346,7 +997,7 @@
       container.innerHTML = '';
 
       if (list.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine passenden Rezepte gefunden.</div>`;
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Keine passenden Rezepte gefunden.</div>`;
         return;
       }
 
@@ -1355,35 +1006,16 @@
         return;
       }
 
-      const groups = {
-        'fleisch': [],
-        'gemuese': [],
-        'dessert': [],
-        'lowcarb': [],
-        'fettverbrennung': [],
-        'stoffwechsel': [],
-        'fettarm': [],
-        'andere': []
-      };
-
+      const groups = { 'fleisch': [], 'gemuese': [], 'dessert': [], 'lowcarb': [], 'fettverbrennung': [], 'stoffwechsel': [], 'fettarm': [], 'andere': [] };
       list.forEach(r => {
-        if (checkIsDessert(r)) {
-          groups['dessert'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fleisch'))) {
-          groups['fleisch'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) {
-          groups['gemuese'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettverbrennung'))) {
-          groups['fettverbrennung'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('stoffwechsel'))) {
-          groups['stoffwechsel'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) {
-          groups['lowcarb'].push(r);
-        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettarm'))) {
-          groups['fettarm'].push(r);
-        } else {
-          groups['andere'].push(r);
-        }
+        if (checkIsDessert(r)) groups['dessert'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fleisch'))) groups['fleisch'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) groups['gemuese'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettverbrennung'))) groups['fettverbrennung'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('stoffwechsel'))) groups['stoffwechsel'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) groups['lowcarb'].push(r);
+        else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettarm'))) groups['fettarm'].push(r);
+        else groups['andere'].push(r);
       });
 
       let html = '';
@@ -1394,21 +1026,86 @@
           html += items.map(r => buildCardHtml(r)).join('');
         }
       }
-
       container.innerHTML = html;
     }
 
-    function updateSide(recipeId, newSide) {
-      const rec = recipes.find(x => String(x.id) === String(recipeId));
-      if (rec) {
-        rec.selectedSide = newSide;
-        filterRecipes();
+    // Modal-Logik mit Live-Makro-Update für Beilagen
+    function openDetails(recipeId, tempSide = null) {
+      const r = recipes.find(x => String(x.id) === String(recipeId));
+      if (!r) return;
+      
+      const withoutSide = hasNoSide(r);
+      const activeSide = tempSide || r.selectedSide;
+      const total = calculateTotalNutri(r, activeSide);
+      
+      let sideSelectHtml = '';
+      if (!withoutSide) {
+        sideSelectHtml = `
+          <div class="swap-row" style="margin-bottom: 14px;">
+            <label>🍽️ Beilage wählen:</label>
+            <select onchange="updateModalSide('${r.id}', this.value)">
+        `;
+        for (const [key, side] of Object.entries(sideOptions)) {
+          sideSelectHtml += `<option value="${key}" ${activeSide === key ? 'selected' : ''}>${side.name}</option>`;
+        }
+        sideSelectHtml += `</select></div>`;
       }
+
+      const sheet = document.getElementById('sheetContent');
+      sheet.innerHTML = `
+        <div style="font-size: 2.4rem; margin-bottom: 8px; text-align:center;">${r.emoji || '🍲'}</div>
+        <div style="display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom: 12px;">
+          <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
+          ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer tauglich</span>' : ''}
+        </div>
+        <h2 style="font-size: 1.35rem; margin-bottom: 16px; text-align:center;">${r.title}</h2>
+        
+        ${sideSelectHtml}
+
+        <div class="nutri-carousel">
+          <div class="nutri-pill"><span>Kcal</span><strong>${total.kcal}</strong></div>
+          <div class="nutri-pill"><span style="color:#3fb950;">Eiweiß</span><strong style="color:#3fb950;">${total.prot} g</strong></div>
+          <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
+          <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
+          <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
+          <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
+        </div>
+
+        <div class="health-indicator">
+          <span style="color: var(--text-muted);">🩺 Blutzucker-Reaktion:</span>
+          <span class="status-text">${total.insulin}</span>
+        </div>
+
+        <div class="section-title">🛒 Zutatenliste:</div>
+        <div class="ingredients-box">${r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.'}</div>
+
+        <div class="section-title">👩‍🍳 Zubereitung:</div>
+        <div class="step-section">
+          <h4>🔪 1. Vorbereitung</h4>
+          <p>${r.prep}</p>
+        </div>
+        ${r.stoveStep ? `<div class="step-section"><h4>🍳 2. Auf dem Herd</h4><p>${r.stoveStep}</p></div>` : ''}
+        ${r.ovenStep ? `<div class="step-section"><h4>🔥 3. Im Backofen</h4><p>${r.ovenStep}</p></div>` : ''}
+        ${r.airfryerStep ? `<div class="step-section" style="border-left: 3px solid #d29922;"><h4 style="color: #d29922;">🌪️ 4. Airfryer</h4><p>${r.airfryerStep}</p></div>` : ''}
+        ${r.tipps ? `<div class="tip-box"><strong>💡 Tipp:</strong>${r.tipps}</div>` : ''}
+      `;
+
+      document.getElementById('modalBackdrop').classList.add('active');
     }
 
-    /* ==========================================
-       NAVIGATION & SUB-FILTER POP-UP LOGIK
-       ========================================== */
+    function updateModalSide(recipeId, newSide) {
+      const rec = recipes.find(x => String(x.id) === String(recipeId));
+      if (rec) rec.selectedSide = newSide;
+      openDetails(recipeId, newSide); // Re-render modal in place
+      filterRecipes(); // Update background list silently
+    }
+
+    function closeSheet(e) { if (e.target.id === 'modalBackdrop') document.getElementById('modalBackdrop').classList.remove('active'); }
+    function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); }
+    function openAddModal() { document.getElementById('addBackdrop').classList.add('active'); }
+    function closeAddModal(e) { if (e.target.id === 'addBackdrop') document.getElementById('addBackdrop').classList.remove('active'); }
+    function closeAddModalForce() { document.getElementById('addBackdrop').classList.remove('active'); }
+
     function handleNavCategory(cat, btn) {
       isNotesViewActive = false;
       document.getElementById('recipesSection').style.display = 'block';
@@ -1418,7 +1115,6 @@
         openSubfilterModal(cat, btn);
         return;
       }
-
       currentSubFilter = null;
       updateSubfilterBadge();
       setCategory(cat, btn);
@@ -1428,91 +1124,58 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
       currentCategory = cat;
-      openedRecipeId = null;
       filterRecipes();
     }
 
     function openSubfilterModal(cat, btn) {
       const config = SUB_FILTERS_CONFIG[cat];
       if (!config) return;
-
       document.getElementById('subfilterTitle').innerText = config.title;
       const grid = document.getElementById('subfilterGrid');
       grid.innerHTML = '';
-
       config.options.forEach(opt => {
         const div = document.createElement('div');
         div.className = `subfilter-card ${opt.isAll ? 'all-btn' : ''}`;
         div.innerText = opt.label;
-        div.onclick = () => {
-          applySubFilter(cat, opt.value, opt.label, btn);
-          closeSubfilterModalForce();
-        };
+        div.onclick = () => { applySubFilter(cat, opt.value, opt.label, btn); closeSubfilterModalForce(); };
         grid.appendChild(div);
       });
-
       document.getElementById('subfilterBackdrop').classList.add('active');
     }
 
-    function closeSubfilterModal(e) {
-      if (e.target.id === 'subfilterBackdrop') {
-        closeSubfilterModalForce();
-      }
-    }
-
-    function closeSubfilterModalForce() {
-      document.getElementById('subfilterBackdrop').classList.remove('active');
-    }
+    function closeSubfilterModal(e) { if (e.target.id === 'subfilterBackdrop') closeSubfilterModalForce(); }
+    function closeSubfilterModalForce() { document.getElementById('subfilterBackdrop').classList.remove('active'); }
 
     function applySubFilter(cat, value, label, btn) {
       setCategory(cat, btn);
-
-      if (value === 'all_sub') {
-        currentSubFilter = null;
-        currentSubFilterLabel = '';
-      } else {
-        currentSubFilter = value.toLowerCase();
-        currentSubFilterLabel = label;
-      }
-
+      if (value === 'all_sub') { currentSubFilter = null; currentSubFilterLabel = ''; } 
+      else { currentSubFilter = value.toLowerCase(); currentSubFilterLabel = label; }
       updateSubfilterBadge();
       filterRecipes();
     }
 
     function clearSubFilter() {
-      currentSubFilter = null;
-      currentSubFilterLabel = '';
-      updateSubfilterBadge();
-      filterRecipes();
+      currentSubFilter = null; currentSubFilterLabel = '';
+      updateSubfilterBadge(); filterRecipes();
     }
 
     function updateSubfilterBadge() {
       const badge = document.getElementById('subfilterBadge');
       const text = document.getElementById('subfilterText');
-      if (currentSubFilter) {
-        text.innerText = `Gefiltert: ${currentSubFilterLabel}`;
-        badge.style.display = 'flex';
-      } else {
-        badge.style.display = 'none';
-      }
+      if (currentSubFilter) { text.innerText = `Gefiltert: ${currentSubFilterLabel}`; badge.style.display = 'flex'; } 
+      else { badge.style.display = 'none'; }
     }
 
     function filterRecipes() {
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = recipes.filter(r => {
         let matchesCategory = false;
-        if (currentCategory === 'all') {
-          matchesCategory = true;
-        } else if (currentCategory === 'airfryer') {
-          matchesCategory = r.airfryer === true;
-        } else if (currentCategory === 'dessert') {
-          matchesCategory = checkIsDessert(r);
-        } else {
-          if (Array.isArray(r.category)) {
-            matchesCategory = r.category.some(c => String(c).toLowerCase().includes(currentCategory));
-          } else if (typeof r.category === 'string') {
-            matchesCategory = r.category.toLowerCase().includes(currentCategory);
-          }
+        if (currentCategory === 'all') matchesCategory = true;
+        else if (currentCategory === 'airfryer') matchesCategory = r.airfryer === true;
+        else if (currentCategory === 'dessert') matchesCategory = checkIsDessert(r);
+        else {
+          if (Array.isArray(r.category)) matchesCategory = r.category.some(c => String(c).toLowerCase().includes(currentCategory));
+          else if (typeof r.category === 'string') matchesCategory = r.category.toLowerCase().includes(currentCategory);
         }
 
         let matchesSubFilter = true;
@@ -1523,208 +1186,75 @@
           matchesSubFilter = inTitle || inIngredients || inZutatenListe;
         }
 
-        const matchesSearch = search === '' || 
-          r.title.toLowerCase().includes(search) || 
-          (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
-
+        const matchesSearch = search === '' || r.title.toLowerCase().includes(search) || (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
         return matchesCategory && matchesSubFilter && matchesSearch;
       });
       renderList(filtered);
     }
 
-    function openDetails(recipeId) {
-      const r = recipes.find(x => String(x.id) === String(recipeId));
-      if (!r) return;
-      const sheet = document.getElementById('sheetContent');
-      const withoutSide = hasNoSide(r);
-      const sideName = sideOptions[r.selectedSide]?.name || "Protein-Nudeln";
-      
-      const sideRowHtml = !withoutSide ? `<p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>` : '';
-
-      sheet.innerHTML = `
-        <div style="font-size: 2.2rem; margin-bottom: 8px;">${r.emoji || '🧁'}</div>
-        <div style="display:flex; gap:8px; align-items:center; margin-bottom: 8px;">
-          <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
-          ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer geeignet</span>' : ''}
-        </div>
-        <h2 style="font-size: 1.3rem; margin-bottom: 6px;">${r.title}</h2>
-        ${sideRowHtml}
-
-        <div style="background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.3); border-radius: 8px; padding: 10px; font-size: 0.8rem; line-height: 1.45; color: #e6edf3; margin-bottom: 14px;">
-          <strong style="color: #3fb950; display:block; margin-bottom: 3px;">🩺 Doc's Ernährungs-Check:</strong>
-          ${r.docCheck || 'Ausgewogene Nährstoffverteilung für einen stabilen Blutzuckerspiegel.'}
-        </div>
-
-        <div class="section-title">🛒 Zutatenliste:</div>
-        <div class="ingredients-box">${r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.'}</div>
-
-        <div class="section-title">👩‍🍳 Exakte Zubereitungsschritte:</div>
-
-        <div class="step-section">
-          <h4>🔪 1. Vorbereitung & Zubereitung</h4>
-          <p>${r.prep}</p>
-        </div>
-
-        ${r.stoveStep ? `
-        <div class="step-section">
-          <h4>🍳 2. Auf dem Herd / in der Pfanne</h4>
-          <p>${r.stoveStep}</p>
-        </div>
-        ` : ''}
-
-        ${r.ovenStep ? `
-        <div class="step-section">
-          <h4>🔥 3. Im Backofen</h4>
-          <p>${r.ovenStep}</p>
-        </div>
-        ` : ''}
-
-        ${r.airfryerStep ? `
-        <div class="step-section" style="border-left: 3px solid #d29922;">
-          <h4 style="color: #d29922;">🌪️ 4. Im Airfryer (Ninja)</h4>
-          <p>${r.airfryerStep}</p>
-        </div>
-        ` : ''}
-
-        ${r.tipps ? `
-        <div class="tip-box">
-          <strong>💡 Tipp:</strong>
-          ${r.tipps}
-        </div>
-        ` : ''}
-      `;
-
-      document.getElementById('modalBackdrop').classList.add('active');
-    }
-
-    function closeSheet(e) {
-      if (e.target.id === 'modalBackdrop') {
-        document.getElementById('modalBackdrop').classList.remove('active');
-      }
-    }
-
-    function closeSheetForce() {
-      document.getElementById('modalBackdrop').classList.remove('active');
-    }
-
-    function openAddModal() {
-      document.getElementById('addBackdrop').classList.add('active');
-    }
-
-    function closeAddModal(e) {
-      if (e.target.id === 'addBackdrop') {
-        document.getElementById('addBackdrop').classList.remove('active');
-      }
-    }
-
-    function closeAddModalForce() {
-      document.getElementById('addBackdrop').classList.remove('active');
-    }
-
     async function saveNewRecipe(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
-      btn.innerText = 'Speichere in Supabase...';
-      btn.disabled = true;
-
-      const title = document.getElementById('newTitle').value;
-      const emoji = document.getElementById('newEmoji').value || '🍲';
-      const category = [document.getElementById('newCategory').value];
-      const airfryer = document.getElementById('newAirfryer').value === 'true';
-      const zutaten_liste = document.getElementById('newZutatenListe').value;
-      const tipps = document.getElementById('newTipps').value;
-      const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
-      const prep = document.getElementById('newPrep').value;
-      const stove_step = document.getElementById('newStove').value;
-      const airfryer_step = document.getElementById('newAirfryerStep').value;
-      const oven_step = document.getElementById('newOven').value;
-
-      const kcal = parseFloat(document.getElementById('newKcal').value) || 200;
-      const kh = parseFloat(document.getElementById('newKh').value) || 5;
-      const fat = parseFloat(document.getElementById('newFat').value) || 4;
-      const prot = parseFloat(document.getElementById('newProt').value) || 25;
-
+      btn.innerText = 'Speichere...'; btn.disabled = true;
       try {
-        const { error } = await supabaseClient.from('Rezepte').insert([
-          {
-            title,
-            emoji,
-            category,
-            airfryer,
-            kcal,
-            kh,
-            fat,
-            prot,
-            ingredients: ingredients.join(', '),
-            zutaten_liste,
-            tipps,
-            prep,
-            stove_step,
-            oven_step,
-            airfryer_step,
-            doc_check: "Selbst erstelltes Rezept. Hohe Proteindichte und blutzuckerregulierend."
-          }
-        ]);
+        const { error } = await supabaseClient.from('Rezepte').insert([{
+          title: document.getElementById('newTitle').value,
+          emoji: document.getElementById('newEmoji').value || '🍲',
+          category: [document.getElementById('newCategory').value],
+          airfryer: document.getElementById('newAirfryer').value === 'true',
+          kcal: parseFloat(document.getElementById('newKcal').value) || 200,
+          kh: parseFloat(document.getElementById('newKh').value) || 5,
+          fat: parseFloat(document.getElementById('newFat').value) || 4,
+          prot: parseFloat(document.getElementById('newProt').value) || 25,
+          ingredients: document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase()).join(', '),
+          zutaten_liste: document.getElementById('newZutatenListe').value,
+          tipps: document.getElementById('newTipps').value,
+          prep: document.getElementById('newPrep').value,
+          stove_step: document.getElementById('newStove').value,
+          oven_step: document.getElementById('newOven').value,
+          airfryer_step: document.getElementById('newAirfryerStep').value,
+          doc_check: "Neu hinzugefügt."
+        }]);
         if (error) throw error;
         await loadRecipesFromSupabase();
-      } catch (err) {
-        console.error('Fehler beim Speichern:', err);
-      }
-
+      } catch (err) { console.error('Fehler:', err); }
       document.getElementById('newRecipeForm').reset();
-      btn.innerText = 'Rezept in Supabase speichern';
-      btn.disabled = false;
+      btn.innerText = 'Rezept speichern'; btn.disabled = false;
       closeAddModalForce();
     }
 
-    /* ==========================================
-       NOTIZEN & EINKAUFSLISTE LOGIK (SUPABASE)
-       ========================================== */
+    /* Notizen & Einkaufsliste Logik */
     function openNotesView(btn) {
       isNotesViewActive = true;
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       document.getElementById('recipesSection').style.display = 'none';
       document.getElementById('notesSection').style.display = 'flex';
-
       loadNotesFromSupabase();
     }
 
     async function loadNotesFromSupabase() {
       const status = document.getElementById('syncStatus');
       try {
-        const { data, error } = await supabaseClient
-          .from('Notizen')
-          .select('*')
-          .order('id', { ascending: false });
-
+        const { data, error } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
         if (error) throw error;
-
         renderNotesList(data || []);
-        if (isNotesViewActive) {
-          status.innerText = `⚡ Notizen synchronisiert (${data ? data.length : 0})`;
-        }
-      } catch (err) {
-        console.error('Fehler beim Laden der Notizen:', err);
-      }
+        if (isNotesViewActive) status.innerText = `⚡ ${data ? data.length : 0} Notizen geladen`;
+      } catch (err) { console.error('Fehler:', err); }
     }
 
     function renderNotesList(notes) {
       const container = document.getElementById('notesList');
       if (!container) return;
-
       if (notes.length === 0) {
-        container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.88rem;">Noch keine Notizen vorhanden. Legt die erste an!</div>`;
+        container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.88rem;">Noch keine Notizen.</div>`;
         return;
       }
-
       container.innerHTML = notes.map(note => {
         const isRamona = (note.author || '').toLowerCase().includes('ramona');
         const badgeClass = isRamona ? 'note-author-ramona' : 'note-author-matze';
         const badgeIcon = isRamona ? '🌸' : '🔧';
         const isDone = !!note.is_done;
-
         return `
           <div class="note-card ${isDone ? 'done' : ''}">
             <div class="note-content">
@@ -1732,106 +1262,61 @@
               <div class="note-text">${escapeHtml(note.content)}</div>
             </div>
             <div class="note-actions">
-              <button class="note-btn-action" title="${isDone ? 'Wieder öffnen' : 'Erledigt'}" onclick="toggleNote(${note.id}, ${!isDone})">
-                ${isDone ? '↩️' : '✅'}
-              </button>
-              <button class="note-btn-action" title="Löschen" onclick="deleteNote(${note.id})">
-                🗑️
-              </button>
+              <button class="note-btn-action" title="${isDone ? 'Wieder öffnen' : 'Erledigt'}" onclick="toggleNote(${note.id}, ${!isDone})">${isDone ? '↩️' : '✅'}</button>
+              <button class="note-btn-action" title="Löschen" onclick="deleteNote(${note.id})">🗑️</button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // Macht das Namens-Eingabefeld sichtbar, wenn "Anderer..." gewählt wurde
     function toggleCustomAuthorInput(val) {
       const customInput = document.getElementById('customAuthorInput');
-      if (val === 'custom') {
-        customInput.style.display = 'block';
-        customInput.focus();
-      } else {
-        customInput.style.display = 'none';
-      }
+      if (val === 'custom') { customInput.style.display = 'block'; customInput.focus(); } 
+      else { customInput.style.display = 'none'; }
     }
 
-    // Speichert die Notiz mit dem passenden Namen
     async function addNote() {
       const input = document.getElementById('noteInput');
       const authorSelect = document.getElementById('noteAuthor');
       const customAuthorInput = document.getElementById('customAuthorInput');
-      
       const content = input.value.trim();
-      
       let author = authorSelect.value;
-      if (author === 'custom') {
-        author = customAuthorInput.value.trim() || 'Gast';
-      }
-
+      if (author === 'custom') author = customAuthorInput.value.trim() || 'Gast';
       if (!content) return;
-
       input.value = '';
-
       try {
-        const { error } = await supabaseClient.from('Notizen').insert([
-          { author, content, is_done: false }
-        ]);
+        const { error } = await supabaseClient.from('Notizen').insert([{ author, content, is_done: false }]);
         if (error) throw error;
         loadNotesFromSupabase();
-      } catch (err) {
-        console.error('Fehler beim Anlegen der Notiz:', err);
-      }
+      } catch (err) { console.error('Fehler:', err); }
     }
 
     async function toggleNote(id, is_done) {
       try {
-        const { error } = await supabaseClient
-          .from('Notizen')
-          .update({ is_done })
-          .eq('id', id);
-
+        const { error } = await supabaseClient.from('Notizen').update({ is_done }).eq('id', id);
         if (error) throw error;
         loadNotesFromSupabase();
-      } catch (err) {
-        console.error('Fehler beim Aktualisieren der Notiz:', err);
-      }
+      } catch (err) { console.error('Fehler:', err); }
     }
 
     async function deleteNote(id) {
       try {
-        const { error } = await supabaseClient
-          .from('Notizen')
-          .delete()
-          .eq('id', id);
-
+        const { error } = await supabaseClient.from('Notizen').delete().eq('id', id);
         if (error) throw error;
         loadNotesFromSupabase();
-      } catch (err) {
-        console.error('Fehler beim Löschen der Notiz:', err);
-      }
+      } catch (err) { console.error('Fehler:', err); }
     }
 
     function escapeHtml(text) {
       if (!text) return '';
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Live-Echtzeit-Verbindung für Notizen
-    supabaseClient
-      .channel('notizen-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, () => {
-        if (isNotesViewActive) {
-          loadNotesFromSupabase();
-        }
-      })
-      .subscribe();
+    supabaseClient.channel('notizen-live').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, () => {
+      if (isNotesViewActive) loadNotesFromSupabase();
+    }).subscribe();
 
-    // Initial Rezepte laden
     loadRecipesFromSupabase();
   </script>
 </body>
