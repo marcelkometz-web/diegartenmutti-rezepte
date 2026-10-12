@@ -667,7 +667,11 @@
       <button type="button" class="chip-btn" onclick="toggleChip('kohlrabi', this)">🥬 Kohlrabi</button>
       <button type="button" class="chip-btn" onclick="toggleChip('zucchini', this)">🥒 Zucchini</button>
       <button type="button" class="chip-btn" onclick="toggleChip('sahne', this)">🥛 Sahne</button>
-    </div>
+      <button class="nav-item" onclick="showNotesView()">
+  📝 Notizen
+</button>
+
+        </div>
   </div>
 
   <div class="recipe-list" id="recipeList"></div>
@@ -1342,10 +1346,67 @@
       btn.innerText = 'Rezept in Supabase speichern';
       btn.disabled = false;
       closeAddModalForce();
+      let isNotesViewActive = false;
+
+function showNotesView() {
+  isNotesViewActive = true;
+  // Rezeptansicht ausblenden, Notizen einblenden
+  const recipeContainer = document.querySelector('.recipe-container') || document.getElementById('recipes');
+  if (recipeContainer) recipeContainer.style.display = 'none';
+  document.getElementById('notes-view').style.display = 'block';
+  loadNotesFromSupabase();
+}
+
+async function loadNotesFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from('Notizen')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Fehler beim Laden:', error);
+    return;
+  }
+
+  const list = document.getElementById('notes-list');
+  list.innerHTML = '';
+  data.forEach(note => {
+    const li = document.createElement('li');
+    li.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee;';
+    li.innerHTML = `
+      <span style="${note.is_done ? 'text-decoration: line-through; opacity: 0.6;' : ''}">
+        <strong>${note.author}:</strong> ${note.content}
+      </span>
+      <div>
+        <button onclick="toggleNote(${note.id}, ${!note.is_done})">${note.is_done ? '↩️' : '✅'}</button>
+        <button onclick="deleteNote(${note.id})">🗑️</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+async function addNote() {
+  const input = document.getElementById('note-input');
+  const author = document.getElementById('note-author').value;
+  const content = input.value.trim();
+  if (!content) return;
+
+  await supabaseClient.from('Notizen').insert([{ author, content, is_done: false }]);
+  input.value = '';
+}
+
+async function toggleNote(id, is_done) {
+  await supabaseClient.from('Notizen').update({ is_done }).eq('id', id);
+}
+
+async function deleteNote(id) {
+  await supabaseClient.from('Notizen').delete().eq('id', id);
     }
     // Live-Echtzeit-Verbindung für Notizen
     supabaseClient
       .channel('notizen-live')
+      }
       .on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, () => {
         if (isNotesViewActive) {
           loadNotesFromSupabase();
@@ -1355,5 +1416,19 @@
 
     loadRecipesFromSupabase();
   </script>
+  <div id="notes-view" style="display: none; padding: 16px;">
+  <h2>Gemeinsame Notizen</h2>
+  
+  <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+    <select id="note-author" style="padding: 8px; border-radius: 6px;">
+      <option value="Ramona">🌸 Ramona</option>
+      <option value="Matze">🔧 Matze</option>
+    </select>
+    <input type="text" id="note-input" placeholder="Neue Notiz / Zutat..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+    <button onclick="addNote()" style="padding: 8px 16px; border-radius: 6px; background: #22c55e; color: white; border: none; font-weight: bold;">Speichern</button>
+  </div>
+
+  <ul id="notes-list" style="list-style: none; padding: 0;"></ul>
+</div>
 </body>
 </html>
