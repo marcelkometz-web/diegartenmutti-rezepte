@@ -841,21 +841,25 @@
         📝 Neue Notiz / Einkaufszettel
       </h3>
 
+      <!-- Zeile 1: Wer schreibt? -->
       <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        <select id="noteAuthor" onchange="toggleCustomAuthorInput(this.value)" style="background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 600; outline: none; min-width: 130px;">
+        <select id="noteAuthor" onchange="toggleCustomAuthorInput(this.value)" style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 10px 12px; border-radius: 8px; font-weight: 600; outline: none;">
           <option value="Ramona">🌸 Ramona</option>
           <option value="Matze">🔧 Matze</option>
-          <option value="custom">✏️ Anderer...</option>
+          <option value="custom">✏️ Anderer Name...</option>
         </select>
 
-        <!-- Feld für freie Eingabe (standardmäßig ausgeblendet) -->
-        <input type="text" id="customAuthorInput" placeholder="Dein Name..." style="display: none; width: 110px; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 10px; border-radius: 8px; outline: none;">
-
-        <!-- Textfeld für den Notizinhalt -->
-        <input type="text" id="noteInput" placeholder="Was einkaufen / notieren..." style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 12px; border-radius: 8px; outline: none;" onkeydown="if(event.key === 'Enter') addNote()">
+        <!-- Erscheint nur bei "Anderer Name..." daneben -->
+        <input type="text" id="customAuthorInput" placeholder="Name..." style="display: none; flex: 1; background: var(--card-sub); border: 1px solid #3fb950; color: #fff; padding: 10px 12px; border-radius: 8px; outline: none;">
       </div>
 
-      <button onclick="addNote()" class="btn-save" style="margin-top: 0; padding: 10px; font-size: 0.95rem;">
+      <!-- Zeile 2: Der Notiztext (volle Breite!) -->
+      <div style="margin-bottom: 10px;">
+        <input type="text" id="noteInput" placeholder="Was einkaufen / notieren..." style="width: 100%; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 11px 12px; border-radius: 8px; font-size: 0.95rem; outline: none;" onkeydown="if(event.key === 'Enter') addNote()">
+      </div>
+
+      <!-- Zeile 3: Button -->
+      <button onclick="addNote()" class="btn-save" style="margin-top: 0; padding: 11px; font-size: 0.95rem;">
         ➕ Notiz speichern
       </button>
     </div>
