@@ -1343,6 +1343,15 @@
       btn.disabled = false;
       closeAddModalForce();
     }
+    // Live-Echtzeit-Verbindung für Notizen
+    supabaseClient
+      .channel('notizen-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, () => {
+        if (isNotesViewActive) {
+          loadNotesFromSupabase();
+        }
+      })
+      .subscribe();
 
     loadRecipesFromSupabase();
   </script>
