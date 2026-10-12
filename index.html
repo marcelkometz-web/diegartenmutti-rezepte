@@ -29,10 +29,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -592,42 +588,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Schwebender Nach-oben-Button (Scroll-to-Top) */
-    .fab-scroll-top {
-      position: fixed;
-      right: 18px;
-      bottom: calc(134px + env(safe-area-inset-bottom));
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #21262d;
-      color: #f0f6fc;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      z-index: 600;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background 0.2s ease;
-      user-select: none;
-    }
-
-    .fab-scroll-top.visible {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .fab-scroll-top:active {
-      transform: scale(0.9);
-      background: #30363d;
-    }
-
     /* Horizontale Daumen-Leiste unten */
     .bottom-bar {
       position: fixed;
@@ -682,7 +642,7 @@
 </head>
 <body>
 
-  <header id="pageTop">
+  <header>
     <div class="brand-title">DieGartenMutti86</div>
     <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
@@ -699,13 +659,12 @@
     
     <!-- Schnellauswahl für typische Reste -->
     <div class="reste-chips" id="resteChips">
-      <button type="button" class="chip-btn" onclick="toggleChip('bohnen', this)">🫘 Bohnen</button>
-      <button type="button" class="chip-btn" onclick="toggleChip('kohlrabi', this)">🥔 Kohlrabi</button>
       <button type="button" class="chip-btn" onclick="toggleChip('hähnchen', this)">🍗 Hähnchen</button>
       <button type="button" class="chip-btn" onclick="toggleChip('hackfleisch', this)">🥩 Hack</button>
       <button type="button" class="chip-btn" onclick="toggleChip('ei', this)">🥚 Eier</button>
       <button type="button" class="chip-btn" onclick="toggleChip('quark', this)">🥣 Quark</button>
       <button type="button" class="chip-btn" onclick="toggleChip('brokkoli', this)">🥦 Brokkoli</button>
+      <button type="button" class="chip-btn" onclick="toggleChip('kohlrabi', this)">🥬 Kohlrabi</button>
       <button type="button" class="chip-btn" onclick="toggleChip('zucchini', this)">🥒 Zucchini</button>
       <button type="button" class="chip-btn" onclick="toggleChip('sahne', this)">🥛 Sahne</button>
     </div>
@@ -741,35 +700,23 @@
           <div class="form-group">
             <label>Kategorie</label>
             <select id="newCategory">
-              <option value="bohnen">🫘 Bohnen</option>
-              <option value="kohlrabi">🥔 Kohlrabi</option>
-              <option value="wirsing">🥬 Wirsing & Kohl</option>
-              <option value="fleisch">🍗 Fleisch</option>
-              <option value="gemuese">🥦 Gemüse</option>
-              <option value="dessert">🧁 Dessert / Süßes</option>
-              <option value="lowcarb">🥗 Low-Carb</option>
-              <option value="fettverbrennung">🔥 Fettverbrennung</option>
-              <option value="stoffwechsel">⚡ Stoffwechsel aktiv</option>
-              <option value="fettarm">⚖️ Fettarm</option>
+              <option value="fleisch">Fleisch</option>
+              <option value="gemuese">Gemüse</option>
+              <option value="dessert">Dessert / Süßes</option>
+              <option value="lowcarb">Low-Carb</option>
+              <option value="fettverbrennung">Fettverbrennung</option>
+              <option value="stoffwechsel">Stoffwechsel aktiv</option>
+              <option value="fettarm">Fettarm</option>
             </select>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Für Airfryer geeignet?</label>
-            <select id="newAirfryer">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Beilage benötigt? (Nudeln/Reis)</label>
-            <select id="newHasSide">
-              <option value="true">Ja (Pfannen, Fleisch etc.)</option>
-              <option value="false">Nein (Rolle, Suppe, Eintopf, pur)</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label>Für Airfryer geeignet?</label>
+          <select id="newAirfryer">
+            <option value="true">Ja</option>
+            <option value="false">Nein</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -779,7 +726,7 @@
 
         <div class="form-group">
           <label>Schlagwörter für Resteküche (kommagetrennt)</label>
-          <input type="text" id="newIngredients" required placeholder="z. B. bohnen, speck, zwiebel"></input>
+          <input type="text" id="newIngredients" required placeholder="z. B. kohlrabi, sahne, pute"></input>
         </div>
 
         <div class="form-row">
@@ -834,11 +781,6 @@
     </div>
   </div>
 
-  <!-- Schwebender Nach-oben-Button -->
-  <button class="fab-scroll-top" id="fabScrollTop" onclick="scrollToPageTop()" aria-label="Nach oben scrollen">
-    ⬆️
-  </button>
-
   <!-- Schwebender Aktualisieren-Button (FAB) -->
   <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()" aria-label="Aktualisieren">
     <span>🔄</span>
@@ -849,18 +791,6 @@
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
       <span>Alle</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('bohnen', this)">
-      <span class="icon">🫘</span>
-      <span>Bohnen</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('kohlrabi', this)">
-      <span class="icon">🥔</span>
-      <span>Kohlrabi</span>
-    </button>
-    <button class="nav-btn" onclick="setCategory('wirsing', this)">
-      <span class="icon">🥬</span>
-      <span>Wirsing</span>
     </button>
     <button class="nav-btn" onclick="setCategory('fleisch', this)">
       <span class="icon">🍗</span>
@@ -915,17 +845,14 @@
     };
 
     const CATEGORY_NAMES = {
-      'bohnen':         { label: 'Bohnen-Gerichte', icon: '🫘' },
-      'kohlrabi':       { label: 'Kohlrabi-Spezialitäten', icon: '🥔' },
-      'wirsing':        { label: 'Wirsing & Kohl', icon: '🥬' },
-      'fleisch':        { label: 'Fleischgerichte', icon: '🍗' },
-      'gemuese':        { label: 'Gemüse & Pfannen', icon: '🥦' },
-      'dessert':        { label: 'Desserts & Süßes', icon: '🧁' },
-      'lowcarb':        { label: 'Low-Carb Klassiker', icon: '🥗' },
-      'fettverbrennung':{ label: 'Fettverbrennung', icon: '🔥' },
-      'stoffwechsel':   { label: 'Stoffwechsel aktiv', icon: '⚡' },
-      'fettarm':        { label: 'Fettarm & Leicht', icon: '⚖️' },
-      'andere':         { label: 'Weitere Rezepte', icon: '🍲' }
+      'fleisch': { label: 'Fleischgerichte', icon: '🍗' },
+      'gemuese': { label: 'Gemüse & Pfannen', icon: '🥦' },
+      'dessert': { label: 'Desserts & Süßes', icon: '🧁' },
+      'lowcarb': { label: 'Low-Carb Klassiker', icon: '🥗' },
+      'fettverbrennung': { label: 'Fettverbrennung', icon: '🔥' },
+      'stoffwechsel': { label: 'Stoffwechsel aktiv', icon: '⚡' },
+      'fettarm': { label: 'Fettarm & Leicht', icon: '⚖️' },
+      'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
     };
 
     let recipes = [];
@@ -933,39 +860,22 @@
     let openedRecipeId = null;
     let selectedChip = null;
 
-    function scrollToPageTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Scroll-Erkennung für den Nach-oben-Button
-    window.addEventListener('scroll', () => {
-      const scrollBtn = document.getElementById('fabScrollTop');
-      if (scrollBtn) {
-        if (window.scrollY > 250) {
-          scrollBtn.classList.add('visible');
-        } else {
-          scrollBtn.classList.remove('visible');
-        }
-      }
-    }, { passive: true });
-
-    // Erkennt präzise, ob ein Gericht eine Beilage hat oder nicht
+    // Erkennt Gerichte, die KEINE Beilage benötigen (Desserts, Rollen, Snacks, Suppen, Böden)
     function hasNoSide(r) {
       if (!r) return false;
+      const titleLower = (r.title || '').toLowerCase();
 
-      // 1. Manuell im Formular festgelegt (höchste Priorität)
-      if (r.has_side !== null && r.has_side !== undefined) {
-        return !r.has_side;
+      // Süßspeisen / Desserts
+      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
+          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
+        return true;
       }
-
-      // 2. Automatischer Fallback nach Kategorie (Desserts)
-      if (checkIsDessert(r)) {
+      if (Array.isArray(r.category) && r.category.some(c => String(c).toLowerCase().includes('dessert'))) {
         return true;
       }
 
-      // 3. Automatischer Fallback nach Schlagwörtern im Titel
-      const titleLower = (r.title || '').toLowerCase();
-      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'eintopf', 'snack', 'pur'];
+      // Rollen, Snacks, Fingerfood, Böden, Suppen
+      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack'];
       if (noSideKeywords.some(kw => titleLower.includes(kw))) {
         return true;
       }
@@ -1012,7 +922,6 @@
               emoji: item.emoji || '🍲',
               category: cat,
               airfryer: item.airfryer === true || item.airfryer === 'true',
-              has_side: item.has_side !== undefined && item.has_side !== null ? (item.has_side === true || item.has_side === 'true') : null,
               score: item.score || 'A',
               scoreClass: 'var(--score-a)',
               selectedSide: item.selectedSide || 'protein_nudeln',
@@ -1205,9 +1114,6 @@
       }
 
       const groups = {
-        'bohnen': [],
-        'kohlrabi': [],
-        'wirsing': [],
         'fleisch': [],
         'gemuese': [],
         'dessert': [],
@@ -1219,28 +1125,19 @@
       };
 
       list.forEach(r => {
-        const catList = Array.isArray(r.category) ? r.category.map(c => String(c).toLowerCase()) : [String(r.category).toLowerCase()];
-        const titleLower = (r.title || '').toLowerCase();
-
         if (checkIsDessert(r)) {
           groups['dessert'].push(r);
-        } else if (catList.includes('bohnen') || titleLower.includes('bohne')) {
-          groups['bohnen'].push(r);
-        } else if (catList.includes('kohlrabi') || titleLower.includes('kohlrabi')) {
-          groups['kohlrabi'].push(r);
-        } else if (catList.includes('wirsing') || titleLower.includes('wirsing')) {
-          groups['wirsing'].push(r);
-        } else if (catList.some(c => c.includes('fleisch'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fleisch'))) {
           groups['fleisch'].push(r);
-        } else if (catList.some(c => c.includes('gemuese'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) {
           groups['gemuese'].push(r);
-        } else if (catList.some(c => c.includes('fettverbrennung'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettverbrennung'))) {
           groups['fettverbrennung'].push(r);
-        } else if (catList.some(c => c.includes('stoffwechsel'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('stoffwechsel'))) {
           groups['stoffwechsel'].push(r);
-        } else if (catList.some(c => c.includes('lowcarb'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('lowcarb'))) {
           groups['lowcarb'].push(r);
-        } else if (catList.some(c => c.includes('fettarm'))) {
+        } else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fettarm'))) {
           groups['fettarm'].push(r);
         } else {
           groups['andere'].push(r);
@@ -1272,10 +1169,6 @@
       btn.classList.add('active');
       currentCategory = cat;
       openedRecipeId = null;
-
-      // Wenn auf "Alle" geklickt wird (oder generell beim Kategorie-Wechsel), sanft ganz nach oben scrollen
-      scrollToPageTop();
-
       filterRecipes();
     }
 
@@ -1283,27 +1176,22 @@
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = recipes.filter(r => {
         let matchesCategory = false;
-        const catList = Array.isArray(r.category) ? r.category.map(c => String(c).toLowerCase()) : [String(r.category).toLowerCase()];
-        const titleLower = (r.title || '').toLowerCase();
-
         if (currentCategory === 'all') {
           matchesCategory = true;
         } else if (currentCategory === 'airfryer') {
           matchesCategory = r.airfryer === true;
         } else if (currentCategory === 'dessert') {
           matchesCategory = checkIsDessert(r);
-        } else if (currentCategory === 'bohnen') {
-          matchesCategory = catList.includes('bohnen') || titleLower.includes('bohne');
-        } else if (currentCategory === 'kohlrabi') {
-          matchesCategory = catList.includes('kohlrabi') || titleLower.includes('kohlrabi');
-        } else if (currentCategory === 'wirsing') {
-          matchesCategory = catList.includes('wirsing') || titleLower.includes('wirsing');
         } else {
-          matchesCategory = catList.some(c => c.includes(currentCategory));
+          if (Array.isArray(r.category)) {
+            matchesCategory = r.category.some(c => String(c).toLowerCase().includes(currentCategory));
+          } else if (typeof r.category === 'string') {
+            matchesCategory = r.category.toLowerCase().includes(currentCategory);
+          }
         }
 
         const matchesSearch = search === '' || 
-          titleLower.includes(search) || 
+          r.title.toLowerCase().includes(search) || 
           (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
 
         return matchesCategory && matchesSearch;
@@ -1410,7 +1298,6 @@
       const emoji = document.getElementById('newEmoji').value || '🍲';
       const category = [document.getElementById('newCategory').value];
       const airfryer = document.getElementById('newAirfryer').value === 'true';
-      const has_side = document.getElementById('newHasSide').value === 'true';
       const zutaten_liste = document.getElementById('newZutatenListe').value;
       const tipps = document.getElementById('newTipps').value;
       const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
@@ -1431,7 +1318,6 @@
             emoji,
             category,
             airfryer,
-            has_side,
             kcal,
             kh,
             fat,
