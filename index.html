@@ -386,7 +386,7 @@
       background: #30363d;
     }
 
-    /* Modal / Popup */
+    /* Modals */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -492,7 +492,7 @@
       font-size: 0.83rem;
       line-height: 1.5;
       color: #f0f6fc;
-      white-space: pre-line; /* <-- DAS sorgt dafür, dass jeder Zeilenumbruch sauber untereinander steht */
+      white-space: pre-line;
     }
 
     .tip-box strong {
@@ -786,7 +786,7 @@
     <span>🔄</span>
   </button>
 
-  <!-- Daumen-Navigation -->
+  <!-- Horizontale Daumen-Navigation -->
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -860,17 +860,38 @@
     let openedRecipeId = null;
     let selectedChip = null;
 
+    // Erkennt Gerichte, die KEINE Beilage benötigen (Desserts, Rollen, Snacks, Suppen, Böden)
+    function hasNoSide(r) {
+      if (!r) return false;
+      const titleLower = (r.title || '').toLowerCase();
+
+      // Süßspeisen / Desserts
+      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
+          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
+        return true;
+      }
+      if (Array.isArray(r.category) && r.category.some(c => String(c).toLowerCase().includes('dessert'))) {
+        return true;
+      }
+
+      // Rollen, Snacks, Fingerfood, Böden, Suppen
+      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack'];
+      if (noSideKeywords.some(kw => titleLower.includes(kw))) {
+        return true;
+      }
+
+      return false;
+    }
+
     function checkIsDessert(r) {
       if (!r) return false;
       const titleLower = (r.title || '').toLowerCase();
-      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
+      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
+          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
         return true;
       }
       if (Array.isArray(r.category)) {
         return r.category.some(c => String(c).toLowerCase().includes('dessert'));
-      }
-      if (typeof r.category === 'string') {
-        return r.category.toLowerCase().includes('dessert');
       }
       return false;
     }
@@ -948,33 +969,36 @@
     }
 
     function calculateTotalNutri(recipe) {
-      const isDessert = checkIsDessert(recipe);
+      const withoutSide = hasNoSide(recipe);
 
-      if (isDessert) {
+      // Gerichte OHNE Beilage: Exakte Nährwerte ohne Nudeln/Reis/Kartoffeln
+      if (withoutSide) {
+        const isDessert = checkIsDessert(recipe);
         return {
           kcal: Math.round(recipe.baseNutri.kcal),
           kh: Number(recipe.baseNutri.kh).toFixed(1),
-          sugar: "1.5",
+          sugar: Number(recipe.baseNutri.sugar || 1.5).toFixed(1),
           fat: Number(recipe.baseNutri.fat).toFixed(1),
-          satFat: "1.0",
-          fiber: "1.0",
+          satFat: Number(recipe.baseNutri.satFat || 1.0).toFixed(1),
+          fiber: Number(recipe.baseNutri.fiber || 1.0).toFixed(1),
           prot: Number(recipe.baseNutri.prot).toFixed(1),
-          salt: "0.05",
-          insulin: "Stabil (Zuckerfrei)",
+          salt: Number(recipe.baseNutri.salt || 0.05).toFixed(2),
+          insulin: isDessert ? "Stabil (Zuckerfrei)" : "Ketogen / Optimal stabil",
           gl: "Sehr niedrig"
         };
       }
 
+      // Gerichte MIT Beilage
       const side = sideOptions[recipe.selectedSide] || sideOptions["protein_nudeln"];
       return {
         kcal: Math.round(recipe.baseNutri.kcal + side.kcal),
         kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
-        sugar: (recipe.baseNutri.sugar + side.sugar).toFixed(1),
+        sugar: ((recipe.baseNutri.sugar || 0) + side.sugar).toFixed(1),
         fat: (recipe.baseNutri.fat + side.fat).toFixed(1),
-        satFat: (recipe.baseNutri.satFat + side.satFat).toFixed(1),
-        fiber: (recipe.baseNutri.fiber + side.fiber).toFixed(1),
+        satFat: ((recipe.baseNutri.satFat || 0) + side.satFat).toFixed(1),
+        fiber: ((recipe.baseNutri.fiber || 0) + side.fiber).toFixed(1),
         prot: (recipe.baseNutri.prot + side.prot).toFixed(1),
-        salt: (recipe.baseNutri.salt + side.salt).toFixed(2),
+        salt: ((recipe.baseNutri.salt || 0) + side.salt).toFixed(2),
         insulin: side.insulin,
         gl: side.gl
       };
@@ -1021,10 +1045,10 @@
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r);
       const isOpen = openedRecipeId === r.id;
-      const isDessert = checkIsDessert(r);
+      const withoutSide = hasNoSide(r);
 
       let sideSelectHtml = '';
-      if (!isDessert) {
+      if (!withoutSide) {
         sideSelectHtml = `
           <div class="swap-row">
             <label>Beilage:</label>
@@ -1179,10 +1203,10 @@
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       const sheet = document.getElementById('sheetContent');
-      const isDessert = checkIsDessert(r);
+      const withoutSide = hasNoSide(r);
       const sideName = sideOptions[r.selectedSide]?.name || "Protein-Nudeln";
       
-      const sideRowHtml = !isDessert ? `<p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>` : '';
+      const sideRowHtml = !withoutSide ? `<p style="font-size: 0.8rem; color: #3fb950; margin-bottom: 14px;">Ausgewählte Beilage: <strong>${sideName}</strong></p>` : '';
 
       sheet.innerHTML = `
         <div style="font-size: 2.2rem; margin-bottom: 8px;">${r.emoji || '🧁'}</div>
