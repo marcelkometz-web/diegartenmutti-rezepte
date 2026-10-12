@@ -155,6 +155,29 @@
       color: #3fb950;
     }
 
+    /* Aktiver Unterfilter Badge */
+    .active-subfilter-badge {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(46, 160, 67, 0.15);
+      border: 1px solid #3fb950;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      color: #3fb950;
+    }
+
+    .active-subfilter-badge button {
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
     .category-divider {
       display: flex;
       align-items: center;
@@ -501,6 +524,47 @@
       margin-bottom: 4px;
     }
 
+    /* Sub-Filter Modal Styles */
+    .subfilter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .subfilter-card {
+      background: var(--card-sub);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .subfilter-card.all-btn {
+      grid-column: span 2;
+      background: rgba(46, 160, 67, 0.15);
+      border-color: #3fb950;
+      color: #3fb950;
+      font-weight: 700;
+    }
+
+    .subfilter-card:active {
+      transform: scale(0.96);
+      border-color: #3fb950;
+      background: #238636;
+      color: #fff;
+    }
+
     /* Formular */
     .form-group {
       margin-bottom: 12px;
@@ -759,6 +823,12 @@
         <button type="button" class="chip-btn" onclick="toggleChip('zucchini', this)">🥒 Zucchini</button>
         <button type="button" class="chip-btn" onclick="toggleChip('sahne', this)">🥛 Sahne</button>
       </div>
+
+      <!-- Badge für aktiven Unterfilter aus dem Pop-up -->
+      <div class="active-subfilter-badge" id="subfilterBadge">
+        <span id="subfilterText">Gefiltert: Hähnchen</span>
+        <button onclick="clearSubFilter()" title="Filter aufheben">&times;</button>
+      </div>
     </div>
 
     <div class="recipe-list" id="recipeList"></div>
@@ -796,6 +866,16 @@
     <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
       <div id="sheetContent"></div>
+    </div>
+  </div>
+
+  <!-- Sub-Filter Modal (Pop-up für Fleisch & Gemüse) -->
+  <div class="modal-backdrop" id="subfilterBackdrop" onclick="closeSubfilterModal(event)">
+    <div class="modal-sheet" id="subfilterSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeSubfilterModalForce()">&times;</button>
+      <h2 id="subfilterTitle" style="font-size: 1.25rem; color: #3fb950; margin-bottom: 6px;">Kategorie wählen</h2>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Wähle eine Zutat oder zeige alle Gerichte an:</p>
+      <div class="subfilter-grid" id="subfilterGrid"></div>
     </div>
   </div>
 
@@ -907,39 +987,39 @@
 
   <!-- Horizontale Daumen-Navigation -->
   <nav class="bottom-bar">
-    <button class="nav-btn active" onclick="setCategory('all', this)">
+    <button class="nav-btn active" id="nav-btn-all" onclick="handleNavCategory('all', this)">
       <span class="icon">✨</span>
       <span>Alle</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('fleisch', this)">
+    <button class="nav-btn" id="nav-btn-fleisch" onclick="handleNavCategory('fleisch', this)">
       <span class="icon">🍗</span>
       <span>Fleisch</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('gemuese', this)">
+    <button class="nav-btn" id="nav-btn-gemuese" onclick="handleNavCategory('gemuese', this)">
       <span class="icon">🥦</span>
       <span>Gemüse</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('dessert', this)">
+    <button class="nav-btn" id="nav-btn-dessert" onclick="handleNavCategory('dessert', this)">
       <span class="icon">🧁</span>
       <span>Dessert</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('lowcarb', this)">
+    <button class="nav-btn" id="nav-btn-lowcarb" onclick="handleNavCategory('lowcarb', this)">
       <span class="icon">🥗</span>
       <span>Low-Carb</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('fettverbrennung', this)">
+    <button class="nav-btn" id="nav-btn-fettverbrennung" onclick="handleNavCategory('fettverbrennung', this)">
       <span class="icon">🔥</span>
       <span>Fettverbrennung</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('stoffwechsel', this)">
+    <button class="nav-btn" id="nav-btn-stoffwechsel" onclick="handleNavCategory('stoffwechsel', this)">
       <span class="icon">⚡</span>
       <span>Stoffwechsel</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('fettarm', this)">
+    <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)">
       <span class="icon">⚖️</span>
       <span>Fettarm</span>
     </button>
-    <button class="nav-btn" onclick="setCategory('airfryer', this)">
+    <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)">
       <span class="icon">🌪️</span>
       <span>Airfryer</span>
     </button>
@@ -978,13 +1058,42 @@
       'andere':  { label: 'Weitere Rezepte', icon: '🍲' }
     };
 
+    // Konfiguration für Pop-up-Auswahl (Fleisch & Gemüse)
+    const SUB_FILTERS_CONFIG = {
+      fleisch: {
+        title: '🍗 Fleischart wählen',
+        options: [
+          { label: '✨ Alle Fleischgerichte', value: 'all_sub', isAll: true },
+          { label: '🍗 Hähnchen / Geflügel', value: 'hähnchen' },
+          { label: '🥩 Rind', value: 'rind' },
+          { label: '🥓 Schwein', value: 'schwein' },
+          { label: '🧆 Hackfleisch', value: 'hack' }
+        ]
+      },
+      gemuese: {
+        title: '🥦 Gemüseart wählen',
+        options: [
+          { label: '✨ Alle Gemüsegerichte', value: 'all_sub', isAll: true },
+          { label: '🥦 Brokkoli', value: 'brokkoli' },
+          { label: '🥬 Spinat', value: 'spinat' },
+          { label: '🥒 Zucchini', value: 'zucchini' },
+          { label: '🥬 Kohlrabi', value: 'kohlrabi' },
+          { label: '🥦 Blumenkohl', value: 'blumenkohl' },
+          { label: '🍄 Pilze', value: 'pilz' },
+          { label: '🫑 Paprika', value: 'paprika' }
+        ]
+      }
+    };
+
     let recipes = [];
     let currentCategory = 'all';
+    let currentSubFilter = null; // Z. B. 'hähnchen', 'brokkoli'
+    let currentSubFilterLabel = '';
     let openedRecipeId = null;
     let selectedChip = null;
     let isNotesViewActive = false;
 
-    // Erkennt Gerichte, die KEINE Beilage benötigen (Desserts, Rollen, Snacks, Suppen, Böden)
+    // Erkennt Gerichte, die KEINE Beilage benötigen
     function hasNoSide(r) {
       if (!r) return false;
       const titleLower = (r.title || '').toLowerCase();
@@ -1228,11 +1337,11 @@
       container.innerHTML = '';
 
       if (list.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine Rezepte gefunden.</div>`;
+        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Keine passenden Rezepte gefunden.</div>`;
         return;
       }
 
-      if (currentCategory !== 'all') {
+      if (currentCategory !== 'all' || currentSubFilter) {
         container.innerHTML = list.map(r => buildCardHtml(r)).join('');
         return;
       }
@@ -1288,17 +1397,98 @@
       }
     }
 
-    function setCategory(cat, btn) {
+    /* ==========================================
+       NAVIGATION & SUB-FILTER POP-UP LOGIK
+       ========================================== */
+    function handleNavCategory(cat, btn) {
       // Wenn wir in Notizen waren, zurück zur Rezeptansicht
       isNotesViewActive = false;
       document.getElementById('recipesSection').style.display = 'block';
       document.getElementById('notesSection').style.display = 'none';
 
+      // Hat diese Kategorie ein Pop-up (z. B. Fleisch oder Gemüse)?
+      if (SUB_FILTERS_CONFIG[cat]) {
+        openSubfilterModal(cat, btn);
+        return;
+      }
+
+      // Standard Kategoriewechsel
+      currentSubFilter = null;
+      updateSubfilterBadge();
+      setCategory(cat, btn);
+    }
+
+    function setCategory(cat, btn) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
       currentCategory = cat;
       openedRecipeId = null;
       filterRecipes();
+    }
+
+    function openSubfilterModal(cat, btn) {
+      const config = SUB_FILTERS_CONFIG[cat];
+      if (!config) return;
+
+      document.getElementById('subfilterTitle').innerText = config.title;
+      const grid = document.getElementById('subfilterGrid');
+      grid.innerHTML = '';
+
+      config.options.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = `subfilter-card ${opt.isAll ? 'all-btn' : ''}`;
+        div.innerText = opt.label;
+        div.onclick = () => {
+          applySubFilter(cat, opt.value, opt.label, btn);
+          closeSubfilterModalForce();
+        };
+        grid.appendChild(div);
+      });
+
+      document.getElementById('subfilterBackdrop').classList.add('active');
+    }
+
+    function closeSubfilterModal(e) {
+      if (e.target.id === 'subfilterBackdrop') {
+        closeSubfilterModalForce();
+      }
+    }
+
+    function closeSubfilterModalForce() {
+      document.getElementById('subfilterBackdrop').classList.remove('active');
+    }
+
+    function applySubFilter(cat, value, label, btn) {
+      setCategory(cat, btn);
+
+      if (value === 'all_sub') {
+        currentSubFilter = null;
+        currentSubFilterLabel = '';
+      } else {
+        currentSubFilter = value.toLowerCase();
+        currentSubFilterLabel = label;
+      }
+
+      updateSubfilterBadge();
+      filterRecipes();
+    }
+
+    function clearSubFilter() {
+      currentSubFilter = null;
+      currentSubFilterLabel = '';
+      updateSubfilterBadge();
+      filterRecipes();
+    }
+
+    function updateSubfilterBadge() {
+      const badge = document.getElementById('subfilterBadge');
+      const text = document.getElementById('subfilterText');
+      if (currentSubFilter) {
+        text.innerText = `Gefiltert: ${currentSubFilterLabel}`;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     function filterRecipes() {
@@ -1319,11 +1509,20 @@
           }
         }
 
+        // Prüfung auf Unterfilter (z. B. Hähnchen, Schwein, Brokkoli, etc.)
+        let matchesSubFilter = true;
+        if (currentSubFilter) {
+          const inTitle = (r.title || '').toLowerCase().includes(currentSubFilter);
+          const inIngredients = r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(currentSubFilter));
+          const inZutatenListe = (r.zutatenListe || '').toLowerCase().includes(currentSubFilter);
+          matchesSubFilter = inTitle || inIngredients || inZutatenListe;
+        }
+
         const matchesSearch = search === '' || 
           r.title.toLowerCase().includes(search) || 
           (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
 
-        return matchesCategory && matchesSearch;
+        return matchesCategory && matchesSubFilter && matchesSearch;
       });
       renderList(filtered);
     }
