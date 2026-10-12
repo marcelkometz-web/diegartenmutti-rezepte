@@ -343,7 +343,7 @@
 
     .close-sheet {
       position: sticky;
-      top: 0;
+      top: 16px; /* Hier geben wir dem X Abstand zur Browser-Leiste */
       float: right;
       margin-bottom: -34px;
       background: #21262d;
@@ -354,11 +354,11 @@
       height: 34px;
       border-radius: 50%;
       cursor: pointer;
-      z-index: 20;
+      z-index: 100; /* Erhöht, damit es garantiert über allem schwebt */
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
     }
 
     .swap-row {
