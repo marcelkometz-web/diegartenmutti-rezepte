@@ -120,7 +120,7 @@
       font-size: 1.15rem;
       font-weight: bold;
       cursor: pointer;
-      display: none; /* Standardmäßig ausgeblendet */
+      display: none; 
       padding: 0 4px;
       transition: transform 0.2s ease, color 0.2s ease;
     }
@@ -224,7 +224,7 @@
       margin: 16px 0 10px 0;
       padding-bottom: 4px;
       border-bottom: 1px solid rgba(48, 54, 61, 0.6);
-      grid-column: 1 / -1; /* Geht im Grid über die volle Breite */
+      grid-column: 1 / -1; 
     }
 
     /* NEUES GRID-LAYOUT FÜR REZEPTE */
@@ -272,7 +272,7 @@
       font-weight: 600;
       color: #fff;
       line-height: 1.25;
-      height: 2.5em; /* Exakt 2 Zeilen Platz */
+      height: 2.5em; 
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -307,7 +307,6 @@
       font-weight: 600;
     }
 
-    /* Makro-Leiste auf der Kachel (Coach-Feature) */
     .card-quick-macros {
       display: flex;
       gap: 8px;
@@ -507,22 +506,47 @@
       color: #c9d1d9;
     }
 
-    .tip-box {
-      background: rgba(210, 153, 34, 0.1);
-      border: 1px solid rgba(210, 153, 34, 0.35);
+    /* NEU: Editierbare Tipps / Eigene Notizen */
+    .editable-tipps {
+      width: 100%;
+      background: rgba(210, 153, 34, 0.08);
+      border: 1px dashed rgba(210, 153, 34, 0.4);
+      color: #f0f6fc;
       border-radius: 10px;
       padding: 12px;
-      margin-top: 12px;
-      font-size: 0.83rem;
+      font-size: 0.88rem;
       line-height: 1.5;
-      color: #f0f6fc;
-      white-space: pre-line;
+      min-height: 80px;
+      resize: vertical;
+      outline: none;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
     }
 
-    .tip-box strong {
-      color: #d29922;
-      display: block;
-      margin-bottom: 4px;
+    .editable-tipps:focus {
+      border-style: solid;
+      border-color: #d29922;
+      background: rgba(210, 153, 34, 0.15);
+    }
+
+    .btn-save-small {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-save-small:active {
+      transform: scale(0.95);
     }
 
     /* Sub-Filter Modal Styles */
@@ -974,21 +998,16 @@
 
       btn.classList.toggle('active');
 
-      // Aktuelle Begriffe im Suchfeld auslesen
       let terms = searchInput.value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
 
       if (btn.classList.contains('active')) {
-        // Hinzufügen, falls nicht schon vorhanden
         if (!terms.includes(ingredient)) terms.push(ingredient);
       } else {
-        // Entfernen, wenn der Chip deaktiviert wird
         terms = terms.filter(t => t !== ingredient);
       }
 
-      // Suchfeld aktualisieren
       searchInput.value = terms.join(' ');
 
-      // Das "X" ein- oder ausblenden
       if (searchInput.value.trim().length > 0) {
         clearBtn.style.display = 'block';
       } else {
@@ -1003,14 +1022,12 @@
       const clearBtn = document.getElementById('clearSearchBtn');
       const searchVal = input.value.toLowerCase();
       
-      // Das "X" ein- oder ausblenden
       if (searchVal.trim().length > 0) {
         clearBtn.style.display = 'block';
       } else {
         clearBtn.style.display = 'none';
       }
 
-      // Chips automatisch aktivieren/deaktivieren basierend auf dem getippten Text
       document.querySelectorAll('.chip-btn').forEach(btn => {
         const onclickText = btn.getAttribute('onclick');
         const match = onclickText.match(/'([^']+)'/);
@@ -1031,11 +1048,9 @@
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearchBtn');
       
-      // Suchfeld leeren
       input.value = '';
       clearBtn.style.display = 'none';
       
-      // Alle Chips deaktivieren
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
       
       filterRecipes();
@@ -1155,10 +1170,51 @@
         ${r.stoveStep ? `<div class="step-section"><h4>🍳 2. Auf dem Herd</h4><p>${r.stoveStep}</p></div>` : ''}
         ${r.ovenStep ? `<div class="step-section"><h4>🔥 3. Im Backofen</h4><p>${r.ovenStep}</p></div>` : ''}
         ${r.airfryerStep ? `<div class="step-section" style="border-left: 3px solid #d29922;"><h4 style="color: #d29922;">🌪️ 4. Airfryer</h4><p>${r.airfryerStep}</p></div>` : ''}
-        ${r.tipps ? `<div class="tip-box"><strong>💡 Tipp:</strong>${r.tipps}</div>` : ''}
+        
+        <!-- NEU: Eigene editierbare Notizen & Tipps -->
+        <div class="section-title" style="margin-top: 20px;">💡 Meine Notizen & Tipps:</div>
+        <textarea id="editTipps-${r.id}" class="editable-tipps" placeholder="Was möchtest du beim nächsten Mal anders machen? ...">${r.tipps || ''}</textarea>
+        <button class="btn-save-small" onclick="saveTipps('${r.id}', this)">💾 Notiz speichern</button>
       `;
 
       document.getElementById('modalBackdrop').classList.add('active');
+    }
+
+    async function saveTipps(recipeId, btn) {
+      const textarea = document.getElementById(`editTipps-${recipeId}`);
+      const newTipps = textarea.value;
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '⏳ Speichere...';
+      btn.style.background = '#d29922';
+
+      try {
+        const { error } = await supabaseClient
+          .from('Rezepte')
+          .update({ tipps: newTipps })
+          .eq('id', recipeId);
+          
+        if (error) throw error;
+        
+        const rec = recipes.find(x => String(x.id) === String(recipeId));
+        if (rec) rec.tipps = newTipps;
+        
+        btn.innerHTML = '✅ Gespeichert!';
+        btn.style.background = '#2ea043';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.style.background = '#238636';
+        }, 2000);
+
+      } catch (err) {
+        console.error('Fehler beim Speichern:', err);
+        btn.innerHTML = '❌ Fehler';
+        btn.style.background = '#da3633';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.style.background = '#238636';
+        }, 2000);
+      }
     }
 
     function updateModalSide(recipeId, newSide) {
@@ -1236,8 +1292,6 @@
 
     function filterRecipes() {
       const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
-      
-      // Suchbegriffe splitten (damit wir auch nach z.B. "hähnchen brokkoli" filtern können)
       const searchTerms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
 
       const filtered = recipes.filter(r => {
@@ -1258,7 +1312,6 @@
           matchesSubFilter = inTitle || inIngredients || inZutatenListe;
         }
 
-        // UND-Suche: ALLE gesuchten Wörter müssen im Rezept vorkommen
         let matchesSearch = true;
         if (searchTerms.length > 0) {
           matchesSearch = searchTerms.every(term => {
@@ -1305,7 +1358,6 @@
       closeAddModalForce();
     }
 
-    /* Notizen & Einkaufsliste Logik */
     function openNotesView(btn) {
       isNotesViewActive = true;
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
