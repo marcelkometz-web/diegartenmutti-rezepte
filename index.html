@@ -111,6 +111,7 @@
       color: #6e7681;
     }
 
+    /* Das rote X im Suchfeld */
     .clear-search-btn {
       background: none;
       border: none;
@@ -151,6 +152,7 @@
       transform: scale(0.96);
     }
 
+    /* Resteküche Schnellklick-Chips */
     .reste-chips {
       display: flex;
       gap: 6px;
@@ -186,6 +188,7 @@
       color: #3fb950;
     }
 
+    /* Aktiver Unterfilter Badge */
     .active-subfilter-badge {
       display: none;
       align-items: center;
@@ -223,6 +226,7 @@
       grid-column: 1 / -1; 
     }
 
+    /* NEUES GRID-LAYOUT FÜR REZEPTE */
     .recipe-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -302,6 +306,7 @@
       font-weight: 600;
     }
 
+    /* Makro-Leiste auf der Kachel */
     .card-quick-macros {
       display: flex;
       gap: 8px;
@@ -695,6 +700,7 @@
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
   </header>
 
+  <!-- REZEPTE-BEREICH -->
   <div id="recipesSection">
     
     <div class="top-actions">
@@ -729,6 +735,7 @@
     <div class="recipe-list" id="recipeList"></div>
   </div>
 
+  <!-- NOTIZEN-BEREICH -->
   <div id="notesSection" class="notes-container">
     <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
       <h3 style="font-size: 1.05rem; margin-bottom: 12px; color: #3fb950; display: flex; align-items: center; gap: 6px;">
@@ -776,6 +783,7 @@
     </div>
   </div>
 
+  <!-- Formular Modal (Neues Rezept anlegen + KI Generator) -->
   <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
     <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
@@ -783,6 +791,7 @@
       
       <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
         
+        <!-- NEU: KI BEREICH (Sichere Version über Supabase) -->
         <div class="ki-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <label style="color:#a371f7; font-weight:bold; font-size:0.9rem;">✨ KI Rezept-Generator</label>
@@ -852,6 +861,7 @@
     <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)"><span class="icon">🌪️</span><span>Airfryer</span></button>
     <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
   </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
@@ -927,12 +937,10 @@
       btn.style.background = '#6e7681';
 
       try {
-        // Die App ruft jetzt deine sichere Datenbank-Funktion auf
         const { data, error } = await supabaseClient.rpc('generiere_rezept_ki', { user_prompt: prompt });
         
         if (error) throw error;
 
-        // Daten von Google verarbeiten
         const apiData = JSON.parse(data);
         if(apiData.error) throw new Error(apiData.error.message);
 
@@ -940,7 +948,6 @@
         rawJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
         const recipe = JSON.parse(rawJson);
 
-        // Formular-Felder ausfüllen
         document.getElementById('newTitle').value = recipe.title || '';
         document.getElementById('newEmoji').value = recipe.emoji || '🍲';
         document.getElementById('newCategory').value = recipe.category || 'lowcarb';
@@ -957,7 +964,6 @@
         document.getElementById('newAirfryerStep').value = recipe.airfryer_step || '';
         document.getElementById('newTipps').value = recipe.tipps || '';
 
-        // Erfolg anzeigen
         btn.innerHTML = '✅ Rezept erfolgreich ausgefüllt!';
         btn.style.background = '#238636';
         setTimeout(() => { 
@@ -974,12 +980,12 @@
         btn.style.background = '#da3633';
         setTimeout(() => { 
           btn.innerHTML = originalText; 
+          btn.disabled = false;
           btn.style.background = '#a371f7'; 
         }, 3000);
       }
     }
 
-    // --- BESTEHENDE LOGIK ---
     function hasNoSide(r) {
       if (!r) return false;
       const titleLower = (r.title || '').toLowerCase();
