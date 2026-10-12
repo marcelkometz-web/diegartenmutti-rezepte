@@ -910,12 +910,12 @@
               baseNutri: {
                 kcal: Number(item.kcal) || 200,
                 kh: Number(item.kh) || 5,
-                sugar: 2.0,
+                sugar: Number(item.sugar) || 2.0,
                 fat: Number(item.fat) || 4,
-                satFat: 1.0,
-                fiber: 3.5,
+                satFat: Number(item.sat_fat) || 1.0,
+                fiber: Number(item.fiber) || 3.5,
                 prot: Number(item.prot) || 25,
-                salt: 0.5
+                salt: Number(item.salt) || 0.5
               },
               docCheck: item.doc_check || item.docCheck || 'Ausgewogene Nährstoffe für optimalen Blutzucker.',
               prep: item.prep || 'Zutaten vorbereiten und schneiden.',
