@@ -711,12 +711,21 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Für Airfryer geeignet?</label>
-          <select id="newAirfryer">
-            <option value="true">Ja</option>
-            <option value="false">Nein</option>
-          </select>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Für Airfryer geeignet?</label>
+            <select id="newAirfryer">
+              <option value="true">Ja</option>
+              <option value="false">Nein</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Beilage benötigt? (Nudeln/Reis)</label>
+            <select id="newHasSide">
+              <option value="true">Ja (Pfannen, Fleisch etc.)</option>
+              <option value="false">Nein (Rolle, Suppe, Dessert, pur)</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
@@ -860,22 +869,23 @@
     let openedRecipeId = null;
     let selectedChip = null;
 
-    // Erkennt Gerichte, die KEINE Beilage benötigen (Desserts, Rollen, Snacks, Suppen, Böden)
+    // Erkennt präzise, ob ein Gericht eine Beilage hat oder nicht
     function hasNoSide(r) {
       if (!r) return false;
+
+      // 1. Manuell im Formular festgelegt (höchste Priorität)
+      if (r.has_side !== null && r.has_side !== undefined) {
+        return !r.has_side;
+      }
+
+      // 2. Automatischer Fallback nach Kategorie (Desserts)
+      if (checkIsDessert(r)) {
+        return true;
+      }
+
+      // 3. Automatischer Fallback nach Schlagwörtern im Titel
       const titleLower = (r.title || '').toLowerCase();
-
-      // Süßspeisen / Desserts
-      if (titleLower.includes('dessert') || titleLower.includes('mousse') || titleLower.includes('traum') || 
-          titleLower.includes('tassenkuchen') || titleLower.includes('fettbomben')) {
-        return true;
-      }
-      if (Array.isArray(r.category) && r.category.some(c => String(c).toLowerCase().includes('dessert'))) {
-        return true;
-      }
-
-      // Rollen, Snacks, Fingerfood, Böden, Suppen
-      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack'];
+      const noSideKeywords = ['rolle', 'röllchen', 'boden', 'käsechips', 'chips', 'suppe', 'snack', 'pur'];
       if (noSideKeywords.some(kw => titleLower.includes(kw))) {
         return true;
       }
@@ -922,6 +932,7 @@
               emoji: item.emoji || '🍲',
               category: cat,
               airfryer: item.airfryer === true || item.airfryer === 'true',
+              has_side: item.has_side !== undefined && item.has_side !== null ? (item.has_side === true || item.has_side === 'true') : null,
               score: item.score || 'A',
               scoreClass: 'var(--score-a)',
               selectedSide: item.selectedSide || 'protein_nudeln',
@@ -1298,6 +1309,7 @@
       const emoji = document.getElementById('newEmoji').value || '🍲';
       const category = [document.getElementById('newCategory').value];
       const airfryer = document.getElementById('newAirfryer').value === 'true';
+      const has_side = document.getElementById('newHasSide').value === 'true';
       const zutaten_liste = document.getElementById('newZutatenListe').value;
       const tipps = document.getElementById('newTipps').value;
       const ingredients = document.getElementById('newIngredients').value.split(',').map(s => s.trim().toLowerCase());
@@ -1318,6 +1330,7 @@
             emoji,
             category,
             airfryer,
+            has_side,
             kcal,
             kh,
             fat,
