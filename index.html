@@ -640,16 +640,11 @@
   <div id="recipesSection">
     
     <!-- Komprimierte Top-Actions -->
-    <div class="top-actions">
-      <div class="search-row">
         <div class="search-box">
           <span>🔍</span>
           <input type="text" id="searchInput" placeholder="Resteküche (Zutaten)..." oninput="onSearchManual()">
+          <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" aria-label="Suche leeren">✖</button>
         </div>
-        <button class="btn-add-compact" onclick="openAddModal()">
-          <span>➕ Neu</span>
-        </button>
-      </div>
       
       <!-- Schnellauswahl für typische Reste -->
       <div class="reste-chips" id="resteChips">
