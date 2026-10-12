@@ -112,6 +112,22 @@
       color: #6e7681;
     }
 
+    .clear-search-btn {
+      background: none;
+      border: none;
+      color: #6e7681;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none; /* Standardmäßig ausgeblendet */
+      padding: 0 4px;
+      transition: color 0.2s ease;
+    }
+
+    .clear-search-btn:active {
+      color: #fff;
+      transform: scale(0.9);
+    }
+
     .btn-add-compact {
       background: #238636;
       color: #fff;
@@ -206,7 +222,7 @@
       margin: 16px 0 10px 0;
       padding-bottom: 4px;
       border-bottom: 1px solid rgba(48, 54, 61, 0.6);
-      grid-column: 1 / -1; /* Geht im Grid über die volle Breite */
+      grid-column: 1 / -1;
     }
 
     /* NEUES GRID-LAYOUT FÜR REZEPTE */
@@ -254,7 +270,7 @@
       font-weight: 600;
       color: #fff;
       line-height: 1.25;
-      height: 2.5em; /* Exakt 2 Zeilen Platz */
+      height: 2.5em; 
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -327,7 +343,7 @@
       background: var(--card-bg);
       width: 100%;
       max-width: 650px;
-      max-height: 92vh;
+      max-height: 85dvh; /* Bessere Anpassung an mobile Safari Leisten */
       border-radius: 20px 20px 0 0;
       border: 1px solid var(--border);
       overflow-y: auto;
@@ -343,7 +359,7 @@
 
     .close-sheet {
       position: sticky;
-      top: 16px; /* Hier geben wir dem X Abstand zur Browser-Leiste */
+      top: 16px; /* Angepasster Abstand wegen mobiler Browser-Leiste */
       float: right;
       margin-bottom: -34px;
       background: #21262d;
@@ -354,7 +370,7 @@
       height: 34px;
       border-radius: 50%;
       cursor: pointer;
-      z-index: 100; /* Erhöht, damit es garantiert über allem schwebt */
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -640,11 +656,17 @@
   <div id="recipesSection">
     
     <!-- Komprimierte Top-Actions -->
+    <div class="top-actions">
+      <div class="search-row">
         <div class="search-box">
           <span>🔍</span>
           <input type="text" id="searchInput" placeholder="Resteküche (Zutaten)..." oninput="onSearchManual()">
           <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" aria-label="Suche leeren">✖</button>
         </div>
+        <button class="btn-add-compact" onclick="openAddModal()">
+          <span>➕ Neu</span>
+        </button>
+      </div>
       
       <!-- Schnellauswahl für typische Reste -->
       <div class="reste-chips" id="resteChips">
@@ -947,26 +969,51 @@
 
     function toggleChip(ingredient, btn) {
       const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
       if (selectedChip === ingredient) {
         selectedChip = null;
         btn.classList.remove('active');
         searchInput.value = '';
+        clearBtn.style.display = 'none';
       } else {
         document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedChip = ingredient;
         searchInput.value = ingredient;
+        clearBtn.style.display = 'block';
       }
       filterRecipes();
     }
 
     function onSearchManual() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      
+      if (input.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+
       selectedChip = null;
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
       filterRecipes();
     }
 
-    // Die neue, aufgeräumte Coach-Kachel
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      
+      input.value = '';
+      clearBtn.style.display = 'none';
+      
+      selectedChip = null;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      
+      filterRecipes();
+    }
+
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r);
       return `
@@ -1024,7 +1071,6 @@
       container.innerHTML = html;
     }
 
-    // Modal-Logik mit Live-Makro-Update für Beilagen
     function openDetails(recipeId, tempSide = null) {
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
@@ -1091,8 +1137,8 @@
     function updateModalSide(recipeId, newSide) {
       const rec = recipes.find(x => String(x.id) === String(recipeId));
       if (rec) rec.selectedSide = newSide;
-      openDetails(recipeId, newSide); // Re-render modal in place
-      filterRecipes(); // Update background list silently
+      openDetails(recipeId, newSide);
+      filterRecipes();
     }
 
     function closeSheet(e) { if (e.target.id === 'modalBackdrop') document.getElementById('modalBackdrop').classList.remove('active'); }
