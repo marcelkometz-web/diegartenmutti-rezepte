@@ -386,6 +386,7 @@
       background: #30363d;
     }
 
+    /* Modal / Popup */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -547,6 +548,43 @@
       width: 100%;
       margin-top: 10px;
       cursor: pointer;
+    }
+
+    /* Schwebender Aktualisieren-Button (FAB) */
+    .fab-refresh {
+      position: fixed;
+      right: 18px;
+      bottom: calc(76px + env(safe-area-inset-bottom));
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #238636;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      z-index: 600;
+      transition: transform 0.2s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .fab-refresh:active {
+      transform: scale(0.9);
+      background: #2ea043;
+    }
+
+    .fab-refresh.spin span {
+      display: inline-block;
+      animation: spinAnim 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes spinAnim {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     /* Horizontale Daumen-Leiste unten */
@@ -742,7 +780,12 @@
     </div>
   </div>
 
-  <!-- Horizontale Daumen-Navigation -->
+  <!-- Schwebender Aktualisieren-Button (FAB) -->
+  <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()" aria-label="Aktualisieren">
+    <span>🔄</span>
+  </button>
+
+  <!-- Daumen-Navigation -->
   <nav class="bottom-bar">
     <button class="nav-btn active" onclick="setCategory('all', this)">
       <span class="icon">✨</span>
@@ -890,6 +933,17 @@
       }
 
       filterRecipes();
+    }
+
+    async function triggerRefresh() {
+      const btn = document.getElementById('fabRefresh');
+      if (btn) btn.classList.add('spin');
+      
+      await loadRecipesFromSupabase();
+      
+      setTimeout(() => {
+        if (btn) btn.classList.remove('spin');
+      }, 700);
     }
 
     function calculateTotalNutri(recipe) {
