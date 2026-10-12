@@ -841,13 +841,19 @@
         📝 Neue Notiz / Einkaufszettel
       </h3>
 
-      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        <select id="noteAuthor" style="background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 12px; border-radius: 8px; font-weight: 600; outline: none;">
-          <option value="Ramona">🌸 Ramona</option>
-          <option value="Matze">🔧 Matze</option>
-        </select>
-        <input type="text" id="noteInput" placeholder="Was einkaufen / notieren..." style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 12px; border-radius: 8px; outline: none;" onkeydown="if(event.key === 'Enter') addNote()">
-      </div>
+<div style="display: flex; gap: 8px; margin-bottom: 10px;">
+  <select id="noteAuthor" onchange="toggleCustomAuthorInput(this.value)" style="background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 600; outline: none; min-width: 130px;">
+    <option value="Ramona">🌸 Ramona</option>
+    <option value="Matze">🔧 Matze</option>
+    <option value="custom">✏️ Anderer...</option>
+  </select>
+
+  <!-- Feld für freie Eingabe (standardmäßig ausgeblendet) -->
+  <input type="text" id="customAuthorInput" placeholder="Dein Name..." style="display: none; width: 110px; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 10px; border-radius: 8px; outline: none;">
+
+  <!-- Textfeld für den Notizinhalt -->
+  <input type="text" id="noteInput" placeholder="Was einkaufen / notieren..." style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); color: #fff; padding: 9px 12px; border-radius: 8px; outline: none;" onkeydown="if(event.key === 'Enter') addNote()">
+</div>
 
       <button onclick="addNote()" class="btn-save" style="margin-top: 0; padding: 10px; font-size: 0.95rem;">
         ➕ Notiz speichern
@@ -1739,15 +1745,45 @@
       }).join('');
     }
 
-    async function addNote() {
-      const input = document.getElementById('noteInput');
-      const authorSelect = document.getElementById('noteAuthor');
-      const content = input.value.trim();
-      const author = authorSelect.value;
+// Macht das Namens-Eingabefeld sichtbar, wenn "Anderer..." gewählt wurde
+function toggleCustomAuthorInput(val) {
+  const customInput = document.getElementById('customAuthorInput');
+  if (val === 'custom') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+  }
+}
 
-      if (!content) return;
+// Speichert die Notiz mit dem passenden Namen
+async function addNote() {
+  const input = document.getElementById('noteInput');
+  const authorSelect = document.getElementById('noteAuthor');
+  const customAuthorInput = document.getElementById('customAuthorInput');
+  
+  const content = input.value.trim();
+  
+  // Wenn "Anderer..." gewählt ist, nimm das Eingabefeld, sonst die Schnellauswahl:
+  let author = authorSelect.value;
+  if (author === 'custom') {
+    author = customAuthorInput.value.trim() || 'Gast';
+  }
 
-      input.value = '';
+  if (!content) return;
+
+  input.value = '';
+
+  try {
+    const { error } = await supabaseClient.from('Notizen').insert([
+      { author, content, is_done: false }
+    ]);
+    if (error) throw error;
+    loadNotesFromSupabase();
+  } catch (err) {
+    console.error('Fehler beim Anlegen der Notiz:', err);
+  }
+}
 
       try {
         const { error } = await supabaseClient.from('Notizen').insert([
