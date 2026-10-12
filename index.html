@@ -112,20 +112,22 @@
       color: #6e7681;
     }
 
+    /* Das rote X im Suchfeld */
     .clear-search-btn {
       background: none;
       border: none;
-      color: #6e7681;
-      font-size: 1rem;
+      color: #ff4d4d;
+      font-size: 1.15rem;
+      font-weight: bold;
       cursor: pointer;
       display: none; /* Standardmäßig ausgeblendet */
       padding: 0 4px;
-      transition: color 0.2s ease;
+      transition: transform 0.2s ease, color 0.2s ease;
     }
 
     .clear-search-btn:active {
-      color: #fff;
-      transform: scale(0.9);
+      color: #ff1a1a;
+      transform: scale(0.85);
     }
 
     .btn-add-compact {
@@ -222,7 +224,7 @@
       margin: 16px 0 10px 0;
       padding-bottom: 4px;
       border-bottom: 1px solid rgba(48, 54, 61, 0.6);
-      grid-column: 1 / -1;
+      grid-column: 1 / -1; /* Geht im Grid über die volle Breite */
     }
 
     /* NEUES GRID-LAYOUT FÜR REZEPTE */
@@ -270,7 +272,7 @@
       font-weight: 600;
       color: #fff;
       line-height: 1.25;
-      height: 2.5em; 
+      height: 2.5em; /* Exakt 2 Zeilen Platz */
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -343,7 +345,7 @@
       background: var(--card-bg);
       width: 100%;
       max-width: 650px;
-      max-height: 85dvh; /* Bessere Anpassung an mobile Safari Leisten */
+      max-height: 85dvh;
       border-radius: 20px 20px 0 0;
       border: 1px solid var(--border);
       overflow-y: auto;
@@ -359,7 +361,7 @@
 
     .close-sheet {
       position: sticky;
-      top: 16px; /* Angepasster Abstand wegen mobiler Browser-Leiste */
+      top: 16px;
       float: right;
       margin-bottom: -34px;
       background: #21262d;
@@ -660,7 +662,7 @@
       <div class="search-row">
         <div class="search-box">
           <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="Resteküche (Zutaten)..." oninput="onSearchManual()">
+          <input type="text" id="searchInput" placeholder="Zutaten kombinieren..." oninput="onSearchManual()">
           <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" aria-label="Suche leeren">✖</button>
         </div>
         <button class="btn-add-compact" onclick="openAddModal()">
@@ -868,7 +870,6 @@
     let currentCategory = 'all';
     let currentSubFilter = null;
     let currentSubFilterLabel = '';
-    let selectedChip = null;
     let isNotesViewActive = false;
 
     function hasNoSide(r) {
@@ -971,33 +972,58 @@
       const searchInput = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearchBtn');
 
-      if (selectedChip === ingredient) {
-        selectedChip = null;
-        btn.classList.remove('active');
-        searchInput.value = '';
-        clearBtn.style.display = 'none';
+      btn.classList.toggle('active');
+
+      // Aktuelle Begriffe im Suchfeld auslesen
+      let terms = searchInput.value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
+
+      if (btn.classList.contains('active')) {
+        // Hinzufügen, falls nicht schon vorhanden
+        if (!terms.includes(ingredient)) terms.push(ingredient);
       } else {
-        document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedChip = ingredient;
-        searchInput.value = ingredient;
-        clearBtn.style.display = 'block';
+        // Entfernen, wenn der Chip deaktiviert wird
+        terms = terms.filter(t => t !== ingredient);
       }
+
+      // Suchfeld aktualisieren
+      searchInput.value = terms.join(' ');
+
+      // Das "X" ein- oder ausblenden
+      if (searchInput.value.trim().length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+
       filterRecipes();
     }
 
     function onSearchManual() {
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearchBtn');
+      const searchVal = input.value.toLowerCase();
       
-      if (input.value.length > 0) {
+      // Das "X" ein- oder ausblenden
+      if (searchVal.trim().length > 0) {
         clearBtn.style.display = 'block';
       } else {
         clearBtn.style.display = 'none';
       }
 
-      selectedChip = null;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      // Chips automatisch aktivieren/deaktivieren basierend auf dem getippten Text
+      document.querySelectorAll('.chip-btn').forEach(btn => {
+        const onclickText = btn.getAttribute('onclick');
+        const match = onclickText.match(/'([^']+)'/);
+        if (match) {
+          const ingredient = match[1];
+          if (searchVal.includes(ingredient)) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+
       filterRecipes();
     }
 
@@ -1005,10 +1031,11 @@
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearchBtn');
       
+      // Suchfeld leeren
       input.value = '';
       clearBtn.style.display = 'none';
       
-      selectedChip = null;
+      // Alle Chips deaktivieren
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
       
       filterRecipes();
@@ -1208,7 +1235,11 @@
     }
 
     function filterRecipes() {
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      // Suchbegriffe splitten (damit wir auch nach z.B. "hähnchen brokkoli" filtern können)
+      const searchTerms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
+
       const filtered = recipes.filter(r => {
         let matchesCategory = false;
         if (currentCategory === 'all') matchesCategory = true;
@@ -1227,7 +1258,17 @@
           matchesSubFilter = inTitle || inIngredients || inZutatenListe;
         }
 
-        const matchesSearch = search === '' || r.title.toLowerCase().includes(search) || (r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(search)));
+        // UND-Suche: ALLE gesuchten Wörter müssen im Rezept vorkommen
+        let matchesSearch = true;
+        if (searchTerms.length > 0) {
+          matchesSearch = searchTerms.every(term => {
+            const inTitle = (r.title || '').toLowerCase().includes(term);
+            const inIng = r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(term));
+            const inList = (r.zutatenListe || '').toLowerCase().includes(term);
+            return inTitle || inIng || inList;
+          });
+        }
+
         return matchesCategory && matchesSubFilter && matchesSearch;
       });
       renderList(filtered);
