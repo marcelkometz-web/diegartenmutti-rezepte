@@ -117,7 +117,7 @@
       color: #fb7185;
     }
 
-    /* Quick Links Bar (Garten-App, Read.txt, Impressum) */
+    /* Leiste mit Garten-App, Read.txt und Impressum */
     .quick-actions-bar {
       display: flex;
       justify-content: center;
@@ -1286,7 +1286,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
   <footer class="app-footer">
     <p>© DieGartenMutti86 | Entwickelt von Marcel Kometz</p>
     <p>
-      <a href="javascript:void(0)" onclick="openGartenApp()" style="font-weight: 800; margin-right: 12px;">🌱 Garten-App</a>
+      <a href="https://marcelkometz-web.github.io/Mona/" style="font-weight: 800; margin-right: 12px;">🌱 Garten-App</a>
       <a href="javascript:void(0)" onclick="openReadmeModal()" style="margin-right: 12px;">📄 Read.txt</a>
       <a href="javascript:void(0)" onclick="openImpressumModal()">⚖️ Impressum & Rechtliches</a>
     </p>
@@ -1315,17 +1315,11 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // =========================================
-    // WECHSEL ZUR GARTEN-APP
+    // DIREKTER WECHSEL ZUR GARTEN-APP
     // =========================================
     function openGartenApp() {
       try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
-      // Fallback: Prüft ob lokal oder auf GitHub Pages
-      if (window.location.hostname.includes('github.io')) {
-        // Falls euer Garten-Repo einen bestimmten Namen hat, kann der Pfad hier angepasst werden:
-        window.location.href = '../ramonas-garten-anzucht/'; 
-      } else {
-        window.location.href = '../ramonas-garten/index.html';
-      }
+      window.location.href = 'https://marcelkometz-web.github.io/Mona/';
     }
 
     // =========================================
