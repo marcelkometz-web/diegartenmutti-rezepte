@@ -6,7 +6,7 @@
   <title>DieGartenMutti86 – Rezepte & Notizen</title>
   <style>
     /* --- THEMES --- */
-    /* 1. Warm Dark (Neuer Standard - Organischer & wärmer) */
+    /* 1. Warm Dark (Standard) */
     :root {
       --bg: #1c1917;
       --card-bg: #292524;
@@ -35,7 +35,7 @@
       --nav-bg: rgba(255, 255, 255, 0.94);
     }
 
-    /* 3. Tech Dark (Altes Design) */
+    /* 3. Tech Dark */
     [data-theme="tech-dark"] {
       --bg: #0d1117;
       --card-bg: #161b22;
@@ -44,6 +44,19 @@
       --text-muted: #8b949e;
       --border: #30363d;
       --nav-bg: rgba(22, 27, 34, 0.94);
+    }
+
+    /* 4. Berry Pink (Rot/Pink) */
+    [data-theme="pink-red"] {
+      --bg: #2d111d;
+      --card-bg: #401426;
+      --card-sub: #5c1b37;
+      --accent: #e11d48;
+      --accent-glow: rgba(225, 29, 72, 0.2);
+      --text: #fff1f2;
+      --text-muted: #fda4af;
+      --border: #881337;
+      --nav-bg: rgba(64, 20, 38, 0.94);
     }
 
     * {
@@ -78,6 +91,13 @@
       display: inline-block;
     }
 
+    /* Besondere Farb-Anpassung für die Überschrift im Pink-Theme */
+    [data-theme="pink-red"] .brand-title {
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
     .brand-sub {
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -92,6 +112,10 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
+    }
+
+    [data-theme="pink-red"] .sync-status {
+      color: #fb7185;
     }
 
     .top-actions {
@@ -172,11 +196,20 @@
       gap: 6px;
       box-shadow: 0 4px 14px rgba(35, 134, 54, 0.3);
       white-space: nowrap;
+      transition: background 0.3s ease;
+    }
+
+    [data-theme="pink-red"] .btn-add-compact {
+      background: #be123c;
+      box-shadow: 0 4px 14px rgba(190, 18, 60, 0.3);
     }
 
     .btn-add-compact:active {
       background: #2ea043;
       transform: scale(0.96);
+    }
+    [data-theme="pink-red"] .btn-add-compact:active {
+      background: #9f1239;
     }
 
     .reste-chips {
@@ -213,6 +246,12 @@
       border-color: #3fb950;
       color: #3fb950;
     }
+    
+    [data-theme="pink-red"] .chip-btn.active {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
 
     .active-subfilter-badge {
       display: none;
@@ -225,6 +264,12 @@
       margin-bottom: 4px;
       font-size: 0.82rem;
       color: #3fb950;
+    }
+
+    [data-theme="pink-red"] .active-subfilter-badge {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid #f43f5e;
+      color: #f43f5e;
     }
 
     .active-subfilter-badge button {
@@ -251,6 +296,10 @@
       grid-column: 1 / -1; 
     }
 
+    [data-theme="pink-red"] .category-divider {
+      color: #f43f5e;
+    }
+
     .recipe-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -275,6 +324,10 @@
     .recipe-card:active {
       transform: scale(0.96);
       border-color: #3fb950;
+    }
+    
+    [data-theme="pink-red"] .recipe-card:active {
+      border-color: #f43f5e;
     }
 
     .card-icon {
@@ -347,6 +400,10 @@
 
     .card-quick-macros .prot {
       color: #3fb950;
+    }
+    
+    [data-theme="pink-red"] .card-quick-macros .prot {
+      color: #fb7185;
     }
 
     .modal-backdrop {
@@ -432,6 +489,10 @@
       max-width: 65%;
     }
 
+    [data-theme="pink-red"] .swap-row select {
+      color: #fb7185;
+    }
+
     .nutri-carousel {
       display: flex;
       gap: 8px;
@@ -482,9 +543,18 @@
       margin-bottom: 14px;
     }
 
+    [data-theme="pink-red"] .health-indicator {
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px dashed rgba(244, 63, 94, 0.35);
+    }
+
     .health-indicator .status-text {
       color: #3fb950;
       font-weight: 700;
+    }
+
+    [data-theme="pink-red"] .health-indicator .status-text {
+      color: #fb7185;
     }
 
     .section-title {
@@ -568,6 +638,10 @@
       gap: 6px;
       transition: all 0.2s;
     }
+    
+    [data-theme="pink-red"] .btn-save-small {
+      background: #be123c;
+    }
 
     .btn-save-small:active {
       transform: scale(0.95);
@@ -606,6 +680,12 @@
       font-weight: 700;
     }
 
+    [data-theme="pink-red"] .subfilter-card.all-btn {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
     .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px; }
     .form-group label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
     .form-group input, .form-group textarea, .form-group select { background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 12px; font-size: 0.88rem; outline: none; }
@@ -623,6 +703,10 @@
       width: 100%; 
       margin-top: 10px; 
       cursor: pointer; 
+    }
+
+    [data-theme="pink-red"] .btn-save {
+      background: #be123c;
     }
 
     .ki-box {
@@ -668,9 +752,16 @@
       user-select: none;
     }
 
+    [data-theme="pink-red"] .fab-refresh {
+      background: #be123c;
+    }
+
     .fab-refresh:active {
       transform: scale(0.9);
       background: #2ea043;
+    }
+    [data-theme="pink-red"] .fab-refresh:active {
+      background: #9f1239;
     }
 
     .fab-refresh.spin span {
@@ -710,16 +801,25 @@
     .nav-btn .icon { font-size: 1.25rem; }
     .nav-btn.active { color: #3fb950; font-weight: 700; }
 
+    [data-theme="pink-red"] .nav-btn.active {
+      color: #fb7185;
+    }
+
     /* --- NOTIZEN KLASSEN --- */
     .notes-container { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.2s ease-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .note-create-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    
     .note-create-title { font-size: 1.05rem; margin-bottom: 12px; color: #3fb950; display: flex; align-items: center; gap: 6px; }
+    [data-theme="pink-red"] .note-create-title { color: #fb7185; }
+
     .note-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
     .note-select, .note-input-custom, .note-input-main { background: var(--card-sub); color: var(--text); border-radius: 8px; outline: none; border: 1px solid var(--border); }
     .note-select { flex: 1; padding: 10px 12px; font-weight: 600; }
     .note-input-custom { display: none; flex: 1; border-color: #3fb950; padding: 10px 12px; }
+    [data-theme="pink-red"] .note-input-custom { border-color: #fb7185; }
+    
     .note-input-main-wrapper { margin-bottom: 10px; }
     .note-input-main { width: 100%; padding: 11px 12px; font-size: 0.95rem; }
     .btn-save-note { margin-top: 0; padding: 11px; font-size: 0.95rem; width: 100%; }
@@ -744,7 +844,7 @@
     .settings-row:last-child { border-bottom: none; }
     .settings-label { font-size: 0.9rem; color: var(--text); font-weight: 600; }
     .settings-select { background: var(--card-sub); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; outline: none; font-weight: bold; }
-    .contact-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #21262d; border: 1px solid var(--border); color: var(--text); text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: transform 0.2s; }
+    .contact-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #21262d; border: 1px solid var(--border); color: #fff; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: transform 0.2s; }
     .contact-btn:active { transform: scale(0.96); }
   </style>
 </head>
@@ -823,7 +923,7 @@
     <div id="notesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
 
-  <!-- EINSTELLUNGEN-BEREICH (NEU) -->
+  <!-- EINSTELLUNGEN-BEREICH -->
   <div id="settingsSection" class="settings-container">
     
     <div class="settings-card">
@@ -832,6 +932,7 @@
         <span class="settings-label">Farbschema wählen</span>
         <select class="settings-select" id="themeSelect" onchange="changeTheme(this.value)">
           <option value="warm-dark">🌿 Warm Dark (Standard)</option>
+          <option value="pink-red">🌺 Berry Pink</option>
           <option value="light">☀️ Light Mode</option>
           <option value="tech-dark">💻 Tech Dark</option>
         </select>
@@ -844,7 +945,7 @@
         Gibt es einen Fehler oder hast du eine neue Idee für DieGartenMutti86? Schreib dem Admin (Matze) direkt eine Nachricht.
       </p>
       <!-- HIER E-MAIL EINTRAGEN: Ersetze "deine.email@hier-eintragen.de" durch deine echte Adresse -->
-      <a href="mailto:marcelkometz@icloud.com?subject=Feedback:%20DieGartenMutti86%20App" class="contact-btn">
+      <a href="mailto:deine.email@hier-eintragen.de?subject=Feedback:%20DieGartenMutti86%20App" class="contact-btn">
         📧 Matze anschreiben
       </a>
     </div>
@@ -861,7 +962,7 @@
   <div class="modal-backdrop" id="subfilterBackdrop" onclick="closeSubfilterModal(event)">
     <div class="modal-sheet" id="subfilterSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSubfilterModalForce()">&times;</button>
-      <h2 id="subfilterTitle" style="font-size: 1.25rem; color: #3fb950; margin-bottom: 6px;">Kategorie wählen</h2>
+      <h2 id="subfilterTitle" style="font-size: 1.25rem; color: var(--text); margin-bottom: 6px;">Kategorie wählen</h2>
       <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Wähle eine Zutat oder zeige alle Gerichte an:</p>
       <div class="subfilter-grid" id="subfilterGrid"></div>
     </div>
@@ -871,7 +972,7 @@
   <div class="modal-backdrop" id="addBackdrop" onclick="closeAddModal(event)">
     <div class="modal-sheet" id="addSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeAddModalForce()">&times;</button>
-      <h2 style="font-size: 1.2rem; margin-bottom: 14px; color: #3fb950;">Neues Rezept anlegen</h2>
+      <h2 style="font-size: 1.2rem; margin-bottom: 14px; color: var(--text);">Neues Rezept anlegen</h2>
       
       <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
         
@@ -943,7 +1044,6 @@
     <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)"><span class="icon">⚖️</span><span>Fettarm</span></button>
     <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)"><span class="icon">🌪️</span><span>Airfryer</span></button>
     <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
-    <!-- NEU: Einstellungs-Button -->
     <button class="nav-btn" id="navBtnSettings" onclick="openSettingsView(this)"><span class="icon">⚙️</span><span>Setup</span></button>
   </nav>
 
@@ -1022,7 +1122,7 @@
 
     function applyTheme(themeName) {
       if (themeName === 'warm-dark') {
-        document.documentElement.removeAttribute('data-theme'); // Nutzt root
+        document.documentElement.removeAttribute('data-theme');
       } else {
         document.documentElement.setAttribute('data-theme', themeName);
       }
@@ -1354,11 +1454,11 @@
         if (rec) rec.tipps = newTipps;
         btn.innerHTML = '✅ Gespeichert!';
         btn.style.background = '#2ea043';
-        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = '#238636'; }, 2000);
+        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = ''; }, 2000);
       } catch (err) {
         btn.innerHTML = '❌ Fehler';
         btn.style.background = '#da3633';
-        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = '#238636'; }, 2000);
+        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = ''; }, 2000);
       }
     }
 
@@ -1605,7 +1705,7 @@
     }).subscribe();
 
     document.addEventListener('DOMContentLoaded', () => {
-       initTheme(); // Lade gespeichertes Theme beim Start
+       initTheme();
        loadRecipesFromSupabase();
     });
 
