@@ -91,7 +91,6 @@
       display: inline-block;
     }
 
-    /* Besondere Farb-Anpassung für die Überschrift im Pink-Theme */
     [data-theme="pink-red"] .brand-title {
       background: linear-gradient(135deg, #f43f5e, #be123c);
       -webkit-background-clip: text;
@@ -330,6 +329,39 @@
       border-color: #f43f5e;
     }
 
+    /* NEU: Favoriten-Button auf der Karte */
+    .fav-btn-card {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      border: none;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: transform 0.2s, background 0.2s;
+      z-index: 10;
+    }
+    
+    .fav-btn-card:active {
+      transform: scale(0.85);
+    }
+    
+    .fav-btn-card.is-fav {
+      background: rgba(255, 255, 255, 0.9);
+      color: #e11d48;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    [data-theme="light"] .fav-btn-card {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
     .card-icon {
       font-size: 2.2rem;
       background: var(--card-sub);
@@ -355,6 +387,7 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       margin-bottom: 8px;
+      padding: 0 4px;
     }
 
     .card-badges {
@@ -564,6 +597,7 @@
       color: var(--text);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 6px;
     }
 
@@ -576,6 +610,53 @@
       line-height: 1.6;
       color: var(--text);
       white-space: pre-line;
+    }
+
+    /* NEU: WhatsApp Button */
+    .whatsapp-btn {
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+    }
+    .whatsapp-btn:active {
+      transform: scale(0.96);
+      background: #1da851;
+    }
+
+    /* NEU: In App-Notizen Button */
+    .add-notes-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      font-size: 0.9rem;
+    }
+    .add-notes-btn:active {
+      transform: scale(0.96);
+      background: var(--card-sub);
     }
 
     .step-section {
@@ -836,6 +917,16 @@
     .note-btn-action { background: var(--card-sub); border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; }
     .note-btn-action:active { transform: scale(0.92); background: var(--border); }
 
+    /* --- ZYKLUS PLANER KLASSEN (NEU) --- */
+    .cycle-container { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.2s ease-out; }
+    .phase-indicator { background: var(--card-sub); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 14px; text-align: center; }
+    .phase-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; }
+    .phase-menstruation { background: rgba(225, 29, 72, 0.15); color: #e11d48; border: 1px solid rgba(225, 29, 72, 0.3); }
+    .phase-follikel { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .phase-eisprung { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .phase-luteal { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .phase-text { font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+
     /* --- EINSTELLUNGEN KLASSEN --- */
     .settings-container { display: none; flex-direction: column; gap: 16px; animation: fadeIn 0.2s ease-out; }
     .settings-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
@@ -891,6 +982,37 @@
     <div class="recipe-list" id="recipeList"></div>
   </div>
 
+  <!-- ZYKLUS PLANER BEREICH (NEU) -->
+  <div id="cycleSection" class="cycle-container">
+    <div class="note-create-card">
+      <h3 class="note-create-title">🩸 Zyklus & Ernährung</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+        Passe deine Ernährung an deine Zyklusphase an. Das hilft gegen Heißhunger und unterstützt deinen Körper ideal.
+      </p>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Letzte Periode (1. Tag)</label>
+          <input type="date" id="cycleStartDate" onchange="calculateCycle()">
+        </div>
+        <div class="form-group">
+          <label>Zykluslänge (Tage)</label>
+          <input type="number" id="cycleLength" value="28" onchange="calculateCycle()">
+        </div>
+      </div>
+
+      <div id="currentPhaseInfo" style="display: none;">
+        <div class="phase-indicator">
+          <div id="phaseBadge" class="phase-badge">Phase</div>
+          <div id="phaseText" class="phase-text">Text...</div>
+        </div>
+        <button class="btn-save btn-save-note" style="margin-top: 14px;" onclick="filterRecipesForCycle()">
+          ✨ Passende Rezepte anzeigen
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- NOTIZEN-BEREICH -->
   <div id="notesSection" class="notes-container">
     <div class="note-create-card">
@@ -944,7 +1066,6 @@
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
         Gibt es einen Fehler oder hast du eine neue Idee für DieGartenMutti86? Schreib dem Admin (Matze) direkt eine Nachricht.
       </p>
-      <!-- HIER E-MAIL EINTRAGEN: Ersetze "deine.email@hier-eintragen.de" durch deine echte Adresse -->
       <a href="mailto:deine.email@hier-eintragen.de?subject=Feedback:%20DieGartenMutti86%20App" class="contact-btn">
         📧 Matze anschreiben
       </a>
@@ -1035,6 +1156,8 @@
 
   <nav class="bottom-bar">
     <button class="nav-btn active" id="nav-btn-all" onclick="handleNavCategory('all', this)"><span class="icon">✨</span><span>Alle</span></button>
+    <!-- NEU: Favoriten Button -->
+    <button class="nav-btn" id="nav-btn-favoriten" onclick="handleNavCategory('favoriten', this)"><span class="icon">❤️</span><span>Favoriten</span></button>
     <button class="nav-btn" id="nav-btn-fleisch" onclick="handleNavCategory('fleisch', this)"><span class="icon">🍗</span><span>Fleisch</span></button>
     <button class="nav-btn" id="nav-btn-gemuese" onclick="handleNavCategory('gemuese', this)"><span class="icon">🥦</span><span>Gemüse</span></button>
     <button class="nav-btn" id="nav-btn-dessert" onclick="handleNavCategory('dessert', this)"><span class="icon">🧁</span><span>Dessert</span></button>
@@ -1043,6 +1166,8 @@
     <button class="nav-btn" id="nav-btn-stoffwechsel" onclick="handleNavCategory('stoffwechsel', this)"><span class="icon">⚡</span><span>Stoffwechsel</span></button>
     <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)"><span class="icon">⚖️</span><span>Fettarm</span></button>
     <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)"><span class="icon">🌪️</span><span>Airfryer</span></button>
+    <!-- NEU: Zyklus Planer -->
+    <button class="nav-btn" id="navBtnCycle" onclick="openCycleView(this)"><span class="icon">🩸</span><span>Zyklus</span></button>
     <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
     <button class="nav-btn" id="navBtnSettings" onclick="openSettingsView(this)"><span class="icon">⚙️</span><span>Setup</span></button>
   </nav>
@@ -1054,6 +1179,8 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let searchTimeout = null; 
+    let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || []; // NEU: Favoriten Speicher
+    let currentCycleCategory = null; // Für den Menstruationsplaner-Filter
 
     const sideOptions = {
       "protein_nudeln": { name: "Protein-Nudeln", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, satFat: 0.3, fiber: 6.5, prot: 14.0, salt: 0.02, gl: "Niedrig", insulin: "Stabil (Optimal)" },
@@ -1067,6 +1194,7 @@
     };
 
     const CATEGORY_NAMES = {
+      'favoriten': { label: 'Deine Favoriten', icon: '❤️' },
       'fleisch': { label: 'Fleischgerichte', icon: '🍗' },
       'gemuese': { label: 'Gemüse & Pfannen', icon: '🥦' },
       'dessert': { label: 'Desserts & Snacks', icon: '🧁' },
@@ -1128,32 +1256,117 @@
       }
     }
 
+    // --- FAVORITEN LOGIK ---
+    function toggleFavorite(id, event) {
+      event.stopPropagation(); // Verhindert, dass das Rezept geöffnet wird
+      const index = favorites.indexOf(String(id));
+      if (index === -1) {
+        favorites.push(String(id));
+      } else {
+        favorites.splice(index, 1);
+      }
+      localStorage.setItem('gartenMuttiFavs', JSON.stringify(favorites));
+      filterRecipes();
+      
+      // Update Button visuell falls im Modal
+      const modalBtn = document.getElementById('modalFavBtn');
+      if(modalBtn) {
+        modalBtn.innerText = favorites.includes(String(id)) ? '❤️ Favorit' : '🤍 Merken';
+      }
+    }
+
+    // --- ZYKLUS PLANER LOGIK ---
+    function initCycle() {
+      const savedDate = localStorage.getItem('gartenMuttiCycleDate');
+      const savedLength = localStorage.getItem('gartenMuttiCycleLength') || '28';
+      
+      if(savedDate) document.getElementById('cycleStartDate').value = savedDate;
+      document.getElementById('cycleLength').value = savedLength;
+      
+      if(savedDate) calculateCycle();
+    }
+
+    function calculateCycle() {
+      const dateVal = document.getElementById('cycleStartDate').value;
+      const lengthVal = parseInt(document.getElementById('cycleLength').value);
+      if(!dateVal || !lengthVal) return;
+
+      localStorage.setItem('gartenMuttiCycleDate', dateVal);
+      localStorage.setItem('gartenMuttiCycleLength', lengthVal);
+
+      const startDate = new Date(dateVal);
+      const today = new Date();
+      const diffTime = Math.abs(today - startDate);
+      let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Modulo für aktuellen Zyklustag (falls mehr als 1 Zyklus vergangen ist)
+      let cycleDay = (diffDays % lengthVal) + 1;
+
+      const badge = document.getElementById('phaseBadge');
+      const text = document.getElementById('phaseText');
+      const infoBox = document.getElementById('currentPhaseInfo');
+
+      infoBox.style.display = 'block';
+
+      if (cycleDay >= 1 && cycleDay <= 5) {
+        badge.className = 'phase-badge phase-menstruation';
+        badge.innerText = `🩸 Tag ${cycleDay}: Menstruation`;
+        text.innerText = "Dein Körper braucht Eisen und Wärme. Perfekt sind jetzt Fleischgerichte, wärmende Gemüsepfannen und Gerichte zur Fettverbrennung (die heizen den Körper gut ein).";
+        currentCycleCategory = ['fleisch', 'gemuese', 'fettverbrennung'];
+      } 
+      else if (cycleDay >= 6 && cycleDay <= 13) {
+        badge.className = 'phase-badge phase-follikel';
+        badge.innerText = `🌱 Tag ${cycleDay}: Follikelphase`;
+        text.innerText = "Energielevel steigt! Leichte, frische Kost tut jetzt gut. Setze auf Low-Carb, fettarme Gerichte und viel knackiges Gemüse.";
+        currentCycleCategory = ['lowcarb', 'fettarm', 'gemuese'];
+      }
+      else if (cycleDay >= 14 && cycleDay <= 16) {
+        badge.className = 'phase-badge phase-eisprung';
+        badge.innerText = `🔥 Tag ${cycleDay}: Eisprung-Phase`;
+        text.innerText = "Volle Energie! Unterstütze deinen aktiven Stoffwechsel. Gerichte für Stoffwechsel und Fettverbrennung sind jetzt ideal.";
+        currentCycleCategory = ['stoffwechsel', 'fettverbrennung'];
+      }
+      else {
+        badge.className = 'phase-badge phase-luteal';
+        badge.innerText = `🌙 Tag ${cycleDay}: Lutealphase`;
+        text.innerText = "Dein Körper braucht mehr Energie und Heißhunger kann entstehen. Gesunde komplexe Kohlenhydrate, Süßes (Low-Carb Desserts) beugen Cravings vor.";
+        currentCycleCategory = ['dessert', 'andere'];
+      }
+    }
+
+    function filterRecipesForCycle() {
+      // Wir switchen zurück zur Rezept-Ansicht und setzen einen Special-Filter
+      document.getElementById('cycleSection').style.display = 'none';
+      document.getElementById('recipesSection').style.display = 'block';
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('nav-btn-all').classList.add('active'); // Visuell auf Alle, aber intern gefiltert
+      
+      currentCategory = 'cycle-mode';
+      currentSubFilter = null;
+      document.getElementById('subfilterText').innerText = `Gefiltert: Zyklus-Empfehlung`; 
+      document.getElementById('subfilterBadge').style.display = 'flex';
+      
+      filterRecipes();
+    }
+
+
     // --- KI GENERATOR ---
     async function generateAiRecipe() {
       const prompt = document.getElementById('aiPrompt').value.trim();
-      
-      if(!prompt) {
-        alert('Bitte gib im Textfeld an, worauf du Hunger hast (z.B. "Zucchini mit Hack")!');
-        return;
-      }
-
+      if(!prompt) { alert('Bitte gib im Textfeld an, worauf du Hunger hast (z.B. "Zucchini mit Hack")!'); return; }
       const btn = document.getElementById('btnGenerateAi');
       const originalText = btn.innerHTML;
       btn.innerHTML = '⏳ KI denkt nach... (ca. 5 Sek)';
       btn.disabled = true;
       btn.style.background = '#6e7681';
-
       try {
         const { data, error } = await supabaseClient.rpc('generiere_rezept_ki', { user_prompt: prompt });
         if (error) throw error;
-
         const apiData = JSON.parse(data);
         if(apiData.error) throw new Error(apiData.error.message);
-
         let rawJson = apiData.candidates[0].content.parts[0].text;
         rawJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
         const recipe = JSON.parse(rawJson);
-
         document.getElementById('newTitle').value = recipe.title || '';
         document.getElementById('newEmoji').value = recipe.emoji || '🍲';
         document.getElementById('newCategory').value = recipe.category || 'lowcarb';
@@ -1169,26 +1382,16 @@
         document.getElementById('newOven').value = recipe.oven_step || '';
         document.getElementById('newAirfryerStep').value = recipe.airfryer_step || '';
         document.getElementById('newTipps').value = recipe.tipps || '';
-
         btn.innerHTML = '✅ Rezept erfolgreich ausgefüllt!';
         btn.style.background = '#238636';
-        setTimeout(() => { 
-          btn.innerHTML = originalText; 
-          btn.disabled = false; 
-          btn.style.background = '#a371f7'; 
-        }, 3000);
-
+        setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; btn.style.background = '#a371f7'; }, 3000);
       } catch (err) {
         console.error('KI Fehler:', err);
         alert('Fehler bei der Generierung. Versuche es noch einmal oder formuliere es etwas anders.');
         btn.innerHTML = '❌ Fehler. Nochmal versuchen';
         btn.disabled = false;
         btn.style.background = '#da3633';
-        setTimeout(() => { 
-          btn.innerHTML = originalText; 
-          btn.disabled = false;
-          btn.style.background = '#a371f7'; 
-        }, 3000);
+        setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; btn.style.background = '#a371f7'; }, 3000);
       }
     }
 
@@ -1212,11 +1415,9 @@
     async function loadRecipesFromSupabase() {
       const status = document.getElementById('syncStatus');
       status.innerText = '⏳ Lade Rezepte...';
-
       try {
         const { data, error } = await supabaseClient.from('Rezepte').select('*');
         if (error) throw error;
-
         if (data && data.length > 0) {
           recipes = data.map(item => {
             let cat = Array.isArray(item.category) ? item.category : (item.category ? [item.category] : []);
@@ -1276,14 +1477,10 @@
       const sideKey = tempSide || recipe.selectedSide;
       const side = sideOptions[sideKey] || sideOptions["protein_nudeln"];
       return {
-        kcal: Math.round(recipe.baseNutri.kcal + side.kcal),
-        kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
-        sugar: ((recipe.baseNutri.sugar || 0) + side.sugar).toFixed(1),
-        fat: (recipe.baseNutri.fat + side.fat).toFixed(1),
-        satFat: ((recipe.baseNutri.satFat || 0) + side.satFat).toFixed(1),
-        fiber: ((recipe.baseNutri.fiber || 0) + side.fiber).toFixed(1),
-        prot: (recipe.baseNutri.prot + side.prot).toFixed(1),
-        salt: ((recipe.baseNutri.salt || 0) + side.salt).toFixed(2),
+        kcal: Math.round(recipe.baseNutri.kcal + side.kcal), kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
+        sugar: ((recipe.baseNutri.sugar || 0) + side.sugar).toFixed(1), fat: (recipe.baseNutri.fat + side.fat).toFixed(1),
+        satFat: ((recipe.baseNutri.satFat || 0) + side.satFat).toFixed(1), fiber: ((recipe.baseNutri.fiber || 0) + side.fiber).toFixed(1),
+        prot: (recipe.baseNutri.prot + side.prot).toFixed(1), salt: ((recipe.baseNutri.salt || 0) + side.salt).toFixed(2),
         insulin: side.insulin, gl: side.gl
       };
     }
@@ -1337,8 +1534,13 @@
 
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r);
+      const isFav = favorites.includes(String(r.id));
+      
       return `
         <div class="recipe-card" onclick="openDetails('${r.id}')">
+          <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${r.id}', event)">
+            ${isFav ? '❤️' : '🤍'}
+          </button>
           <div class="card-icon">${r.emoji || '🍲'}</div>
           <div class="card-meta">
             <h3>${r.title}</h3>
@@ -1358,16 +1560,26 @@
     function renderList(list) {
       const container = document.getElementById('recipeList');
       container.innerHTML = '';
+      
+      if (currentCategory === 'favoriten' && list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Noch keine Favoriten markiert (❤️).</div>`;
+        return;
+      }
+      
       if (list.length === 0) {
         container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Keine passenden Rezepte gefunden.</div>`;
         return;
       }
+      
       if (currentCategory !== 'all' || currentSubFilter) {
         container.innerHTML = list.map(r => buildCardHtml(r)).join('');
         return;
       }
-      const groups = { 'fleisch': [], 'gemuese': [], 'dessert': [], 'lowcarb': [], 'fettverbrennung': [], 'stoffwechsel': [], 'fettarm': [], 'andere': [] };
+      
+      const groups = { 'favoriten': [], 'fleisch': [], 'gemuese': [], 'dessert': [], 'lowcarb': [], 'fettverbrennung': [], 'stoffwechsel': [], 'fettarm': [], 'andere': [] };
       list.forEach(r => {
+        if (favorites.includes(String(r.id))) groups['favoriten'].push(r);
+        
         if (checkIsDessert(r)) groups['dessert'].push(r);
         else if (r.category && r.category.some(c => String(c).toLowerCase().includes('fleisch'))) groups['fleisch'].push(r);
         else if (r.category && r.category.some(c => String(c).toLowerCase().includes('gemuese'))) groups['gemuese'].push(r);
@@ -1379,7 +1591,7 @@
       });
       let html = '';
       for (const [key, items] of Object.entries(groups)) {
-        if (items.length > 0) {
+        if (items.length > 0 && key !== 'favoriten') { // Favoriten oben ignorieren bei "Alle", um Duplikate im Stream zu sparen (optional)
           const cfg = CATEGORY_NAMES[key] || CATEGORY_NAMES['andere'];
           html += `<div class="category-divider">${cfg.icon} ${cfg.label} (${items.length})</div>`;
           html += items.map(r => buildCardHtml(r)).join('');
@@ -1388,12 +1600,62 @@
       container.innerHTML = html;
     }
 
+    // --- AUTOMATISCHE EINKAUFSLISTEN & TEILEN ---
+    function shareWhatsApp(recipeId) {
+      const r = recipes.find(x => String(x.id) === String(recipeId));
+      if (!r) return;
+      
+      let text = `🛒 *Einkaufsliste: ${r.title}*\n\n`;
+      let lines = (r.zutatenListe || '').split('\n');
+      
+      lines.forEach(line => {
+        let cleanLine = line.replace(/•/g, '').trim(); // Entfernt alte Bullets
+        if(cleanLine) text += `▫️ ${cleanLine}\n`;
+      });
+      
+      text += `\n_Generiert mit DieGartenMutti86_`;
+      
+      let url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    async function addRecipeToAppNotes(recipeId, btn) {
+      const r = recipes.find(x => String(x.id) === String(recipeId));
+      if (!r) return;
+      
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Speichere...';
+      
+      let content = `🛒 Einkauf für ${r.title}:\n`;
+      let lines = (r.zutatenListe || '').split('\n');
+      lines.forEach(line => {
+        let cleanLine = line.replace(/•/g, '').trim();
+        if(cleanLine) content += `- ${cleanLine}\n`;
+      });
+
+      try {
+        const { error } = await supabaseClient.from('Notizen').insert([{ author: 'App Bot', content: content.trim(), is_done: false }]);
+        if (error) throw error;
+        
+        btn.innerHTML = '✅ In Notizen gespeichert!';
+        setTimeout(() => { btn.innerHTML = originalText; }, 2500);
+        
+        if (isNotesViewActive) loadNotesFromSupabase();
+      } catch (err) { 
+        console.error('Fehler beim Speichern:', err); 
+        btn.innerHTML = '❌ Fehler';
+        setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+      }
+    }
+
     function openDetails(recipeId, tempSide = null) {
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       const withoutSide = hasNoSide(r);
       const activeSide = tempSide || r.selectedSide;
       const total = calculateTotalNutri(r, activeSide);
+      const isFav = favorites.includes(String(r.id));
+      
       let sideSelectHtml = '';
       if (!withoutSide) {
         sideSelectHtml = `
@@ -1414,7 +1676,16 @@
           ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer tauglich</span>' : ''}
         </div>
         <h2 style="font-size: 1.35rem; margin-bottom: 16px; text-align:center; color: var(--text);">${r.title}</h2>
+        
+        <!-- Favoriten Button oben in den Details -->
+        <div style="display:flex; justify-content:center; margin-bottom: 16px;">
+          <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0;" onclick="toggleFavorite('${r.id}', event)">
+            ${isFav ? '❤️ Favorit' : '🤍 Merken'}
+          </button>
+        </div>
+
         ${sideSelectHtml}
+        
         <div class="nutri-carousel">
           <div class="nutri-pill"><span>Kcal</span><strong>${total.kcal}</strong></div>
           <div class="nutri-pill"><span style="color:#3fb950;">Eiweiß</span><strong style="color:#3fb950;">${total.prot} g</strong></div>
@@ -1423,17 +1694,25 @@
           <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
           <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
         </div>
+        
         <div class="health-indicator">
           <span style="color: var(--text-muted);">🩺 Blutzucker-Reaktion:</span>
           <span class="status-text">${total.insulin}</span>
         </div>
+        
         <div class="section-title">🛒 Zutatenliste:</div>
         <div class="ingredients-box">${r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.'}</div>
-        <div class="section-title">👩‍🍳 Zubereitung:</div>
+        
+        <!-- NEU: Einkaufslisten Buttons -->
+        <button class="whatsapp-btn" onclick="shareWhatsApp('${r.id}')">📲 Liste per WhatsApp senden</button>
+        <button class="add-notes-btn" onclick="addRecipeToAppNotes('${r.id}', this)">📝 Zutaten in App-Notizen sichern</button>
+
+        <div class="section-title" style="margin-top: 16px;">👩‍🍳 Zubereitung:</div>
         <div class="step-section"><h4>🔪 1. Vorbereitung</h4><p>${r.prep}</p></div>
         ${r.stoveStep ? `<div class="step-section"><h4>🍳 2. Auf dem Herd</h4><p>${r.stoveStep}</p></div>` : ''}
         ${r.ovenStep ? `<div class="step-section"><h4>🔥 3. Im Backofen</h4><p>${r.ovenStep}</p></div>` : ''}
         ${r.airfryerStep ? `<div class="step-section" style="border-left: 3px solid #d29922;"><h4 style="color: #d29922;">🌪️ 4. Airfryer</h4><p>${r.airfryerStep}</p></div>` : ''}
+        
         <div class="section-title" style="margin-top: 20px;">💡 Meine Notizen & Tipps:</div>
         <textarea id="editTipps-${r.id}" class="editable-tipps" placeholder="Was möchtest du beim nächsten Mal anders machen? ...">${r.tipps || ''}</textarea>
         <button class="btn-save-small" onclick="saveTipps('${r.id}', this)">💾 Notiz speichern</button>
@@ -1481,6 +1760,7 @@
       document.getElementById('recipesSection').style.display = 'block';
       document.getElementById('notesSection').style.display = 'none';
       document.getElementById('settingsSection').style.display = 'none';
+      document.getElementById('cycleSection').style.display = 'none';
       
       if (SUB_FILTERS_CONFIG[cat]) { openSubfilterModal(cat, btn); return; }
       currentSubFilter = null;
@@ -1502,6 +1782,7 @@
       
       document.getElementById('recipesSection').style.display = 'none';
       document.getElementById('settingsSection').style.display = 'none';
+      document.getElementById('cycleSection').style.display = 'none';
       document.getElementById('notesSection').style.display = 'flex';
       
       loadNotesFromSupabase();
@@ -1514,7 +1795,21 @@
       
       document.getElementById('recipesSection').style.display = 'none';
       document.getElementById('notesSection').style.display = 'none';
+      document.getElementById('cycleSection').style.display = 'none';
       document.getElementById('settingsSection').style.display = 'flex';
+    }
+
+    function openCycleView(btn) {
+      isNotesViewActive = false;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      document.getElementById('recipesSection').style.display = 'none';
+      document.getElementById('notesSection').style.display = 'none';
+      document.getElementById('settingsSection').style.display = 'none';
+      document.getElementById('cycleSection').style.display = 'flex';
+      
+      initCycle(); // Lädt Daten direkt
     }
 
     function openSubfilterModal(cat, btn) {
@@ -1546,13 +1841,23 @@
 
     function clearSubFilter() {
       currentSubFilter = null; currentSubFilterLabel = '';
+      if(currentCategory === 'cycle-mode') {
+        currentCategory = 'all'; // Reset Zyklus-Filter wenn man das X klickt
+      }
       updateSubfilterBadge(); filterRecipes();
     }
 
     function updateSubfilterBadge() {
       const badge = document.getElementById('subfilterBadge');
       const text = document.getElementById('subfilterText');
-      if (currentSubFilter) { text.innerText = `Gefiltert: ${currentSubFilterLabel}`; badge.style.display = 'flex'; } 
+      if (currentSubFilter) { 
+        text.innerText = `Gefiltert: ${currentSubFilterLabel}`; 
+        badge.style.display = 'flex'; 
+      } 
+      else if (currentCategory === 'cycle-mode') {
+        text.innerText = `Gefiltert: Zyklus-Empfehlung`; 
+        badge.style.display = 'flex'; 
+      }
       else { badge.style.display = 'none'; }
     }
 
@@ -1561,13 +1866,26 @@
       const searchTerms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
       const filtered = recipes.filter(r => {
         let matchesCategory = false;
+        
         if (currentCategory === 'all') matchesCategory = true;
+        else if (currentCategory === 'favoriten') matchesCategory = favorites.includes(String(r.id));
         else if (currentCategory === 'airfryer') matchesCategory = r.airfryer === true;
         else if (currentCategory === 'dessert') matchesCategory = checkIsDessert(r);
+        else if (currentCategory === 'cycle-mode') {
+           // Prüft ob die Rezept-Kategorie eine der empfohlenen Kategorien des Zyklus enthält
+           if(currentCycleCategory) {
+              if (Array.isArray(r.category)) {
+                matchesCategory = r.category.some(c => currentCycleCategory.some(cc => String(c).toLowerCase().includes(cc)));
+              }
+           } else {
+             matchesCategory = true; // Fallback falls kein Zyklus gesetzt
+           }
+        }
         else {
           if (Array.isArray(r.category)) matchesCategory = r.category.some(c => String(c).toLowerCase().includes(currentCategory));
           else if (typeof r.category === 'string') matchesCategory = r.category.toLowerCase().includes(currentCategory);
         }
+        
         let matchesSubFilter = true;
         if (currentSubFilter) {
           const inTitle = (r.title || '').toLowerCase().includes(currentSubFilter);
@@ -1575,6 +1893,7 @@
           const inZutatenListe = (r.zutatenListe || '').toLowerCase().includes(currentSubFilter);
           matchesSubFilter = inTitle || inIngredients || inZutatenListe;
         }
+        
         let matchesSearch = true;
         if (searchTerms.length > 0) {
           matchesSearch = searchTerms.every(term => {
@@ -1639,14 +1958,19 @@
       }
       container.innerHTML = notes.map(note => {
         const isRamona = (note.author || '').toLowerCase().includes('ramona');
-        const badgeClass = isRamona ? 'note-author-ramona' : 'note-author-matze';
-        const badgeIcon = isRamona ? '🌸' : '🔧';
+        const isApp = (note.author || '').toLowerCase().includes('app');
+        const badgeClass = isRamona ? 'note-author-ramona' : (isApp ? '' : 'note-author-matze');
+        const badgeIcon = isRamona ? '🌸' : (isApp ? '🤖' : '🔧');
         const isDone = !!note.is_done;
+        
+        // App Notizen (Einkaufsliste) machen wir etwas dezenter in der Farbe
+        const style = isApp ? `background: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46,160,67,0.3);` : '';
+
         return `
           <div class="note-card ${isDone ? 'done' : ''}">
             <div class="note-content">
-              <span class="note-author-badge ${badgeClass}">${badgeIcon} ${escapeHtml(note.author)}</span>
-              <div class="note-text">${escapeHtml(note.content)}</div>
+              <span class="note-author-badge ${badgeClass}" style="${style}">${badgeIcon} ${escapeHtml(note.author)}</span>
+              <div class="note-text" style="${isApp ? 'white-space: pre-line;' : ''}">${escapeHtml(note.content)}</div>
             </div>
             <div class="note-actions">
               <button class="note-btn-action" title="${isDone ? 'Wieder öffnen' : 'Erledigt'}" onclick="toggleNote(${note.id}, ${!isDone})">${isDone ? '↩️' : '✅'}</button>
