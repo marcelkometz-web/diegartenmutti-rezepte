@@ -77,7 +77,7 @@
     }
 
     header {
-      padding: 6px 0 14px 0;
+      padding: 6px 0 10px 0;
       text-align: center;
     }
 
@@ -115,6 +115,48 @@
 
     [data-theme="pink-red"] .sync-status {
       color: #fb7185;
+    }
+
+    /* Quick Links Bar (Garten-App, Read.txt, Impressum) */
+    .quick-actions-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .quick-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .quick-btn.highlight {
+      background: rgba(46, 160, 67, 0.15);
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    [data-theme="pink-red"] .quick-btn.highlight {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    .quick-btn:active {
+      transform: scale(0.96);
     }
 
     .top-actions {
@@ -329,7 +371,6 @@
       border-color: #f43f5e;
     }
 
-    /* NEU: Favoriten-Button auf der Karte */
     .fav-btn-card {
       position: absolute;
       top: 8px;
@@ -612,7 +653,6 @@
       white-space: pre-line;
     }
 
-    /* NEU: WhatsApp Button */
     .whatsapp-btn {
       background: #25D366;
       color: #fff;
@@ -636,7 +676,6 @@
       background: #1da851;
     }
 
-    /* NEU: In App-Notizen Button */
     .add-notes-btn {
       background: var(--card-bg);
       color: var(--text);
@@ -917,7 +956,7 @@
     .note-btn-action { background: var(--card-sub); border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; }
     .note-btn-action:active { transform: scale(0.92); background: var(--border); }
 
-    /* --- ZYKLUS PLANER KLASSEN (NEU) --- */
+    /* --- ZYKLUS PLANER KLASSEN --- */
     .cycle-container { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.2s ease-out; }
     .phase-indicator { background: var(--card-sub); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 14px; text-align: center; }
     .phase-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; }
@@ -937,6 +976,19 @@
     .settings-select { background: var(--card-sub); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; outline: none; font-weight: bold; }
     .contact-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #21262d; border: 1px solid var(--border); color: #fff; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: transform 0.2s; }
     .contact-btn:active { transform: scale(0.96); }
+
+    /* Footer */
+    footer.app-footer {
+      text-align: center;
+      padding: 30px 10px 20px 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+    }
+    footer.app-footer p { margin-bottom: 6px; }
+    footer.app-footer a { color: #3fb950; text-decoration: underline; cursor: pointer; }
+    [data-theme="pink-red"] footer.app-footer a { color: #f43f5e; }
   </style>
 </head>
 <body>
@@ -946,6 +998,19 @@
     <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
   </header>
+
+  <!-- SCHNELLWECHSEL-LEISTE (Garten-App, Read.txt, Impressum) -->
+  <div class="quick-actions-bar">
+    <button onclick="openGartenApp()" class="quick-btn highlight" title="Zurück zur Garten-App">
+      🌱 Garten-App
+    </button>
+    <button onclick="openReadmeModal()" class="quick-btn" title="Dokumentation Read.txt öffnen">
+      📄 Read
+    </button>
+    <button onclick="openImpressumModal()" class="quick-btn" title="Impressum anzeigen">
+      ⚖️ Impressum
+    </button>
+  </div>
 
   <!-- REZEPTE-BEREICH -->
   <div id="recipesSection">
@@ -982,7 +1047,7 @@
     <div class="recipe-list" id="recipeList"></div>
   </div>
 
-  <!-- ZYKLUS PLANER BEREICH (NEU) -->
+  <!-- ZYKLUS PLANER BEREICH -->
   <div id="cycleSection" class="cycle-container">
     <div class="note-create-card">
       <h3 class="note-create-title">🩸 Zyklus & Ernährung</h3>
@@ -1062,17 +1127,33 @@
     </div>
 
     <div class="settings-card">
+      <h3>🌱 Schnelle Navigation</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="openGartenApp()" class="btn-save" style="margin-top:0; font-size:0.95rem;">
+          🌱 Direkt zur Ramonas Garten App
+        </button>
+        <button onclick="openReadmeModal()" class="add-notes-btn" style="margin-top:0;">
+          📄 Dokumentation Read.txt
+        </button>
+        <button onclick="openImpressumModal()" class="add-notes-btn" style="margin-top:0;">
+          ⚖️ Impressum anzeigen
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-card">
       <h3>🛠️ App Support</h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
         Gibt es einen Fehler oder hast du eine neue Idee für DieGartenMutti86? Schreib dem Admin (Matze) direkt eine Nachricht.
       </p>
-      <a href="mailto:deine.email@hier-eintragen.de?subject=Feedback:%20DieGartenMutti86%20App" class="contact-btn">
+      <a href="mailto:marcelkometz@icloud.com?subject=Feedback:%20DieGartenMutti86%20App" class="contact-btn">
         📧 Matze anschreiben
       </a>
     </div>
 
   </div>
 
+  <!-- Detail Modal -->
   <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
     <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
@@ -1080,12 +1161,60 @@
     </div>
   </div>
 
+  <!-- Subfilter Modal -->
   <div class="modal-backdrop" id="subfilterBackdrop" onclick="closeSubfilterModal(event)">
     <div class="modal-sheet" id="subfilterSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSubfilterModalForce()">&times;</button>
       <h2 id="subfilterTitle" style="font-size: 1.25rem; color: var(--text); margin-bottom: 6px;">Kategorie wählen</h2>
       <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Wähle eine Zutat oder zeige alle Gerichte an:</p>
       <div class="subfilter-grid" id="subfilterGrid"></div>
+    </div>
+  </div>
+
+  <!-- Read.txt Modal -->
+  <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
+    <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
+      <h2 style="font-size: 1.2rem; margin-bottom: 12px; color: var(--text);">📄 Read.txt – Dokumentation</h2>
+      <div id="readmeContent" style="white-space: pre-wrap; font-size: 0.88rem; line-height: 1.5; color: var(--text); background: var(--card-sub); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+DieGartenMutti86 – Rezepte & Notizen App
+=========================================
+• Schnelle, gesunde und Low-Carb-orientierte Küche
+• Nahtlose Verknüpfung mit eurer "Ramonas Garten Hilfe"
+• Alle Rezepte & Notizen sind per Cloud (Supabase) synchronisiert
+• WhatsApp-Export für direkte Einkaufslisten
+• Zyklus-Ernährungsplaner zur optimalen Unterstützung des Körpers
+
+Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in eure Garten-Enzyklopädie wechseln!
+      </div>
+      <button class="btn-save" style="margin-top: 14px;" onclick="closeReadmeModalForce()">Schließen</button>
+    </div>
+  </div>
+
+  <!-- Impressum Modal -->
+  <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
+    <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
+      <h2 style="font-size: 1.2rem; margin-bottom: 12px; color: var(--text);">⚖️ Impressum</h2>
+      <div style="font-size: 0.88rem; line-height: 1.6; color: var(--text);">
+        <p style="margin: 8px 0;"><strong>Angaben gemäß § 5 DDG:</strong><br>
+          Marcel Kometz<br>
+          Manfredstr. 15<br>
+          47178 Duisburg
+        </p>
+        <p style="margin: 12px 0 8px 0;"><strong>Kontakt:</strong><br>
+          E-Mail: <a href="mailto:marcelkometz@icloud.com" style="color: #3fb950; font-weight: 700; text-decoration: none;">marcelkometz@icloud.com</a>
+        </p>
+        <p style="margin: 12px 0 8px 0;"><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:</strong><br>
+          Marcel Kometz<br>
+          Manfredstr. 15<br>
+          47178 Duisburg
+        </p>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 14px; background: var(--card-sub); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);">
+          ℹ️ Rein privates, nicht-kommerzielles Familien-Projekt.
+        </p>
+      </div>
+      <button class="btn-save" style="margin-top: 16px;" onclick="closeImpressumModalForce()">Schließen</button>
     </div>
   </div>
 
@@ -1154,9 +1283,17 @@
     <span>🔄</span>
   </button>
 
+  <footer class="app-footer">
+    <p>© DieGartenMutti86 | Entwickelt von Marcel Kometz</p>
+    <p>
+      <a href="javascript:void(0)" onclick="openGartenApp()" style="font-weight: 800; margin-right: 12px;">🌱 Garten-App</a>
+      <a href="javascript:void(0)" onclick="openReadmeModal()" style="margin-right: 12px;">📄 Read.txt</a>
+      <a href="javascript:void(0)" onclick="openImpressumModal()">⚖️ Impressum & Rechtliches</a>
+    </p>
+  </footer>
+
   <nav class="bottom-bar">
     <button class="nav-btn active" id="nav-btn-all" onclick="handleNavCategory('all', this)"><span class="icon">✨</span><span>Alle</span></button>
-    <!-- NEU: Favoriten Button -->
     <button class="nav-btn" id="nav-btn-favoriten" onclick="handleNavCategory('favoriten', this)"><span class="icon">❤️</span><span>Favoriten</span></button>
     <button class="nav-btn" id="nav-btn-fleisch" onclick="handleNavCategory('fleisch', this)"><span class="icon">🍗</span><span>Fleisch</span></button>
     <button class="nav-btn" id="nav-btn-gemuese" onclick="handleNavCategory('gemuese', this)"><span class="icon">🥦</span><span>Gemüse</span></button>
@@ -1166,7 +1303,6 @@
     <button class="nav-btn" id="nav-btn-stoffwechsel" onclick="handleNavCategory('stoffwechsel', this)"><span class="icon">⚡</span><span>Stoffwechsel</span></button>
     <button class="nav-btn" id="nav-btn-fettarm" onclick="handleNavCategory('fettarm', this)"><span class="icon">⚖️</span><span>Fettarm</span></button>
     <button class="nav-btn" id="nav-btn-airfryer" onclick="handleNavCategory('airfryer', this)"><span class="icon">🌪️</span><span>Airfryer</span></button>
-    <!-- NEU: Zyklus Planer -->
     <button class="nav-btn" id="navBtnCycle" onclick="openCycleView(this)"><span class="icon">🩸</span><span>Zyklus</span></button>
     <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
     <button class="nav-btn" id="navBtnSettings" onclick="openSettingsView(this)"><span class="icon">⚙️</span><span>Setup</span></button>
@@ -1178,9 +1314,44 @@
     const SUPABASE_KEY = 'sb_publishable_8-MkCdXRxN-GagE0g4GYrQ_TY3I6RmD';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // =========================================
+    // WECHSEL ZUR GARTEN-APP
+    // =========================================
+    function openGartenApp() {
+      try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+      // Fallback: Prüft ob lokal oder auf GitHub Pages
+      if (window.location.hostname.includes('github.io')) {
+        // Falls euer Garten-Repo einen bestimmten Namen hat, kann der Pfad hier angepasst werden:
+        window.location.href = '../ramonas-garten-anzucht/'; 
+      } else {
+        window.location.href = '../ramonas-garten/index.html';
+      }
+    }
+
+    // =========================================
+    // README & IMPRESSUM MODALS
+    // =========================================
+    function openReadmeModal() {
+      try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+      fetch('Read.txt')
+        .then(res => { if (!res.ok) throw new Error(); return res.text(); })
+        .then(txt => { document.getElementById('readmeContent').innerText = txt; })
+        .catch(() => {});
+      document.getElementById('readmeBackdrop').classList.add('active');
+    }
+    function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
+    function closeReadmeModalForce() { document.getElementById('readmeBackdrop').classList.remove('active'); }
+
+    function openImpressumModal() {
+      try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+      document.getElementById('impressumBackdrop').classList.add('active');
+    }
+    function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
+    function closeImpressumModalForce() { document.getElementById('impressumBackdrop').classList.remove('active'); }
+
     let searchTimeout = null; 
-    let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || []; // NEU: Favoriten Speicher
-    let currentCycleCategory = null; // Für den Menstruationsplaner-Filter
+    let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
+    let currentCycleCategory = null;
 
     const sideOptions = {
       "protein_nudeln": { name: "Protein-Nudeln", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, satFat: 0.3, fiber: 6.5, prot: 14.0, salt: 0.02, gl: "Niedrig", insulin: "Stabil (Optimal)" },
@@ -1258,7 +1429,7 @@
 
     // --- FAVORITEN LOGIK ---
     function toggleFavorite(id, event) {
-      event.stopPropagation(); // Verhindert, dass das Rezept geöffnet wird
+      event.stopPropagation();
       const index = favorites.indexOf(String(id));
       if (index === -1) {
         favorites.push(String(id));
@@ -1268,7 +1439,6 @@
       localStorage.setItem('gartenMuttiFavs', JSON.stringify(favorites));
       filterRecipes();
       
-      // Update Button visuell falls im Modal
       const modalBtn = document.getElementById('modalFavBtn');
       if(modalBtn) {
         modalBtn.innerText = favorites.includes(String(id)) ? '❤️ Favorit' : '🤍 Merken';
@@ -1299,7 +1469,6 @@
       const diffTime = Math.abs(today - startDate);
       let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       
-      // Modulo für aktuellen Zyklustag (falls mehr als 1 Zyklus vergangen ist)
       let cycleDay = (diffDays % lengthVal) + 1;
 
       const badge = document.getElementById('phaseBadge');
@@ -1335,11 +1504,10 @@
     }
 
     function filterRecipesForCycle() {
-      // Wir switchen zurück zur Rezept-Ansicht und setzen einen Special-Filter
       document.getElementById('cycleSection').style.display = 'none';
       document.getElementById('recipesSection').style.display = 'block';
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('nav-btn-all').classList.add('active'); // Visuell auf Alle, aber intern gefiltert
+      document.getElementById('nav-btn-all').classList.add('active');
       
       currentCategory = 'cycle-mode';
       currentSubFilter = null;
@@ -1348,7 +1516,6 @@
       
       filterRecipes();
     }
-
 
     // --- KI GENERATOR ---
     async function generateAiRecipe() {
@@ -1591,7 +1758,7 @@
       });
       let html = '';
       for (const [key, items] of Object.entries(groups)) {
-        if (items.length > 0 && key !== 'favoriten') { // Favoriten oben ignorieren bei "Alle", um Duplikate im Stream zu sparen (optional)
+        if (items.length > 0 && key !== 'favoriten') {
           const cfg = CATEGORY_NAMES[key] || CATEGORY_NAMES['andere'];
           html += `<div class="category-divider">${cfg.icon} ${cfg.label} (${items.length})</div>`;
           html += items.map(r => buildCardHtml(r)).join('');
@@ -1600,7 +1767,6 @@
       container.innerHTML = html;
     }
 
-    // --- AUTOMATISCHE EINKAUFSLISTEN & TEILEN ---
     function shareWhatsApp(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
@@ -1609,7 +1775,7 @@
       let lines = (r.zutatenListe || '').split('\n');
       
       lines.forEach(line => {
-        let cleanLine = line.replace(/•/g, '').trim(); // Entfernt alte Bullets
+        let cleanLine = line.replace(/•/g, '').trim();
         if(cleanLine) text += `▫️ ${cleanLine}\n`;
       });
       
@@ -1677,7 +1843,6 @@
         </div>
         <h2 style="font-size: 1.35rem; margin-bottom: 16px; text-align:center; color: var(--text);">${r.title}</h2>
         
-        <!-- Favoriten Button oben in den Details -->
         <div style="display:flex; justify-content:center; margin-bottom: 16px;">
           <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0;" onclick="toggleFavorite('${r.id}', event)">
             ${isFav ? '❤️ Favorit' : '🤍 Merken'}
@@ -1703,7 +1868,6 @@
         <div class="section-title">🛒 Zutatenliste:</div>
         <div class="ingredients-box">${r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.'}</div>
         
-        <!-- NEU: Einkaufslisten Buttons -->
         <button class="whatsapp-btn" onclick="shareWhatsApp('${r.id}')">📲 Liste per WhatsApp senden</button>
         <button class="add-notes-btn" onclick="addRecipeToAppNotes('${r.id}', this)">📝 Zutaten in App-Notizen sichern</button>
 
@@ -1809,7 +1973,7 @@
       document.getElementById('settingsSection').style.display = 'none';
       document.getElementById('cycleSection').style.display = 'flex';
       
-      initCycle(); // Lädt Daten direkt
+      initCycle();
     }
 
     function openSubfilterModal(cat, btn) {
@@ -1842,7 +2006,7 @@
     function clearSubFilter() {
       currentSubFilter = null; currentSubFilterLabel = '';
       if(currentCategory === 'cycle-mode') {
-        currentCategory = 'all'; // Reset Zyklus-Filter wenn man das X klickt
+        currentCategory = 'all';
       }
       updateSubfilterBadge(); filterRecipes();
     }
@@ -1872,13 +2036,12 @@
         else if (currentCategory === 'airfryer') matchesCategory = r.airfryer === true;
         else if (currentCategory === 'dessert') matchesCategory = checkIsDessert(r);
         else if (currentCategory === 'cycle-mode') {
-           // Prüft ob die Rezept-Kategorie eine der empfohlenen Kategorien des Zyklus enthält
            if(currentCycleCategory) {
               if (Array.isArray(r.category)) {
                 matchesCategory = r.category.some(c => currentCycleCategory.some(cc => String(c).toLowerCase().includes(cc)));
               }
            } else {
-             matchesCategory = true; // Fallback falls kein Zyklus gesetzt
+             matchesCategory = true;
            }
         }
         else {
@@ -1963,7 +2126,6 @@
         const badgeIcon = isRamona ? '🌸' : (isApp ? '🤖' : '🔧');
         const isDone = !!note.is_done;
         
-        // App Notizen (Einkaufsliste) machen wir etwas dezenter in der Farbe
         const style = isApp ? `background: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46,160,67,0.3);` : '';
 
         return `
