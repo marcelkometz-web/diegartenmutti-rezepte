@@ -1062,7 +1062,7 @@
         </div>
         <div class="form-group">
           <label>Zykluslänge (Tage)</label>
-          <input type="number" id="cycleLength" value="28" onchange="calculateCycle()">
+          <input type="number" id="cycleLength" value="28" min="20" max="45" onchange="calculateCycle()">
         </div>
       </div>
 
@@ -1228,7 +1228,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         
         <div class="ki-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="color:#a371f7; font-weight:bold; font-size:0.9rem;">✨ KI Rezept-Generator</label>
+            <label style="color:#a371f7; font-weight:bold; font-size:0.9rem;">✨ KI Rezept-Generator (inkl. Gemini 4 Argon)</label>
           </div>
           <textarea id="aiPrompt" placeholder="Was möchtest du kochen? (z.B. Schnelles Low-Carb Gericht mit Zucchini und Hackfleisch, max 500 kcal)" style="width:100%; background:var(--card-sub); border:1px solid #a371f7; color:var(--text); padding:10px; border-radius:8px; outline:none; min-height:60px; font-size:0.85rem; resize:vertical;"></textarea>
           <button type="button" id="btnGenerateAi" onclick="generateAiRecipe()" class="ki-btn">✨ Formular durch KI ausfüllen lassen</button>
@@ -1286,7 +1286,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
   <footer class="app-footer">
     <p>© DieGartenMutti86 | Entwickelt von Marcel Kometz</p>
     <p>
-      <a href="https://marcelkometz-web.github.io/Mona/" style="font-weight: 800; margin-right: 12px;">🌱 Garten-App</a>
+      <a href="https://marcelkometz-web.github.io/Mona/" onclick="openGartenApp(); return false;" style="font-weight: 800; margin-right: 12px;">🌱 Garten-App</a>
       <a href="javascript:void(0)" onclick="openReadmeModal()" style="margin-right: 12px;">📄 Read.txt</a>
       <a href="javascript:void(0)" onclick="openImpressumModal()">⚖️ Impressum & Rechtliches</a>
     </p>
@@ -1401,6 +1401,11 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
     let currentSubFilterLabel = '';
     let isNotesViewActive = false;
 
+    function escapeHtml(text) {
+      if (text === null || text === undefined) return '';
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
     // --- THEME LOGIK ---
     function initTheme() {
       const savedTheme = localStorage.getItem('gartenMuttiTheme') || 'warm-dark';
@@ -1439,7 +1444,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       }
     }
 
-    // --- ZYKLUS PLANER LOGIK ---
+    // --- ZYKLUS PLANER LOGIK (Optimiert mit Zukunftsprüfung) ---
     function initCycle() {
       const savedDate = localStorage.getItem('gartenMuttiCycleDate');
       const savedLength = localStorage.getItem('gartenMuttiCycleLength') || '28';
@@ -1452,24 +1457,33 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
 
     function calculateCycle() {
       const dateVal = document.getElementById('cycleStartDate').value;
-      const lengthVal = parseInt(document.getElementById('cycleLength').value);
-      if(!dateVal || !lengthVal) return;
-
-      localStorage.setItem('gartenMuttiCycleDate', dateVal);
-      localStorage.setItem('gartenMuttiCycleLength', lengthVal);
+      const lengthVal = parseInt(document.getElementById('cycleLength').value) || 28;
+      if(!dateVal || lengthVal < 15) return;
 
       const startDate = new Date(dateVal);
       const today = new Date();
-      const diffTime = Math.abs(today - startDate);
-      let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      let cycleDay = (diffDays % lengthVal) + 1;
+      startDate.setHours(0,0,0,0);
+      today.setHours(0,0,0,0);
 
       const badge = document.getElementById('phaseBadge');
       const text = document.getElementById('phaseText');
       const infoBox = document.getElementById('currentPhaseInfo');
-
       infoBox.style.display = 'block';
+
+      if (startDate > today) {
+        badge.className = 'phase-badge phase-menstruation';
+        badge.innerText = '⚠️ Datum liegt in der Zukunft';
+        text.innerText = 'Bitte wähle den ersten Tag deiner letzten vergangenen Periode aus.';
+        currentCycleCategory = null;
+        return;
+      }
+
+      localStorage.setItem('gartenMuttiCycleDate', dateVal);
+      localStorage.setItem('gartenMuttiCycleLength', lengthVal);
+
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const cycleDay = (diffDays % lengthVal) + 1;
 
       if (cycleDay >= 1 && cycleDay <= 5) {
         badge.className = 'phase-badge phase-menstruation';
@@ -1511,7 +1525,22 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       filterRecipes();
     }
 
-    // --- KI GENERATOR ---
+    // --- ROBUSTE KATEGORIE-ERKENNUNG FÜR KI ---
+    function normalizeAiCategory(rawCat) {
+      const valid = ['fleisch', 'gemuese', 'dessert', 'lowcarb', 'fettverbrennung', 'stoffwechsel', 'fettarm'];
+      let str = Array.isArray(rawCat) ? (rawCat[0] || '') : String(rawCat || '');
+      str = str.toLowerCase().replace(/[^a-zäöü]/g, '');
+      if (str.includes('fleisch') || str.includes('hähnchen') || str.includes('rind') || str.includes('hack')) return 'fleisch';
+      if (str.includes('gemüse') || str.includes('gemuese') || str.includes('veggie')) return 'gemuese';
+      if (str.includes('dessert') || str.includes('süß') || str.includes('kuchen')) return 'dessert';
+      if (str.includes('fettverbrennung') || str.includes('burn')) return 'fettverbrennung';
+      if (str.includes('stoffwechsel')) return 'stoffwechsel';
+      if (str.includes('fettarm') || str.includes('light')) return 'fettarm';
+      if (valid.includes(str)) return str;
+      return 'lowcarb';
+    }
+
+    // --- KI GENERATOR (Supabase RPC + direkter Gemini 4 Argon / Flash Fallback) ---
     async function generateAiRecipe() {
       const prompt = document.getElementById('aiPrompt').value.trim();
       if(!prompt) { alert('Bitte gib im Textfeld an, worauf du Hunger hast (z.B. "Zucchini mit Hack")!'); return; }
@@ -1520,23 +1549,59 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       btn.innerHTML = '⏳ KI denkt nach... (ca. 5 Sek)';
       btn.disabled = true;
       btn.style.background = '#6e7681';
+
+      let recipe = null;
+
       try {
         const { data, error } = await supabaseClient.rpc('generiere_rezept_ki', { user_prompt: prompt });
         if (error) throw error;
-        const apiData = JSON.parse(data);
+        const apiData = typeof data === 'string' ? JSON.parse(data) : data;
         if(apiData.error) throw new Error(apiData.error.message);
         let rawJson = apiData.candidates[0].content.parts[0].text;
         rawJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
-        const recipe = JSON.parse(rawJson);
+        recipe = JSON.parse(rawJson);
+      } catch (rpcErr) {
+        console.warn('RPC Fallback auf direkten Gemini-Aufruf:', rpcErr);
+        try {
+          const { data: setRes } = await supabaseClient.from('garten_settings').select('gemini_api_key').limit(1);
+          const apiKey = (setRes && setRes[0] && setRes[0].gemini_api_key) || localStorage.getItem('gemini_api_key');
+          if (!apiKey) throw rpcErr;
+
+          const modelsToTry = ['gemini-4-argon', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash'];
+          const sysPrompt = `Erstelle ein gesundes Low-Carb Rezept für: "${prompt}". Antworte NUR als valides JSON-Objekt: {"title":"Name","emoji":"🍲","category":"lowcarb","airfryer":"true","kcal":350,"prot":32,"kh":8,"fat":18,"ingredients":"zutat1, zutat2","zutaten_liste":"• 200g Zutat 1\\n• 100g Zutat 2","prep":"Vorbereitung...","stove_step":"Herd...","oven_step":"Backofen...","airfryer_step":"Airfryer...","tipps":"Tipp..."}`;
+
+          for (const model of modelsToTry) {
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: sysPrompt }] }],
+                generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
+              })
+            });
+            if (!resp.ok) continue;
+            const d = await resp.json();
+            const txt = d.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (txt) {
+              recipe = JSON.parse(txt.replace(/```json/g, '').replace(/```/g, '').trim());
+              break;
+            }
+          }
+        } catch (fallbackErr) {
+          console.error('Fallback Fehler:', fallbackErr);
+        }
+      }
+
+      if (recipe) {
         document.getElementById('newTitle').value = recipe.title || '';
         document.getElementById('newEmoji').value = recipe.emoji || '🍲';
-        document.getElementById('newCategory').value = recipe.category || 'lowcarb';
-        document.getElementById('newAirfryer').value = recipe.airfryer || 'false';
+        document.getElementById('newCategory').value = normalizeAiCategory(recipe.category);
+        document.getElementById('newAirfryer').value = String(recipe.airfryer) === 'true' ? 'true' : 'false';
         document.getElementById('newKcal').value = recipe.kcal || '';
         document.getElementById('newProt').value = recipe.prot || '';
         document.getElementById('newKh').value = recipe.kh || '';
         document.getElementById('newFat').value = recipe.fat || '';
-        document.getElementById('newIngredients').value = recipe.ingredients || '';
+        document.getElementById('newIngredients').value = Array.isArray(recipe.ingredients) ? recipe.ingredients.join(', ') : (recipe.ingredients || '');
         document.getElementById('newZutatenListe').value = recipe.zutaten_liste || '';
         document.getElementById('newPrep').value = recipe.prep || '';
         document.getElementById('newStove').value = recipe.stove_step || '';
@@ -1546,8 +1611,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         btn.innerHTML = '✅ Rezept erfolgreich ausgefüllt!';
         btn.style.background = '#238636';
         setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; btn.style.background = '#a371f7'; }, 3000);
-      } catch (err) {
-        console.error('KI Fehler:', err);
+      } else {
         alert('Fehler bei der Generierung. Versuche es noch einmal oder formuliere es etwas anders.');
         btn.innerHTML = '❌ Fehler. Nochmal versuchen';
         btn.disabled = false;
@@ -1698,15 +1762,15 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       const isFav = favorites.includes(String(r.id));
       
       return `
-        <div class="recipe-card" onclick="openDetails('${r.id}')">
-          <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${r.id}', event)">
+        <div class="recipe-card" onclick="openDetails('${escapeHtml(r.id)}')">
+          <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${escapeHtml(r.id)}', event)">
             ${isFav ? '❤️' : '🤍'}
           </button>
-          <div class="card-icon">${r.emoji || '🍲'}</div>
+          <div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>
           <div class="card-meta">
-            <h3>${r.title}</h3>
+            <h3>${escapeHtml(r.title)}</h3>
             <div class="card-badges">
-              <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">${r.score || 'A'}</span>
+              <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">${escapeHtml(r.score || 'A')}</span>
               ${r.airfryer ? '<span class="badge-airfryer">🌪️</span>' : ''}
             </div>
           </div>
@@ -1815,30 +1879,31 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       const activeSide = tempSide || r.selectedSide;
       const total = calculateTotalNutri(r, activeSide);
       const isFav = favorites.includes(String(r.id));
+      const safeId = escapeHtml(r.id);
       
       let sideSelectHtml = '';
       if (!withoutSide) {
         sideSelectHtml = `
           <div class="swap-row" style="margin-bottom: 14px;">
             <label>🍽️ Beilage wählen:</label>
-            <select onchange="updateModalSide('${r.id}', this.value)">
+            <select onchange="updateModalSide('${safeId}', this.value)">
         `;
         for (const [key, side] of Object.entries(sideOptions)) {
-          sideSelectHtml += `<option value="${key}" ${activeSide === key ? 'selected' : ''}>${side.name}</option>`;
+          sideSelectHtml += `<option value="${key}" ${activeSide === key ? 'selected' : ''}>${escapeHtml(side.name)}</option>`;
         }
         sideSelectHtml += `</select></div>`;
       }
       const sheet = document.getElementById('sheetContent');
       sheet.innerHTML = `
-        <div style="font-size: 2.4rem; margin-bottom: 8px; text-align:center;">${r.emoji || '🍲'}</div>
+        <div style="font-size: 2.4rem; margin-bottom: 8px; text-align:center;">${escapeHtml(r.emoji || '🍲')}</div>
         <div style="display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom: 12px;">
-          <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${r.score || 'A'}</span>
+          <span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri-Score ${escapeHtml(r.score || 'A')}</span>
           ${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer tauglich</span>' : ''}
         </div>
-        <h2 style="font-size: 1.35rem; margin-bottom: 16px; text-align:center; color: var(--text);">${r.title}</h2>
+        <h2 style="font-size: 1.35rem; margin-bottom: 16px; text-align:center; color: var(--text);">${escapeHtml(r.title)}</h2>
         
         <div style="display:flex; justify-content:center; margin-bottom: 16px;">
-          <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0;" onclick="toggleFavorite('${r.id}', event)">
+          <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0;" onclick="toggleFavorite('${safeId}', event)">
             ${isFav ? '❤️ Favorit' : '🤍 Merken'}
           </button>
         </div>
@@ -1856,24 +1921,24 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         
         <div class="health-indicator">
           <span style="color: var(--text-muted);">🩺 Blutzucker-Reaktion:</span>
-          <span class="status-text">${total.insulin}</span>
+          <span class="status-text">${escapeHtml(total.insulin)}</span>
         </div>
         
         <div class="section-title">🛒 Zutatenliste:</div>
-        <div class="ingredients-box">${r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.'}</div>
+        <div class="ingredients-box">${escapeHtml(r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.')}</div>
         
-        <button class="whatsapp-btn" onclick="shareWhatsApp('${r.id}')">📲 Liste per WhatsApp senden</button>
-        <button class="add-notes-btn" onclick="addRecipeToAppNotes('${r.id}', this)">📝 Zutaten in App-Notizen sichern</button>
+        <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Liste per WhatsApp senden</button>
+        <button class="add-notes-btn" onclick="addRecipeToAppNotes('${safeId}', this)">📝 Zutaten in App-Notizen sichern</button>
 
         <div class="section-title" style="margin-top: 16px;">👩‍🍳 Zubereitung:</div>
-        <div class="step-section"><h4>🔪 1. Vorbereitung</h4><p>${r.prep}</p></div>
-        ${r.stoveStep ? `<div class="step-section"><h4>🍳 2. Auf dem Herd</h4><p>${r.stoveStep}</p></div>` : ''}
-        ${r.ovenStep ? `<div class="step-section"><h4>🔥 3. Im Backofen</h4><p>${r.ovenStep}</p></div>` : ''}
-        ${r.airfryerStep ? `<div class="step-section" style="border-left: 3px solid #d29922;"><h4 style="color: #d29922;">🌪️ 4. Airfryer</h4><p>${r.airfryerStep}</p></div>` : ''}
+        <div class="step-section"><h4>🔪 1. Vorbereitung</h4><p>${escapeHtml(r.prep)}</p></div>
+        ${r.stoveStep ? `<div class="step-section"><h4>🍳 2. Auf dem Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
+        ${r.ovenStep ? `<div class="step-section"><h4>🔥 3. Im Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
+        ${r.airfryerStep ? `<div class="step-section" style="border-left: 3px solid #d29922;"><h4 style="color: #d29922;">🌪️ 4. Airfryer</h4><p>${escapeHtml(r.airfryerStep)}</p></div>` : ''}
         
         <div class="section-title" style="margin-top: 20px;">💡 Meine Notizen & Tipps:</div>
-        <textarea id="editTipps-${r.id}" class="editable-tipps" placeholder="Was möchtest du beim nächsten Mal anders machen? ...">${r.tipps || ''}</textarea>
-        <button class="btn-save-small" onclick="saveTipps('${r.id}', this)">💾 Notiz speichern</button>
+        <textarea id="editTipps-${safeId}" class="editable-tipps" placeholder="Was möchtest du beim nächsten Mal anders machen? ...">${escapeHtml(r.tipps || '')}</textarea>
+        <button class="btn-save-small" onclick="saveTipps('${safeId}', this)">💾 Notiz speichern</button>
       `;
       document.getElementById('modalBackdrop').classList.add('active');
     }
@@ -2173,11 +2238,6 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         if (error) throw error;
         loadNotesFromSupabase();
       } catch (err) { console.error('Fehler:', err); }
-    }
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
     supabaseClient.channel('notizen-live').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, () => {
