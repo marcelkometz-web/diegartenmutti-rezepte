@@ -480,6 +480,7 @@
       color: #fb7185;
     }
 
+    /* Modals & Detail-Ansicht */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -564,6 +565,53 @@
     }
 
     [data-theme="pink-red"] .swap-row select {
+      color: #fb7185;
+    }
+
+    /* NEU: Portionen-Selector */
+    .portion-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      background: var(--card-sub);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .portion-row label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+    .portion-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .portion-btn:active {
+      transform: scale(0.9);
+      background: var(--border);
+    }
+    .portion-display {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #3fb950;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    [data-theme="pink-red"] .portion-display {
       color: #fb7185;
     }
 
@@ -767,6 +815,7 @@
       transform: scale(0.95);
     }
 
+    /* Sub-Filter Modal Styles */
     .subfilter-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1226,11 +1275,12 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       
       <form id="newRecipeForm" onsubmit="saveNewRecipe(event)">
         
+        <!-- NEU: KI BEREICH (Sichere Version über Supabase) -->
         <div class="ki-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="color:#a371f7; font-weight:bold; font-size:0.9rem;">✨ KI Rezept-Generator (inkl. Gemini 4 Argon)</label>
+            <label style="color:#a371f7; font-weight:bold; font-size:0.9rem;">✨ KI Rezept-Generator</label>
           </div>
-          <textarea id="aiPrompt" placeholder="Was möchtest du kochen? (z.B. Schnelles Low-Carb Gericht mit Zucchini und Hackfleisch, max 500 kcal)" style="width:100%; background:var(--card-sub); border:1px solid #a371f7; color:var(--text); padding:10px; border-radius:8px; outline:none; min-height:60px; font-size:0.85rem; resize:vertical;"></textarea>
+          <textarea id="aiPrompt" placeholder="Was möchtest du kochen? (z.B. Schnelles Low-Carb Gericht mit Zucchini und Hackfleisch, max 500 kcal)" style="width:100%; background:#161b22; border:1px solid #a371f7; color:#fff; padding:10px; border-radius:8px; outline:none; min-height:60px; font-size:0.85rem; resize:vertical;"></textarea>
           <button type="button" id="btnGenerateAi" onclick="generateAiRecipe()" class="ki-btn">✨ Formular durch KI ausfüllen lassen</button>
         </div>
 
@@ -1540,7 +1590,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       return 'lowcarb';
     }
 
-    // --- KI GENERATOR (Supabase RPC + direkter Gemini 4 Argon / Flash Fallback) ---
+    // --- KI GENERATOR (Supabase RPC) ---
     async function generateAiRecipe() {
       const prompt = document.getElementById('aiPrompt').value.trim();
       if(!prompt) { alert('Bitte gib im Textfeld an, worauf du Hunger hast (z.B. "Zucchini mit Hack")!'); return; }
@@ -1550,49 +1600,17 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       btn.disabled = true;
       btn.style.background = '#6e7681';
 
-      let recipe = null;
-
       try {
         const { data, error } = await supabaseClient.rpc('generiere_rezept_ki', { user_prompt: prompt });
         if (error) throw error;
+
         const apiData = typeof data === 'string' ? JSON.parse(data) : data;
         if(apiData.error) throw new Error(apiData.error.message);
+
         let rawJson = apiData.candidates[0].content.parts[0].text;
         rawJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
-        recipe = JSON.parse(rawJson);
-      } catch (rpcErr) {
-        console.warn('RPC Fallback auf direkten Gemini-Aufruf:', rpcErr);
-        try {
-          const { data: setRes } = await supabaseClient.from('garten_settings').select('gemini_api_key').limit(1);
-          const apiKey = (setRes && setRes[0] && setRes[0].gemini_api_key) || localStorage.getItem('gemini_api_key');
-          if (!apiKey) throw rpcErr;
+        const recipe = JSON.parse(rawJson);
 
-          const modelsToTry = ['gemini-4-argon', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash'];
-          const sysPrompt = `Erstelle ein gesundes Low-Carb Rezept für: "${prompt}". Antworte NUR als valides JSON-Objekt: {"title":"Name","emoji":"🍲","category":"lowcarb","airfryer":"true","kcal":350,"prot":32,"kh":8,"fat":18,"ingredients":"zutat1, zutat2","zutaten_liste":"• 200g Zutat 1\\n• 100g Zutat 2","prep":"Vorbereitung...","stove_step":"Herd...","oven_step":"Backofen...","airfryer_step":"Airfryer...","tipps":"Tipp..."}`;
-
-          for (const model of modelsToTry) {
-            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: sysPrompt }] }],
-                generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
-              })
-            });
-            if (!resp.ok) continue;
-            const d = await resp.json();
-            const txt = d.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (txt) {
-              recipe = JSON.parse(txt.replace(/```json/g, '').replace(/```/g, '').trim());
-              break;
-            }
-          }
-        } catch (fallbackErr) {
-          console.error('Fallback Fehler:', fallbackErr);
-        }
-      }
-
-      if (recipe) {
         document.getElementById('newTitle').value = recipe.title || '';
         document.getElementById('newEmoji').value = recipe.emoji || '🍲';
         document.getElementById('newCategory').value = normalizeAiCategory(recipe.category);
@@ -1608,11 +1626,14 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         document.getElementById('newOven').value = recipe.oven_step || '';
         document.getElementById('newAirfryerStep').value = recipe.airfryer_step || '';
         document.getElementById('newTipps').value = recipe.tipps || '';
+
         btn.innerHTML = '✅ Rezept erfolgreich ausgefüllt!';
         btn.style.background = '#238636';
         setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; btn.style.background = '#a371f7'; }, 3000);
-      } else {
-        alert('Fehler bei der Generierung. Versuche es noch einmal oder formuliere es etwas anders.');
+
+      } catch (err) {
+        console.error('KI Fehler:', err);
+        alert('Fehler bei der Generierung. Versuche es noch einmal oder formuliere es etwas anders. Fehlermeldung: ' + err.message);
         btn.innerHTML = '❌ Fehler. Nochmal versuchen';
         btn.disabled = false;
         btn.style.background = '#da3633';
@@ -1688,25 +1709,41 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       setTimeout(() => { if (btn) btn.classList.remove('spin'); }, 700);
     }
 
-    function calculateTotalNutri(recipe, tempSide = null) {
+    function calculateTotalNutri(recipe, tempSide = null, portions = 3) {
       const withoutSide = hasNoSide(recipe);
-      if (withoutSide) {
-        return {
-          kcal: Math.round(recipe.baseNutri.kcal), kh: Number(recipe.baseNutri.kh).toFixed(1),
-          sugar: Number(recipe.baseNutri.sugar || 1.5).toFixed(1), fat: Number(recipe.baseNutri.fat).toFixed(1),
-          satFat: Number(recipe.baseNutri.satFat || 1.0).toFixed(1), fiber: Number(recipe.baseNutri.fiber || 1.0).toFixed(1),
-          prot: Number(recipe.baseNutri.prot).toFixed(1), salt: Number(recipe.baseNutri.salt || 0.05).toFixed(2),
-          insulin: checkIsDessert(recipe) ? "Stabil (Zuckerfrei)" : "Optimal stabil", gl: "Sehr niedrig"
-        };
+      
+      let baseKcal = Number(recipe.baseNutri.kcal);
+      let baseKh = Number(recipe.baseNutri.kh);
+      let baseSugar = Number(recipe.baseNutri.sugar || 1.5);
+      let baseFat = Number(recipe.baseNutri.fat);
+      let baseProt = Number(recipe.baseNutri.prot);
+      
+      if (!withoutSide) {
+        const sideKey = tempSide || recipe.selectedSide;
+        const side = sideOptions[sideKey] || sideOptions["protein_nudeln"];
+        baseKcal += side.kcal;
+        baseKh += side.kh;
+        baseSugar += side.sugar;
+        baseFat += side.fat;
+        baseProt += side.prot;
       }
-      const sideKey = tempSide || recipe.selectedSide;
-      const side = sideOptions[sideKey] || sideOptions["protein_nudeln"];
+      
+      let insulinInfo = "Optimal stabil";
+      if (!withoutSide) {
+        const sideKey = tempSide || recipe.selectedSide;
+        const side = sideOptions[sideKey] || sideOptions["protein_nudeln"];
+        insulinInfo = side.insulin;
+      } else if (checkIsDessert(recipe)) {
+        insulinInfo = "Stabil (Zuckerfrei)";
+      }
+
       return {
-        kcal: Math.round(recipe.baseNutri.kcal + side.kcal), kh: (recipe.baseNutri.kh + side.kh).toFixed(1),
-        sugar: ((recipe.baseNutri.sugar || 0) + side.sugar).toFixed(1), fat: (recipe.baseNutri.fat + side.fat).toFixed(1),
-        satFat: ((recipe.baseNutri.satFat || 0) + side.satFat).toFixed(1), fiber: ((recipe.baseNutri.fiber || 0) + side.fiber).toFixed(1),
-        prot: (recipe.baseNutri.prot + side.prot).toFixed(1), salt: ((recipe.baseNutri.salt || 0) + side.salt).toFixed(2),
-        insulin: side.insulin, gl: side.gl
+        kcal: Math.round(baseKcal * portions),
+        kh: (baseKh * portions).toFixed(1),
+        sugar: (baseSugar * portions).toFixed(1),
+        fat: (baseFat * portions).toFixed(1),
+        prot: (baseProt * portions).toFixed(1),
+        insulin: insulinInfo
       };
     }
 
@@ -1739,8 +1776,11 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         const match = onclickText.match(/'([^']+)'/);
         if (match) {
           const ingredient = match[1];
-          if (searchVal.includes(ingredient)) btn.classList.add('active');
-          else btn.classList.remove('active');
+          if (searchVal.split(/[\s,]+/).includes(ingredient)) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
         }
       });
 
@@ -1758,7 +1798,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
     }
 
     function buildCardHtml(r) {
-      const total = calculateTotalNutri(r);
+      const total = calculateTotalNutri(r, null, 1); // Kachel zeigt immer Werte für 1 Portion
       const isFav = favorites.includes(String(r.id));
       
       return `
@@ -1829,12 +1869,26 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       
-      let text = `🛒 *Einkaufsliste: ${r.title}*\n\n`;
+      const pSpan = document.getElementById(`portionCount-${recipeId}`);
+      const portions = pSpan ? parseInt(pSpan.innerText) : 3;
+      
+      let text = `🛒 *Einkaufsliste: ${r.title} (für ${portions} Portion${portions>1?'en':''})*\n\n`;
       let lines = (r.zutatenListe || '').split('\n');
       
       lines.forEach(line => {
         let cleanLine = line.replace(/•/g, '').trim();
-        if(cleanLine) text += `▫️ ${cleanLine}\n`;
+        if(cleanLine) {
+           let updatedLine = cleanLine.replace(/^([\d.,]+)\s*(g|ml|EL|TL|Stück|Dose|Prise)?/i, (match, num, unit) => {
+              let parsedNum = parseFloat(num.replace(',', '.'));
+              if(!isNaN(parsedNum)) {
+                let calcNum = parsedNum * portions;
+                let formattedNum = Number.isInteger(calcNum) ? calcNum : calcNum.toFixed(1).replace('.', ',');
+                return `${formattedNum} ${unit || ''}`;
+              }
+              return match;
+           });
+           text += `▫️ ${updatedLine}\n`;
+        }
       });
       
       text += `\n_Generiert mit DieGartenMutti86_`;
@@ -1847,14 +1901,28 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       
+      const pSpan = document.getElementById(`portionCount-${recipeId}`);
+      const portions = pSpan ? parseInt(pSpan.innerText) : 3;
+      
       const originalText = btn.innerHTML;
       btn.innerHTML = '⏳ Speichere...';
       
-      let content = `🛒 Einkauf für ${r.title}:\n`;
+      let content = `🛒 Einkauf für ${r.title} (${portions} P.):\n`;
       let lines = (r.zutatenListe || '').split('\n');
       lines.forEach(line => {
         let cleanLine = line.replace(/•/g, '').trim();
-        if(cleanLine) content += `- ${cleanLine}\n`;
+        if(cleanLine) {
+           let updatedLine = cleanLine.replace(/^([\d.,]+)\s*(g|ml|EL|TL|Stück|Dose|Prise)?/i, (match, num, unit) => {
+              let parsedNum = parseFloat(num.replace(',', '.'));
+              if(!isNaN(parsedNum)) {
+                let calcNum = parsedNum * portions;
+                let formattedNum = Number.isInteger(calcNum) ? calcNum : calcNum.toFixed(1).replace('.', ',');
+                return `${formattedNum} ${unit || ''}`;
+              }
+              return match;
+           });
+           content += `- ${updatedLine}\n`;
+        }
       });
 
       try {
@@ -1872,12 +1940,62 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
       }
     }
 
+    function updatePortion(recipeId, change) {
+      const pSpan = document.getElementById(`portionCount-${recipeId}`);
+      if(!pSpan) return;
+      
+      let currentPortions = parseInt(pSpan.innerText) || 3;
+      currentPortions += change;
+      if (currentPortions < 1) currentPortions = 1;
+      if (currentPortions > 20) currentPortions = 20;
+      
+      pSpan.innerText = currentPortions;
+      
+      // Update Macros
+      const r = recipes.find(x => String(x.id) === String(recipeId));
+      if (!r) return;
+      
+      const tempSide = document.getElementById(`sideSelect-${recipeId}`) ? document.getElementById(`sideSelect-${recipeId}`).value : null;
+      const total = calculateTotalNutri(r, tempSide, currentPortions);
+      
+      document.getElementById(`valKcal-${recipeId}`).innerText = total.kcal;
+      document.getElementById(`valProt-${recipeId}`).innerText = `${total.prot} g`;
+      document.getElementById(`valKh-${recipeId}`).innerText = `${total.kh} g`;
+      document.getElementById(`valFat-${recipeId}`).innerText = `${total.fat} g`;
+      
+      // Update Zutatenliste dynamisch (Basis ist 1 Portion, da r.zutatenListe in der DB als 1 P. hinterlegt sein sollte)
+      const ingBox = document.getElementById(`ingredientsBox-${recipeId}`);
+      if(ingBox && r.zutatenListe) {
+         let lines = r.zutatenListe.split('\n');
+         let newHtml = '';
+         lines.forEach(line => {
+            let cleanLine = line.replace(/•/g, '').trim();
+            if(cleanLine) {
+               let updatedLine = cleanLine.replace(/^([\d.,]+)\s*(g|ml|EL|TL|Stück|Dose|Prise)?/i, (match, num, unit) => {
+                  let parsedNum = parseFloat(num.replace(',', '.'));
+                  if(!isNaN(parsedNum)) {
+                    let calcNum = parsedNum * currentPortions;
+                    let formattedNum = Number.isInteger(calcNum) ? calcNum : calcNum.toFixed(1).replace('.', ',');
+                    return `${formattedNum} ${unit || ''}`;
+                  }
+                  return match;
+               });
+               newHtml += `• ${escapeHtml(updatedLine)}\n`;
+            } else {
+               newHtml += '\n';
+            }
+         });
+         ingBox.innerHTML = newHtml;
+      }
+    }
+
     function openDetails(recipeId, tempSide = null) {
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       const withoutSide = hasNoSide(r);
       const activeSide = tempSide || r.selectedSide;
-      const total = calculateTotalNutri(r, activeSide);
+      const defaultPortions = 3; 
+      const total = calculateTotalNutri(r, activeSide, defaultPortions);
       const isFav = favorites.includes(String(r.id));
       const safeId = escapeHtml(r.id);
       
@@ -1886,13 +2004,38 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         sideSelectHtml = `
           <div class="swap-row" style="margin-bottom: 14px;">
             <label>🍽️ Beilage wählen:</label>
-            <select onchange="updateModalSide('${safeId}', this.value)">
+            <select id="sideSelect-${safeId}" onchange="updateModalSide('${safeId}', this.value)">
         `;
         for (const [key, side] of Object.entries(sideOptions)) {
           sideSelectHtml += `<option value="${key}" ${activeSide === key ? 'selected' : ''}>${escapeHtml(side.name)}</option>`;
         }
         sideSelectHtml += `</select></div>`;
       }
+      
+      let initialZutaten = '';
+      if(r.zutatenListe) {
+         let lines = r.zutatenListe.split('\n');
+         lines.forEach(line => {
+            let cleanLine = line.replace(/•/g, '').trim();
+            if(cleanLine) {
+               let updatedLine = cleanLine.replace(/^([\d.,]+)\s*(g|ml|EL|TL|Stück|Dose|Prise)?/i, (match, num, unit) => {
+                  let parsedNum = parseFloat(num.replace(',', '.'));
+                  if(!isNaN(parsedNum)) {
+                    let calcNum = parsedNum * defaultPortions;
+                    let formattedNum = Number.isInteger(calcNum) ? calcNum : calcNum.toFixed(1).replace('.', ',');
+                    return `${formattedNum} ${unit || ''}`;
+                  }
+                  return match;
+               });
+               initialZutaten += `• ${escapeHtml(updatedLine)}\n`;
+            } else {
+               initialZutaten += '\n';
+            }
+         });
+      } else {
+        initialZutaten = 'Keine genaue Zutatenliste hinterlegt.';
+      }
+
       const sheet = document.getElementById('sheetContent');
       sheet.innerHTML = `
         <div style="font-size: 2.4rem; margin-bottom: 8px; text-align:center;">${escapeHtml(r.emoji || '🍲')}</div>
@@ -1908,15 +2051,21 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
           </button>
         </div>
 
+        <!-- NEU: Portionen Wähler -->
+        <div class="portion-row">
+          <label>👥 Für wie viele kochen?</label>
+          <button class="portion-btn" onclick="updatePortion('${safeId}', -1)">-</button>
+          <span class="portion-display" id="portionCount-${safeId}">${defaultPortions}</span>
+          <button class="portion-btn" onclick="updatePortion('${safeId}', 1)">+</button>
+        </div>
+
         ${sideSelectHtml}
         
         <div class="nutri-carousel">
-          <div class="nutri-pill"><span>Kcal</span><strong>${total.kcal}</strong></div>
-          <div class="nutri-pill"><span style="color:#3fb950;">Eiweiß</span><strong style="color:#3fb950;">${total.prot} g</strong></div>
-          <div class="nutri-pill"><span>Kohlenh.</span><strong>${total.kh} g</strong></div>
-          <div class="nutri-pill"><span>Fett</span><strong>${total.fat} g</strong></div>
-          <div class="nutri-pill"><span>Zucker</span><strong>${total.sugar} g</strong></div>
-          <div class="nutri-pill"><span>Ballastst.</span><strong>${total.fiber} g</strong></div>
+          <div class="nutri-pill"><span>Kcal</span><strong id="valKcal-${safeId}">${total.kcal}</strong></div>
+          <div class="nutri-pill"><span style="color:#3fb950;">Eiweiß</span><strong id="valProt-${safeId}" style="color:#3fb950;">${total.prot} g</strong></div>
+          <div class="nutri-pill"><span>Kohlenh.</span><strong id="valKh-${safeId}">${total.kh} g</strong></div>
+          <div class="nutri-pill"><span>Fett</span><strong id="valFat-${safeId}">${total.fat} g</strong></div>
         </div>
         
         <div class="health-indicator">
@@ -1925,7 +2074,7 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         </div>
         
         <div class="section-title">🛒 Zutatenliste:</div>
-        <div class="ingredients-box">${escapeHtml(r.zutatenListe || 'Keine genaue Zutatenliste hinterlegt.')}</div>
+        <div class="ingredients-box" id="ingredientsBox-${safeId}">${initialZutaten}</div>
         
         <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Liste per WhatsApp senden</button>
         <button class="add-notes-btn" onclick="addRecipeToAppNotes('${safeId}', this)">📝 Zutaten in App-Notizen sichern</button>
@@ -1967,7 +2116,15 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
     function updateModalSide(recipeId, newSide) {
       const rec = recipes.find(x => String(x.id) === String(recipeId));
       if (rec) rec.selectedSide = newSide;
-      openDetails(recipeId, newSide);
+      
+      const currentPortions = parseInt(document.getElementById(`portionCount-${recipeId}`).innerText) || 3;
+      
+      const total = calculateTotalNutri(rec, newSide, currentPortions);
+      document.getElementById(`valKcal-${recipeId}`).innerText = total.kcal;
+      document.getElementById(`valProt-${recipeId}`).innerText = `${total.prot} g`;
+      document.getElementById(`valKh-${recipeId}`).innerText = `${total.kh} g`;
+      document.getElementById(`valFat-${recipeId}`).innerText = `${total.fat} g`;
+      
       filterRecipes();
     }
 
@@ -2110,18 +2267,22 @@ Tipp: Über den Button "🌱 Garten-App" könnt ihr jederzeit sofort zurück in 
         
         let matchesSubFilter = true;
         if (currentSubFilter) {
-          const inTitle = (r.title || '').toLowerCase().includes(currentSubFilter);
-          const inIngredients = r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(currentSubFilter));
-          const inZutatenListe = (r.zutatenListe || '').toLowerCase().includes(currentSubFilter);
+          // Strenge Suche nach ganzen Wörtern
+          const regex = new RegExp(`\\b${currentSubFilter}\\b`, 'i');
+          const inTitle = regex.test(r.title || '');
+          const inIngredients = r.ingredients && r.ingredients.some(ing => regex.test(ing));
+          const inZutatenListe = regex.test(r.zutatenListe || '');
           matchesSubFilter = inTitle || inIngredients || inZutatenListe;
         }
         
         let matchesSearch = true;
         if (searchTerms.length > 0) {
           matchesSearch = searchTerms.every(term => {
-            const inTitle = (r.title || '').toLowerCase().includes(term);
-            const inIng = r.ingredients && r.ingredients.some(ing => ing.toLowerCase().includes(term));
-            const inList = (r.zutatenListe || '').toLowerCase().includes(term);
+            // Strenge Suche für jedes eingegebene Wort
+            const regex = new RegExp(`\\b${term}\\b`, 'i');
+            const inTitle = regex.test(r.title || '');
+            const inIng = r.ingredients && r.ingredients.some(ing => regex.test(ing));
+            const inList = regex.test(r.zutatenListe || '');
             return inTitle || inIng || inList;
           });
         }
