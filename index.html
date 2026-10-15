@@ -467,23 +467,25 @@
       filterRecipes();
     }
 
-    // VOLLSTÄNDIGE MAHLZEITEN-ZUORDNUNG (Inkl. Brote & Stullen als Abendessen)
+    // PRÄZISE MAHLZEITEN-ZUORDNUNG (Keine falschen Quark- oder Bohnen-Eintritte mehr)
     function getMealType(r) {
       const t = (r.title || '').toLowerCase();
       const c = Array.isArray(r.category) ? r.category.join(' ').toLowerCase() : '';
       
-      // 1. Frühstück
-      if (t.includes('frühstück') || (t.includes('bowl') && t.includes('schoko')) || t.includes('pancake')) return 'fruehstueck';
+      // 1. Frühstück: Nur noch echtes Frühstück, Omeletts, Rührei, Pancakes, Porridge
+      if (t.includes('frühstück') || t.includes('omelett') || t.includes('rührei') || t.includes('pancake') || t.includes('pfannkuchen') || t.includes('porridge') || t.includes('smoothie') || t.includes('toast') || c.includes('fruehstueck')) {
+        return 'fruehstueck';
+      }
       
-      // 2. Nachtisch / Dessert
+      // 2. Nachtisch / Dessert (Hier landet jetzt auch Chia-Pudding & Quark-Desserts sauber)
       if (t.includes('nachtisch') || c.includes('nachtisch')) return 'nachtisch';
-      if (t.includes('dessert') || t.includes('cheesecake') || t.includes('mousse') || t.includes('tassenkuchen') || t.includes('fettbomben') || t.includes('pudding') || t.includes('creme') || t.includes('tiramisu') || t.includes('cups') || c.includes('dessert')) return 'dessert';
+      if (t.includes('dessert') || t.includes('cheesecake') || t.includes('mousse') || t.includes('tassenkuchen') || t.includes('fettbomben') || t.includes('pudding') || t.includes('creme') || t.includes('tiramisu') || t.includes('cups') || t.includes('chia') || (t.includes('quark') && (t.includes('dessert') || t.includes('schüssel') || t.includes('beeren'))) || c.includes('dessert')) return 'dessert';
       
       // 3. Suppen und Eintöpfe -> Immer Mittagessen
       if (t.includes('suppe') || t.includes('eintopf')) return 'mittag';
       
-      // 4. Echte typische Abendessen (Brote, Stullen, Salate, Omeletts, leichte Wraps, Feta überbacken)
-      if (t.includes('brot') || t.includes('stulle') || t.includes('salat') || t.includes('omelett') || t.includes('wrap') || t.includes('schiffchen') || (t.includes('feta') && t.includes('gebacken')) || t.includes('rührei') || t.includes('spiegelei') || c.includes('abend')) {
+      // 4. Abendessen (Brote, Stullen, Salate, Wraps etc.)
+      if (t.includes('brot') || t.includes('stulle') || t.includes('salat') || t.includes('wrap') || t.includes('schiffchen') || (t.includes('feta') && t.includes('gebacken')) || c.includes('abend')) {
         return 'abend';
       }
       
