@@ -453,22 +453,54 @@
     </div>
   </div>
 
+  <!-- NEUES, AUSFÜHRLICHES READ.TXT MODAL -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
-      <h2>📄 Alle Funktionen der App</h2>
+      <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 8px;">📄 Das ultimative App-Handbuch</h2>
       <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
-        <p>Diese App ist ein intelligenter Begleiter für Ernährung, Einkaufsplanung und Alltag.</p>
-        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">🤖 KI-Spitzenkoch & Kamera-Scan</h3>
-        <ul style="padding-left: 20px; margin-bottom: 10px;">
-          <li><b>Text-zu-Rezept:</b> Gib Reste-Zutaten ein und die KI erstellt ein komplettes, berechnetes Rezept.</li>
-          <li><b>Foto-Scan:</b> Fotografiere ein Kochbuch oder Produkt – die KI liest das Bild aus und trägt alles automatisch ein.</li>
+        <p>Willkommen in deiner persönlichen, KI-gestützten Ernährungszentrale. Diese App vereint modernstes Web-Design mit echtem ernährungswissenschaftlichen Know-how. Hier ist alles, was die App kann:</p>
+        
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🤖 Gemini KI-Spitzenkoch & Vision-Scan</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher, Zeitschriften oder handgeschriebene Zettel. Die KI analysiert das Foto und extrahiert den Rezepttitel, Zutaten, Mengen und Arbeitsschritte vollautomatisch in die Datenbank.</li>
+          <li><b>Reste-Verwertung per Text:</b> Gib einfach Zutaten ein (z. B. "Hähnchen, Spinat, Feta") und die KI kreiert dir ein maßgeschneidertes, komplett berechnetes Rezept.</li>
+          <li><b>Modell-Auswahl & Deep Think:</b> Wähle flexibel zwischen schnellen KI-Modellen (3.8 Flash) für den Alltag oder tiefgründigen Analyse-Modellen (4 Argon) für komplexe Rezept-Bilder. Du kannst sogar den "Denkaufwand" der KI manuell steuern.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🍳 Dynamisches Makro- & Rezept-Management</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Smarte Portionierung:</b> Alle Rezepte sind präzise auf 1 Portion normiert. Änderst du die Personenanzahl, berechnet die App die Zutatenmengen sowie Kalorien, Eiweiß, Kohlenhydrate und Fett in Echtzeit hoch oder runter.</li>
+          <li><b>Live Beilagen-Tausch:</b> Tausche z. B. Zucchini-Nudeln gegen Vollkorn-Spaghetti – die App passt die Nährwerte und den Blutzucker-/Insulin-Einfluss sofort live an.</li>
+          <li><b>Medizinischer Doc-Check:</b> Ernährungsmedizinische und physiologische Tipps zu jedem Rezept (z. B. Blutzucker-Wirkung, Aminosäurenprofil, Entzündungshemmung).</li>
+          <li><b>Clevere Filter:</b> Finde über das Kategorien-Menü sofort Gerichte für den Airfryer, Low-Carb-Meals oder High-Protein-Bomben (automatisch gefiltert auf >25g Eiweiß pro Portion).</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🩸 Zyklus-Ernährungsplaner</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Hormonelle Anpassung:</b> Berechnet die aktuelle Zyklusphase (Menstruation, Follikel, Eisprung, Luteal) basierend auf dem eingegebenen Startdatum.</li>
+          <li><b>Maßgeschneiderte Ernährung:</b> Gibt exakte Empfehlungen, welche Nährstoffe (z. B. Eisen, komplexe Kohlenhydrate, Fette) der Körper in der jeweiligen Phase gerade am meisten braucht, um Heißhunger zu vermeiden und den Stoffwechsel optimal zu unterstützen.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">📝 Live-Einkaufslisten & Notizen</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>1-Klick-Einkauf:</b> Mit nur einem Klick landen alle Zutaten eines Rezepts (exakt berechnet auf die eingestellte Portionen-Anzahl) auf der gemeinsamen Einkaufsliste.</li>
+          <li><b>WhatsApp-Export:</b> Teile exakte Einkaufslisten direkt über WhatsApp mit der Familie.</li>
+          <li><b>Echtzeit-Sync:</b> Notizen synchronisieren sich über Supabase sofort in der Cloud. Wähle aus, wer die Notiz geschrieben hat oder trage eigene Namen ein.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">⚙️ Profi-Tools & Setup</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Eier-Timer:</b> Perfekte Frühstückseier dank direkt eingebundenem Pop-up-Timer auf der Startseite.</li>
+          <li><b>Cloud & Offline-Sicherheit:</b> Alle Rezepte liegen sicher in der Supabase-Datenbank. Über das Setup kannst du jederzeit ein JSON-Backup herunterladen oder wieder einspielen.</li>
+          <li><b>4 Premium-Themes:</b> Wähle passend zu deiner Stimmung zwischen Warm Dark, Light Mode, Berry Pink und Tech Dark.</li>
         </ul>
       </div>
       <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
     </div>
   </div>
 
+  <!-- IMPRESSUM MODAL (MIT PRIVAT-HINWEIS UND ADRESSE) -->
   <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
     <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
