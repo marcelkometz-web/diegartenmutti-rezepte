@@ -325,7 +325,8 @@
   </header>
 
   <div class="quick-actions-bar">
-    <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
+    <!-- _blank sorgt dafür, dass die Rezept-App im Hintergrund offen und stabil bleibt! -->
+    <button onclick="window.open('https://marcelkometz-web.github.io/Mona/', '_blank')" class="quick-btn highlight">🌱 Garten-App</button>
     <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
     <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
     <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
