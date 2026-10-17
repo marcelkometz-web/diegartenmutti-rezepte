@@ -542,9 +542,9 @@ async function generateWithGemini() {
   if (!promptText && !capturedBase64Image) { alert('Bitte Text oder Foto!'); return; }
   btn.innerText = `⏳ Gemini ${mCfg.label} arbeitet...`; btn.disabled = true;
 
-  if (!sharedGeminiApiKey || !sharedGeminiApiKey.startsWith('AIza')) await loadSharedGeminiKeyFromDB();
+  if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) await loadSharedGeminiKeyFromDB();
 
-  if (sharedGeminiApiKey && sharedGeminiApiKey.startsWith('AIza')) {
+  if (sharedGeminiApiKey && sharedGeminiApiKey.length > 20) {
     let sysPrompt = `Du bist Spitzenkoch für Low-Carb. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
     let contentParts = [{ text: sysPrompt + "\n\nRezeptwunsch: " + (promptText || 'Erstelle ein Rezept aus diesem Foto.') }];
     if (capturedBase64Image) contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
