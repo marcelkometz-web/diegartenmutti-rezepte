@@ -6,7 +6,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let searchTimeout = null;
 let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
 let currentSelectedPortions = 1; 
-let sharedGeminiApiKey = MASTER_GEMINI_API_KEY;
+let sharedGeminiApiKey = MASTER_GEMINI_API_KEY; 
 
 function lockScroll() { document.body.classList.add('modal-open'); }
 function unlockScroll() { document.body.classList.remove('modal-open'); }
