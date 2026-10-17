@@ -6,22 +6,59 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let searchTimeout = null;
 let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
 let currentSelectedPortions = 1; 
-let sharedGeminiApiKey = MASTER_GEMINI_API_KEY; 
+let sharedGeminiApiKey = "";
 
 function lockScroll() { document.body.classList.add('modal-open'); }
 function unlockScroll() { document.body.classList.remove('modal-open'); }
 
-function saveAdminPin() {
-  const pin = document.getElementById('adminPinInput').value;
-  localStorage.setItem('gartenAdminPin', pin);
-  alert(pin === ADMIN_PIN ? '✅ Passwort korrekt gespeichert! Du hast jetzt volle Admin-Rechte.' : '⚠️ Passwort gespeichert, es ist aber falsch!');
+let secureAdminPin = null;
+
+// Holt das Passwort unsichtbar im Hintergrund aus Supabase
+async function fetchAdminPin() {
+  if (secureAdminPin) return secureAdminPin; 
+  try {
+    const { data, error } = await supabaseClient
+      .from('Notizen')
+      .select('content')
+      .eq('author', 'SYSTEM_ADMIN_PIN')
+      .limit(1);
+    if (!error && data && data.length > 0) {
+      secureAdminPin = data[0].content.trim();
+    }
+  } catch (e) { console.error(e); }
+  return secureAdminPin;
 }
 
-function checkAdmin() {
-  if (localStorage.getItem('gartenAdminPin') === ADMIN_PIN) return true;
+// Speichert den PIN aus den Einstellungen
+async function saveAdminPin() {
+  const realPin = await fetchAdminPin();
+  const pin = document.getElementById('adminPinInput').value;
+  localStorage.setItem('gartenAdminPin', pin);
+  if (realPin && pin === realPin) {
+    alert('✅ Passwort korrekt gespeichert! Du hast jetzt volle Admin-Rechte.');
+  } else {
+    alert('⚠️ Passwort gespeichert, es ist aber falsch!');
+  }
+}
+
+// Prüft das Passwort (mit lokalem Speicher, damit du es nur einmal eingeben musst)
+async function checkAdmin() {
+  const realPin = await fetchAdminPin();
+  if (!realPin) {
+    alert('Systemfehler: Admin-PIN nicht in Datenbank gefunden! (Bitte als SYSTEM_ADMIN_PIN in Supabase anlegen)');
+    return false;
+  }
+
+  const saved = localStorage.getItem('gartenAdminPin');
+  if (saved === realPin) return true; // Du bist bereits eingeloggt!
+  
   const input = prompt('🔒 Geschützter Bereich! Bitte Admin-Passwort eingeben:');
-  if (input === ADMIN_PIN) return true;
-  alert('❌ Falsches Passwort! Zugriff verweigert.'); return false;
+  if (input === realPin) {
+    localStorage.setItem('gartenAdminPin', realPin); // Speichert es für dich ab
+    return true;
+  }
+  alert('❌ Falsches Passwort! Zugriff verweigert.');
+  return false;
 }
 
 // Bild-Komprimierung im Browser vor dem Upload
@@ -426,7 +463,7 @@ function openDetails(recipeId) {
 }
 
 async function saveRecipeTipps(recipeId) {
-  if (!checkAdmin()) return;
+  if (!(await checkAdmin())) return;
   const newTipps = document.getElementById(`editTipps-${recipeId}`).value;
   const r = recipes.find(x => String(x.id) === String(recipeId)); if (r) r.tipps = newTipps;
   await supabaseClient.from('Rezepte').update({ tipps: newTipps }).eq('id', recipeId);
@@ -434,7 +471,7 @@ async function saveRecipeTipps(recipeId) {
 }
 
 async function deleteRecipeFromDB(recipeId) {
-  if (!checkAdmin()) return;
+  if (!(await checkAdmin())) return;
   if (!confirm('Möchtest du dieses Rezept wirklich dauerhaft löschen?')) return;
   await supabaseClient.from('Rezepte').delete().eq('id', recipeId);
   closeSheetForce(); triggerRefresh();
@@ -647,7 +684,7 @@ function fillModalFields(data) {
 }
 
 async function saveNewRecipe() {
-  if (!checkAdmin()) return;
+  if (!(await checkAdmin())) return;
   const title = document.getElementById('newTitle').value.trim();
   if (!title) { alert('Titel fehlt!'); return; }
   const saveBtn = document.querySelector('.btn-save'); 
@@ -711,7 +748,7 @@ function filterRecipesForCycle() { handleNavCategory('fruehstueck'); }
 function toggleCustomAuthorInput(val) { document.getElementById('noteAuthorCustom').style.display = val === 'custom' ? 'block' : 'none'; }
 async function loadNotesFromSupabase() {
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
-  const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY');
+  const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
     <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id}, ${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author||'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
   `).join('');
