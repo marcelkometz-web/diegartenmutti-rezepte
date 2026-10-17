@@ -81,7 +81,7 @@ const GEMINI_MODELS = {
   'argon': { label: '4 Argon', sub: 'Komplexe Aufgaben (Vision)', apiModels: ['gemini-2.5-pro', 'gemini-2.5-flash'], temp: 0.82 }
 };
 let selectedGeminiModelKey = localStorage.getItem('gartenMuttiGeminiModel') || 'argon';
-let selectedThinkingEffort = localStorage.getItem('gartenMuttiThinkingEffort') || 'standard';
+let selectedThinkingEffort = localStorage.getItem('gartenMuttiThinkingEffort') || 'mittel';
 
 const sideOptions = {
   "keine": { name: "Ohne Extra-Beilage", kcal: 0, kh: 0, sugar: 0, fat: 0, prot: 0, insulin: "Optimal stabil" },
@@ -502,9 +502,9 @@ function openAddModal() {
         <div class="gemini-thinking-row">
           <span>Denkaufwand</span>
           <select class="gemini-thinking-select" onchange="changeThinkingEffort(this.value)">
-            <option value="schnell" ${selectedThinkingEffort === 'schnell' ? 'selected' : ''}>⚡ Schnell</option>
-            <option value="standard" ${selectedThinkingEffort === 'standard' ? 'selected' : ''}>🧠 Standard</option>
-            <option value="deep" ${selectedThinkingEffort === 'deep' ? 'selected' : ''}>🔬 Deep Think</option>
+            <option value="niedrig" ${selectedThinkingEffort === 'niedrig' ? 'selected' : ''}>⚡ Niedrig</option>
+            <option value="mittel" ${selectedThinkingEffort === 'mittel' ? 'selected' : ''}>🧠 Mittel</option>
+            <option value="hoch" ${selectedThinkingEffort === 'hoch' ? 'selected' : ''}>🔬 Hoch</option>
           </select>
         </div>
       </div>
@@ -565,7 +565,8 @@ async function generateWithGemini() {
   if (capturedBase64Image) {
     contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
   }
-  const candidateModels = mCfg.apiModels;⁠
+  
+  const candidateModels = mCfg.apiModels;
   
   for (const modelName of candidateModels) {
     try {
