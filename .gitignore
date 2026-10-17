@@ -1,0 +1,9 @@
+# Abhängigkeiten
+node_modules/
+
+# Sensible Konfigurationsdateien (Zugangsdaten, API-Keys)
+config.js
+
+# OS-spezifische Dateien (Mac/Windows unsichtbare Dateien)
+.DS_Store
+Thumbs.db
