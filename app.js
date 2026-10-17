@@ -538,35 +538,70 @@ function openAddModal() {
 
 async function generateWithGemini() {
   const promptText = document.getElementById('kiPromptInput').value.trim();
-  const btn = document.getElementById('kiGenBtn'); const mCfg = GEMINI_MODELS[selectedGeminiModelKey] || GEMINI_MODELS['argon'];
+  const btn = document.getElementById('kiGenBtn'); 
+  const mCfg = GEMINI_MODELS[selectedGeminiModelKey] || GEMINI_MODELS['argon'];
+  
   if (!promptText && !capturedBase64Image) { alert('Bitte Text oder Foto!'); return; }
-  btn.innerText = `⏳ Gemini ${mCfg.label} arbeitet...`; btn.disabled = true;
+  
+  btn.innerText = `⏳ KI lädt...`; 
+  btn.disabled = true;
 
-  if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) await loadSharedGeminiKeyFromDB();
+  // Schlüssel laden, falls noch nicht im Speicher
+  if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
+    await loadSharedGeminiKeyFromDB();
+  }
 
-  if (sharedGeminiApiKey && sharedGeminiApiKey.length > 20) {
-    let sysPrompt = `Du bist Spitzenkoch für Low-Carb. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
-    let contentParts = [{ text: sysPrompt + "\n\nRezeptwunsch: " + (promptText || 'Erstelle ein Rezept aus diesem Foto.') }];
-    if (capturedBase64Image) contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
-    
-    const candidateModels = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
-    for (const modelName of candidateModels) {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: contentParts }], generationConfig: { temperature: mCfg.temp, responseMimeType: "application/json" } })
-        });
-        if (response.ok) {
-          const resData = await response.json(); let rawJson = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          fillModalFields(JSON.parse(rawJson.replace(/```json/g, '').replace(/```/g, '').trim()));
-          btn.innerText = `✅ Erfolgreich erstellt!`; setTimeout(() => { btn.innerText = '🪄 Mit Gemini automatisch ausfüllen'; btn.disabled = false; }, 2200); return;
-        }
-      } catch (err) {}
+  // Wenn der Schlüssel immer noch fehlt:
+  if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
+    alert("Fehler: Kein gültiger API-Schlüssel in der Datenbank gefunden! (Suche nach Autor 'SYSTEM_GEMINI_KEY')");
+    btn.innerText = '🪄 Mit Gemini ausfüllen'; 
+    btn.disabled = false;
+    return;
+  }
+
+  let sysPrompt = `Du bist Spitzenkoch für Low-Carb. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
+  let contentParts = [{ text: sysPrompt + "\n\nRezeptwunsch: " + (promptText || 'Erstelle ein Rezept aus diesem Foto.') }];
+  
+  if (capturedBase64Image) {
+    contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
+  }
+  
+  const candidateModels = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
+  
+  for (const modelName of candidateModels) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ 
+          contents: [{ parts: contentParts }], 
+          generationConfig: { temperature: mCfg.temp, responseMimeType: "application/json" } 
+        })
+      });
+      
+      if (response.ok) {
+        const resData = await response.json(); 
+        let rawJson = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        fillModalFields(JSON.parse(rawJson.replace(/```json/g, '').replace(/```/g, '').trim()));
+        btn.innerText = `✅ Erfolgreich erstellt!`; 
+        setTimeout(() => { btn.innerText = '🪄 Mit Gemini automatisch ausfüllen'; btn.disabled = false; }, 2200); 
+        return; 
+      } else {
+        const errorData = await response.json();
+        console.error("API Fehler:", errorData);
+        alert(`Google API Fehler (${modelName}): ` + (errorData.error?.message || "Unbekannter Fehler"));
+        btn.innerText = '🪄 Mit Gemini ausfüllen'; 
+        btn.disabled = false;
+        return; // Stoppt hier und zeigt den Fehler am Bildschirm!
+      }
+    } catch (err) {
+      console.error("Fetch Error:", err);
     }
   }
-  setTimeout(() => {
-    fillModalFields({ title: "Cremige Gemüse-Pfanne", emoji: "🥘", score: "A", mealCat: "mittag", kcal: 375, prot: 38, kh: 6.5, sugar: 2, fat: 15, airfryer: false, ingredients: "gemüse, frischkäse, lowcarb", zutaten_liste: "• 160 g Fleisch\n• 150 g Gemüse", prep: "Schneiden.", stove_step: "Anbraten.", doc_check: "Gesund.", tipps: "" });
-    btn.innerText = `✅ Ausgefüllt!`; setTimeout(() => { btn.innerText = '🪄 Mit Gemini ausfüllen'; btn.disabled = false; }, 2200);
-  }, 400);
+
+  alert("Konnte keine Verbindung zur Gemini API herstellen.");
+  btn.innerText = '🪄 Mit Gemini ausfüllen'; 
+  btn.disabled = false;
 }
 
 function fillModalFields(data) {
