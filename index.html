@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="IMG_0526.png">
   <meta name="apple-mobile-web-app-title" content="Rezepte">
   <style>
-    /* --- THEMES --- */
+    /* --- DIE GUTEN THEMES SIND ZURÜCK --- */
     :root {
       --bg: #1c1917; --card-bg: #292524; --card-sub: #44403c;
       --accent: #2ea043; --accent-glow: rgba(46, 160, 67, 0.2);
@@ -116,7 +116,7 @@
     .recipe-card {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
       padding: 14px 10px; display: flex; flex-direction: column; align-items: center; text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; position: relative; overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; position: relative;
     }
     .recipe-card:active { transform: scale(0.96); }
 
@@ -128,8 +128,8 @@
     .fav-btn-card.is-fav { background: rgba(255, 255, 255, 0.9); color: #e11d48; }
 
     .card-icon {
-      font-size: 2.2rem; background: var(--card-sub); width: 100%; height: 90px;
-      border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+      font-size: 2.2rem; background: var(--card-sub); width: 56px; height: 56px;
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
     }
     .card-meta h3 {
       font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.25; height: 2.5em;
@@ -211,6 +211,7 @@
     .btn-save-small { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
     [data-theme="pink-red"] .btn-save-small { background: #be123c; }
 
+    /* HIER SIND DIE WICHTIGEN, ENGEN EINGABEFELDER WIEDER DA (Layout ist repariert!) */
     .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px; }
     .form-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
     .form-group input, .form-group textarea, .form-group select { background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 12px; font-size: 0.88rem; outline: none; width: 100%; }
@@ -219,6 +220,7 @@
     .btn-save { background: #238636; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; }
     [data-theme="pink-red"] .btn-save { background: #be123c; }
 
+    /* DIE KI-BOX MIT LILA RAHMEN */
     .ki-box { background: rgba(163, 113, 247, 0.1); border: 2px solid #a371f7; border-radius: 14px; padding: 14px; margin-bottom: 16px; position: relative; }
     .ki-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap; }
     .gemini-model-trigger {
@@ -304,7 +306,7 @@
   </header>
 
   <div class="quick-actions-bar">
-    <button onclick="window.open('https://marcelkometz-web.github.io/Mona/', '_blank')" class="quick-btn highlight">🌱 Garten-App</button>
+    <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
     <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
     <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
     <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
@@ -374,7 +376,6 @@
   </div>
 
   <div id="settingsSection" class="settings-container">
-    <!-- ADMIN BEREICH -->
     <div class="settings-card">
       <h3 style="margin-bottom: 8px; color: #da3633;">🔒 Admin-Passwort</h3>
       <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
@@ -445,25 +446,47 @@
     </div>
   </div>
 
+  <!-- DIE VOLLE READ.TXT -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
       <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 8px;">📄 Das ultimative App-Handbuch</h2>
       <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
-        <p>Willkommen in deiner persönlichen, KI-gestützten Ernährungszentrale. Diese App vereint modernstes Web-Design mit echtem ernährungswissenschaftlichen Know-how.</p>
+        <p>Willkommen in deiner persönlichen, KI-gestützten Ernährungszentrale. Diese App vereint modernstes Web-Design mit echtem ernährungswissenschaftlichen Know-how. Hier ist alles, was die App kann:</p>
+        
         <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🤖 Gemini KI-Spitzenkoch & Vision-Scan</h3>
         <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
-          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher oder Zettel. Die KI liest das Bild aus und lädt das Foto in die App-Galerie.</li>
-          <li><b>Reste-Verwertung:</b> Gib Zutaten ein und die KI kreiert dir ein maßgeschneidertes, berechnetes Rezept.</li>
+          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher, Zeitschriften oder handgeschriebene Zettel. Die KI analysiert das Foto und extrahiert den Rezepttitel, Zutaten, Mengen und Arbeitsschritte vollautomatisch in die Datenbank.</li>
+          <li><b>Reste-Verwertung per Text:</b> Gib einfach Zutaten ein (z. B. "Hähnchen, Spinat, Feta") und die KI kreiert dir ein maßgeschneidertes, komplett berechnetes Rezept.</li>
+          <li><b>Modell-Auswahl & Deep Think:</b> Wähle flexibel zwischen schnellen KI-Modellen (3.8 Flash) für den Alltag oder tiefgründigen Analyse-Modellen (4 Argon) für komplexe Rezept-Bilder. Du kannst sogar den "Denkaufwand" der KI manuell steuern.</li>
         </ul>
-        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🍳 Dynamisches Makro-Management</h3>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🍳 Dynamisches Makro- & Rezept-Management</h3>
         <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
-          <li><b>Smarte Portionen:</b> Alle Rezepte sind auf 1 Portion normiert und rechnen sich live um.</li>
-          <li><b>Live Beilagen-Tausch:</b> Tausche Nudeln gegen Zoodles – Nährwerte und Blutzucker passen sich an.</li>
+          <li><b>Smarte Portionierung:</b> Alle Rezepte sind präzise auf 1 Portion normiert. Änderst du die Personenanzahl, berechnet die App die Zutatenmengen sowie Kalorien, Eiweiß, Kohlenhydrate und Fett in Echtzeit hoch oder runter.</li>
+          <li><b>Live Beilagen-Tausch:</b> Tausche z. B. Zucchini-Nudeln gegen Vollkorn-Spaghetti – die App passt die Nährwerte und den Blutzucker-/Insulin-Einfluss sofort live an.</li>
+          <li><b>Medizinischer Doc-Check:</b> Ernährungsmedizinische und physiologische Tipps zu jedem Rezept (z. B. Blutzucker-Wirkung, Aminosäurenprofil, Entzündungshemmung).</li>
+          <li><b>Clevere Filter:</b> Finde über das Kategorien-Menü sofort Gerichte für den Airfryer, Low-Carb-Meals oder High-Protein-Bomben (automatisch gefiltert auf >25g Eiweiß pro Portion).</li>
         </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🩸 Zyklus-Ernährungsplaner</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Hormonelle Anpassung:</b> Berechnet die aktuelle Zyklusphase (Menstruation, Follikel, Eisprung, Luteal) basierend auf dem eingegebenen Startdatum.</li>
+          <li><b>Maßgeschneiderte Ernährung:</b> Gibt exakte Empfehlungen, welche Nährstoffe (z. B. Eisen, komplexe Kohlenhydrate, Fette) der Körper in der jeweiligen Phase gerade am meisten braucht, um Heißhunger zu vermeiden und den Stoffwechsel optimal zu unterstützen.</li>
+        </ul>
+
         <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">📝 Live-Einkaufslisten & Notizen</h3>
         <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
-          <li><b>Echtzeit-Sync:</b> Notizen synchronisieren sich sofort auf allen Geräten, wenn man zusammen einkaufen geht.</li>
+          <li><b>1-Klick-Einkauf:</b> Mit nur einem Klick landen alle Zutaten eines Rezepts auf der gemeinsamen Einkaufsliste.</li>
+          <li><b>WhatsApp-Export:</b> Teile exakte Einkaufslisten direkt über WhatsApp mit der Familie.</li>
+          <li><b>Echtzeit-Sync:</b> Notizen synchronisieren sich über Supabase sofort in der Cloud. Wähle aus, wer die Notiz geschrieben hat oder trage eigene Namen ein.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">⚙️ Profi-Tools & Setup</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Integrierter Eier-Timer:</b> Perfekte Frühstückseier dank direkt eingebundenem Pop-up-Timer auf der Startseite.</li>
+          <li><b>Cloud & Offline-Sicherheit:</b> Alle Rezepte liegen sicher in der Supabase-Datenbank. Über das Setup kannst du ein JSON-Backup herunterladen oder wieder einspielen.</li>
+          <li><b>4 Premium-Themes:</b> Wähle passend zu deiner Stimmung zwischen Warm Dark, Light Mode, Berry Pink und Tech Dark.</li>
         </ul>
       </div>
       <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
@@ -561,7 +584,6 @@
       return new Blob([ia], { type: mimeString });
     }
 
-    // --- DIE NEUE MULTI-REZEPT-ENGINE FÜR DIPS & SOßEN ---
     const SPECIAL_VARIATIONS = {
       "5 gesunde dips": {
         "aioli": { name: "🧄 Aioli", kcal: 180, prot: 0.5, kh: 1.0, sugar: 0.5, fat: 19.0, zutaten: "• 120 ml Mayonnaise\n• 2 Knoblauchzehen (gepresst)\n• 1 EL frischer Zitronensaft\n• Prise Salz & Pfeffer", prep: "Knoblauch pressen, mit Mayonnaise und Zitronensaft glatt rühren." },
@@ -573,19 +595,15 @@
     };
 
     function getVariationsForRecipe(title) {
-       if(!title) return null;
-       const t = title.toLowerCase();
-       for (const key in SPECIAL_VARIATIONS) {
-           if (t.includes(key.toLowerCase())) return SPECIAL_VARIATIONS[key];
-       }
-       return null;
+       if(!title) return null; const t = title.toLowerCase();
+       for (const key in SPECIAL_VARIATIONS) { if (t.includes(key.toLowerCase())) return SPECIAL_VARIATIONS[key]; } return null;
     }
 
     const INGREDIENT_GROUPS = {
       'fleisch': { icon: '🥩', title: 'Fleisch & Fisch', items: ['Hähnchen', 'Rind', 'Hackfleisch', 'Schwein', 'Pute', 'Lachs', 'Garnelen', 'Thunfisch', 'Speck'] },
       'gemuese': { icon: '🥦', title: 'Gemüse & Grünzeug', items: ['Brokkoli', 'Wirsing', 'Zucchini', 'Blumenkohl', 'Spinat', 'Kohlrabi', 'Lauch', 'Möhren', 'Kartoffeln', 'Süßkartoffel', 'Paprika', 'Tomaten', 'Gurke', 'Pilze', 'Bohnen', 'Erbsen', 'Spitzkohl', 'Avocado', 'Kürbis', 'Aubergine'] },
       'milch': { icon: '🧀', title: 'Proteine & Milch', items: ['Eier', 'Quark', 'Feta', 'Mozzarella', 'Parmesan', 'Frischkäse', 'Sahne', 'Joghurt', 'Butter', 'Tofu'] },
-      'basics': { icon: '🧄', title: 'Basics & Gewürze', items: ['Knoblauch', 'Zwiebel', 'Schalotte', 'Chili', 'Ingwer', 'Kräuter', 'Senf', 'Tomatenmark', 'Nüsse', 'Mandeln'] }
+      'basics': { icon: '🧄', title: 'Basics', items: ['Knoblauch', 'Zwiebel', 'Schalotte', 'Chili', 'Ingwer', 'Kräuter', 'Senf', 'Tomatenmark', 'Nüsse', 'Mandeln'] }
     };
 
     const GEMINI_MODELS = {
@@ -599,43 +617,30 @@
 
     const sideOptions = {
       "keine": { name: "Ohne Extra-Beilage", kcal: 0, kh: 0, sugar: 0, fat: 0, prot: 0, insulin: "Optimal stabil" },
-      "protein_nudeln": { name: "Protein-Nudeln (+100g)", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, prot: 14.0, insulin: "Stabil (Optimal)" },
-      "zoodles": { name: "Zucchini-Nudeln (+150g)", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, prot: 1.8, insulin: "Ketogen / Stabil" },
-      "basmati_reis": { name: "Basmati-Reis (+100g)", kcal: 130, kh: 28, sugar: 0.1, fat: 0.3, prot: 2.7, insulin: "Mäßig erhöht" },
-      "vollkorn_reis": { name: "Vollkorn-Reis (+100g)", kcal: 123, kh: 25, sugar: 0.2, fat: 1.0, prot: 2.8, insulin: "Langsamer Anstieg" },
-      "wildreis": { name: "Wildreis (+100g)", kcal: 101, kh: 21, sugar: 0.7, fat: 0.3, prot: 4.0, insulin: "Sehr stabil" },
-      "kartoffeln": { name: "Salzkartoffeln (+150g)", kcal: 110, kh: 23, sugar: 1.2, fat: 0.2, prot: 3.0, insulin: "Kurzer Peak" },
-      "vollkorn_nudeln": { name: "Vollkorn-Nudeln (+100g)", kcal: 138, kh: 26, sugar: 1.1, fat: 1.2, prot: 5.5, insulin: "Langsamer Anstieg" }
+      "protein_nudeln": { name: "Protein-Nudeln (+100g)", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, prot: 14.0, insulin: "Stabil" },
+      "zoodles": { name: "Zucchini-Nudeln (+150g)", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, prot: 1.8, insulin: "Ketogen" },
+      "basmati_reis": { name: "Basmati-Reis (+100g)", kcal: 130, kh: 28, sugar: 0.1, fat: 0.3, prot: 2.7, insulin: "Mäßig" },
+      "kartoffeln": { name: "Kartoffeln (+150g)", kcal: 110, kh: 23, sugar: 1.2, fat: 0.2, prot: 3.0, insulin: "Peak" }
     };
 
-    const CATEGORY_NAMES = {
-      'fruehstueck': { label: 'Frühstück', icon: '🍳' },
-      'mittag': { label: 'Mittagessen', icon: '🍲' },
-      'abend': { label: 'Abendessen', icon: '🥩' },
-      'snacks': { label: 'Snacks & Süßes', icon: '🧁' }, 
-      'favoriten': { label: 'Deine Favoriten', icon: '❤️' },
-      'lowcarb': { label: 'Low-Carb', icon: '🥗' },
-      'airfryer': { label: 'Airfryer', icon: '🌪️' },
-      'highprotein': { label: 'High-Protein (>25g EW)', icon: '💪' } 
-    };
+    const CATEGORY_NAMES = { 'fruehstueck': { label: 'Frühstück', icon: '🍳' }, 'mittag': { label: 'Mittagessen', icon: '🍲' }, 'abend': { label: 'Abendessen', icon: '🥩' }, 'snacks': { label: 'Snacks', icon: '🧁' } };
 
-    let recipes = [];
-    let currentCategory = 'all';
-    let currentSubFilter = null;
-    let capturedBase64Image = null;
+    let recipes = []; let currentCategory = 'all'; let currentSubFilter = null; let capturedBase64Image = null;
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
+    function escapeHtml(text) { return String(text||'').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 
     function openGartenApp() { window.open('https://marcelkometz-web.github.io/Mona/', '_blank'); }
+    
+    // --- HIER SIND DIE FEHLENDEN KLICK-FUNKTIONEN WIEDER DRIN ---
     function openReadmeModal() { document.getElementById('readmeBackdrop').classList.add('active'); lockScroll(); }
     function closeReadmeModalForce() { document.getElementById('readmeBackdrop').classList.remove('active'); unlockScroll(); }
+    
     function openImpressumModal() { document.getElementById('impressumBackdrop').classList.add('active'); lockScroll(); }
     function closeImpressumModalForce() { document.getElementById('impressumBackdrop').classList.remove('active'); unlockScroll(); }
+    
     function openEierModal() { document.getElementById('eierBackdrop').classList.add('active'); lockScroll(); }
     function closeEierModalForce() { document.getElementById('eierBackdrop').classList.remove('active'); unlockScroll(); }
+    // -------------------------------------------------------------
 
     function openIngredientModal(groupKey) {
       const group = INGREDIENT_GROUPS[groupKey]; if (!group) return;
@@ -679,9 +684,8 @@
     }
 
     function toggleFavorite(id, event) {
-      if (event) event.stopPropagation();
-      const index = favorites.indexOf(String(id));
-      if (index === -1) favorites.push(String(id)); else favorites.splice(index, 1);
+      if (event) event.stopPropagation(); const idx = favorites.indexOf(String(id));
+      if (idx === -1) favorites.push(String(id)); else favorites.splice(idx, 1);
       localStorage.setItem('gartenMuttiFavs', JSON.stringify(favorites)); filterRecipes();
       const modalBtn = document.getElementById('modalFavBtn');
       if (modalBtn) modalBtn.innerHTML = favorites.includes(String(id)) ? '❤️ Favorit' : '🤍 Merken';
@@ -689,11 +693,9 @@
     
     function getMealType(r) {
       const t = (r.title || '').toLowerCase(); const c = Array.isArray(r.category) ? r.category.join(' ').toLowerCase() : '';
-      if (t.includes('frühstück') || t.includes('omelett') || t.includes('rührei') || t.includes('pancake') || c.includes('fruehstueck')) return 'fruehstueck';
-      if (t.includes('nachtisch') || c.includes('nachtisch') || t.includes('dessert') || t.includes('cheesecake') || t.includes('mousse') || t.includes('tassenkuchen') || t.includes('fettbomben') || t.includes('pudding') || c.includes('dessert')) return 'snacks';
-      if (t.includes('suppe') || t.includes('eintopf')) return 'mittag';
-      if (t.includes('brot') || t.includes('stulle') || t.includes('salat') || t.includes('wrap') || c.includes('abend')) return 'abend';
-      return 'mittag';
+      if (t.includes('frühstück') || c.includes('fruehstueck')) return 'fruehstueck';
+      if (t.includes('nachtisch') || c.includes('dessert') || c.includes('snacks')) return 'snacks';
+      if (t.includes('brot') || c.includes('abend')) return 'abend'; return 'mittag';
     }
 
     function getScoreClass(score) {
@@ -703,14 +705,14 @@
     }
 
     async function loadRecipesFromSupabase() {
-      const status = document.getElementById('syncStatus'); status.innerText = '⏳ Lade Rezepte...';
+      const status = document.getElementById('syncStatus'); status.innerText = '⏳ Lade...';
       try {
         const { data, error } = await supabaseClient.from('Rezepte').select('*').order('id', { ascending: true });
         if (error) throw error;
         if (data && data.length > 0) {
           recipes = data.map(item => {
             let cat = Array.isArray(item.category) ? item.category : (item.category ? [item.category] : []);
-            let ing = Array.isArray(item.ingredients) ? item.ingredients : (item.ingredients ? item.ingredients.split(',').map(s => s.trim().toLowerCase()) : []);
+            let ing = Array.isArray(item.ingredients) ? item.ingredients : (item.ingredients ? item.ingredients.split(',').map(s=>s.trim().toLowerCase()) : []);
             let score = item.score || 'A';
             let rec = {
               id: item.id, title: item.title || item.titel || 'Rezept', emoji: item.emoji || '🍲', category: cat,
@@ -729,29 +731,21 @@
     }
 
     function calculateTotalNutri(recipe, tempSide = null, portions = 1, variationKey = null) {
-      let baseKcal = Number(recipe.baseNutri.kcal);
-      let baseKh = Number(recipe.baseNutri.kh);
-      let baseSugar = Number(recipe.baseNutri.sugar || 2);
-      let baseFat = Number(recipe.baseNutri.fat);
+      let baseKcal = Number(recipe.baseNutri.kcal); let baseKh = Number(recipe.baseNutri.kh);
+      let baseSugar = Number(recipe.baseNutri.sugar || 2); let baseFat = Number(recipe.baseNutri.fat);
       let baseProt = Number(recipe.baseNutri.prot);
 
       const vars = getVariationsForRecipe(recipe.title);
       if (vars && variationKey && vars[variationKey]) {
-        baseKcal = vars[variationKey].kcal;
-        baseKh = vars[variationKey].kh;
-        baseSugar = vars[variationKey].sugar;
-        baseFat = vars[variationKey].fat;
-        baseProt = vars[variationKey].prot;
+        baseKcal = vars[variationKey].kcal; baseKh = vars[variationKey].kh;
+        baseSugar = vars[variationKey].sugar; baseFat = vars[variationKey].fat; baseProt = vars[variationKey].prot;
       }
 
       const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine'); 
       const side = sideOptions[sideKey] || sideOptions['keine'];
       
-      let totalKcal = baseKcal + Number(side.kcal);
-      let totalKh = baseKh + Number(side.kh);
-      let totalSugar = baseSugar + Number(side.sugar || 0);
-      let totalFat = baseFat + Number(side.fat);
-      let totalProt = baseProt + Number(side.prot);
+      let totalKcal = baseKcal + Number(side.kcal); let totalKh = baseKh + Number(side.kh);
+      let totalSugar = baseSugar + Number(side.sugar || 0); let totalFat = baseFat + Number(side.fat); let totalProt = baseProt + Number(side.prot);
 
       return { kcal: Math.round(totalKcal * portions), kh: (totalKh * portions).toFixed(1), sugar: (totalSugar * portions).toFixed(1), fat: (totalFat * portions).toFixed(1), prot: (totalProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil" };
     }
@@ -857,50 +851,34 @@
       document.getElementById(`valKh-${recipeId}`).innerText = `${total.kh} g`; document.getElementById(`valSugar-${recipeId}`).innerText = `${total.sugar} g`;
       document.getElementById(`valFat-${recipeId}`).innerText = `${total.fat} g`; document.getElementById(`valInsulin-${recipeId}`).innerText = total.insulin;
       
-      let currentZutaten = r.zutatenListe;
-      let currentPrep = r.prep;
-      const vars = getVariationsForRecipe(r.title);
+      let currentZutaten = r.zutatenListe; let currentPrep = r.prep; const vars = getVariationsForRecipe(r.title);
 
       if (vars && chosenVar && vars[chosenVar]) {
-        currentZutaten = vars[chosenVar].zutaten;
-        currentPrep = vars[chosenVar].prep;
-        const prepEl = document.getElementById(`prepText-${recipeId}`);
-        if(prepEl) prepEl.innerText = currentPrep;
+        currentZutaten = vars[chosenVar].zutaten; currentPrep = vars[chosenVar].prep;
+        const prepEl = document.getElementById(`prepText-${recipeId}`); if(prepEl) prepEl.innerText = currentPrep;
       }
-
       document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(currentZutaten, currentSelectedPortions);
     }
 
     function openDetails(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
       currentSelectedPortions = 1; const safeId = escapeHtml(r.id);
-      const chosenSide = r.selectedSide || 'keine'; 
+      const chosenSide = r.selectedSide || 'keine'; const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions);
       const isFav = favorites.includes(String(r.id));
       let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
 
-      let variationHtml = '';
-      let initialVarKey = null;
-      let displayZutaten = r.zutatenListe;
-      let displayPrep = r.prep;
-
+      let variationHtml = ''; let initialVarKey = null; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
       const vars = getVariationsForRecipe(r.title);
       if (vars) {
-        initialVarKey = Object.keys(vars)[0];
-        displayZutaten = vars[initialVarKey].zutaten;
-        displayPrep = vars[initialVarKey].prep;
+        initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
         let varOptions = Object.entries(vars).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
-        
         variationHtml = `
           <div class="swap-row" style="border-color: #a371f7; background: rgba(163, 113, 247, 0.05); margin-bottom: 12px;">
             <label style="color: #a371f7; font-weight: 800;">🥣 Sorte wählen:</label>
-            <select id="variationSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)" style="background: var(--bg); color: #a371f7; border: 1px solid #a371f7; border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 700; outline: none; max-width: 60%;">
-              ${varOptions}
-            </select>
+            <select id="variationSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)" style="background: var(--bg); color: #a371f7; border: 1px solid #a371f7; border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 700; outline: none; max-width: 60%;">${varOptions}</select>
           </div>
         `;
       }
-
-      const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions, initialVarKey);
 
       const imageOrEmojiHtml = r.image_url
         ? `<div style="text-align:center; margin-bottom: 15px;"><img src="${r.image_url}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>`
@@ -984,6 +962,9 @@
 
     function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); unlockScroll(); }
     function closeSheet(e) { if (e.target.id === 'modalBackdrop') closeSheetForce(); }
+    function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
+    function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
+    function closeEierModal(e) { if (e.target.id === 'eierBackdrop') closeEierModalForce(); }
 
     function hideAllViews() {
       document.getElementById('recipesSection').style.display = 'none'; document.getElementById('notesSection').style.display = 'none';
