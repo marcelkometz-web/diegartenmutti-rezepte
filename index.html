@@ -116,7 +116,7 @@
     .recipe-card {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
       padding: 14px 10px; display: flex; flex-direction: column; align-items: center; text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; position: relative; overflow: hidden;
     }
     .recipe-card:active { transform: scale(0.96); }
 
@@ -128,8 +128,8 @@
     .fav-btn-card.is-fav { background: rgba(255, 255, 255, 0.9); color: #e11d48; }
 
     .card-icon {
-      font-size: 2.2rem; background: var(--card-sub); width: 56px; height: 56px;
-      border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+      font-size: 2.2rem; background: var(--card-sub); width: 100%; height: 90px;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
     }
     .card-meta h3 {
       font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.25; height: 2.5em;
@@ -146,6 +146,7 @@
     .card-quick-macros .prot { color: #3fb950; }
     [data-theme="pink-red"] .card-quick-macros .prot { color: #fb7185; }
 
+    /* Modals */
     .modal-backdrop {
       display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
       z-index: 1000; align-items: flex-end; justify-content: center;
@@ -296,6 +297,7 @@
   </style>
 </head>
 <body>
+
   <header>
     <div class="brand-title">DieGartenMutti86</div>
     <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
@@ -373,7 +375,7 @@
   </div>
 
   <div id="settingsSection" class="settings-container">
-    <!-- NEU: ADMIN BEREICH -->
+    <!-- ADMIN BEREICH -->
     <div class="settings-card">
       <h3 style="margin-bottom: 8px; color: #da3633;">🔒 Admin-Passwort</h3>
       <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
@@ -410,6 +412,7 @@
       </label>
     </div>
   </div>
+
   <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
     <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
@@ -451,7 +454,7 @@
         <p>Willkommen in deiner persönlichen, KI-gestützten Ernährungszentrale. Diese App vereint modernstes Web-Design mit echtem ernährungswissenschaftlichen Know-how.</p>
         <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🤖 Gemini KI-Spitzenkoch & Vision-Scan</h3>
         <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
-          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher oder Zettel. Die KI liest das Bild aus und trägt alles vollautomatisch ein.</li>
+          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher oder Zettel. Die KI liest das Bild aus und lädt das Foto in die App-Galerie.</li>
           <li><b>Reste-Verwertung:</b> Gib Zutaten ein und die KI kreiert dir ein maßgeschneidertes, berechnetes Rezept.</li>
         </ul>
         <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🍳 Dynamisches Makro-Management</h3>
@@ -518,6 +521,7 @@
       <span class="icon">⚙️</span><span>Setup</span>
     </button>
   </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
@@ -525,9 +529,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const MASTER_GEMINI_API_KEY = ''; 
-    
-    // --- HIER IST DEIN NEUES ADMIN PASSWORT ---
-    const ADMIN_PIN = 'Garten86'; // Dieses Passwort kannst du jederzeit ändern!
+    const ADMIN_PIN = 'Garten86'; // Dein Admin-Passwort
 
     let searchTimeout = null;
     let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
@@ -537,7 +539,6 @@
     function lockScroll() { document.body.classList.add('modal-open'); }
     function unlockScroll() { document.body.classList.remove('modal-open'); }
 
-    // --- SICHERHEITS-FUNKTIONEN ---
     function saveAdminPin() {
       const pin = document.getElementById('adminPinInput').value;
       localStorage.setItem('gartenAdminPin', pin);
@@ -548,8 +549,17 @@
       if (localStorage.getItem('gartenAdminPin') === ADMIN_PIN) return true;
       const input = prompt('🔒 Geschützter Bereich! Bitte Admin-Passwort eingeben:');
       if (input === ADMIN_PIN) return true;
-      alert('❌ Falsches Passwort! Zugriff verweigert.');
-      return false;
+      alert('❌ Falsches Passwort! Zugriff verweigert.'); return false;
+    }
+
+    function dataURItoBlob(dataURI) {
+      let byteString;
+      if (dataURI.split(',')[0].indexOf('base64') >= 0) byteString = atob(dataURI.split(',')[1]);
+      else byteString = unescape(dataURI.split(',')[1]);
+      let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      let ia = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+      return new Blob([ia], { type: mimeString });
     }
 
     const INGREDIENT_GROUPS = {
@@ -609,12 +619,10 @@
     function closeEierModalForce() { document.getElementById('eierBackdrop').classList.remove('active'); unlockScroll(); }
 
     function openIngredientModal(groupKey) {
-      const group = INGREDIENT_GROUPS[groupKey];
-      if (!group) return;
+      const group = INGREDIENT_GROUPS[groupKey]; if (!group) return;
       document.getElementById('ingModalTitle').innerHTML = `${group.icon} ${group.title}`;
       const terms = document.getElementById('searchInput').value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
-      const grid = document.getElementById('ingModalGrid');
-      grid.innerHTML = group.items.map(item => {
+      document.getElementById('ingModalGrid').innerHTML = group.items.map(item => {
         const isActive = terms.includes(item.toLowerCase());
         return `<button class="chip-btn ${isActive ? 'active' : ''}" style="margin:4px; font-size:0.9rem; padding:8px 14px;" onclick="toggleModalIngredient('${item.toLowerCase()}', this)">${item}</button>`;
       }).join('');
@@ -622,13 +630,10 @@
     }
 
     function toggleModalIngredient(item, btn) {
-      btn.classList.toggle('active');
-      let input = document.getElementById('searchInput');
+      btn.classList.toggle('active'); let input = document.getElementById('searchInput');
       let terms = input.value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
-      if (btn.classList.contains('active')) { if (!terms.includes(item)) terms.push(item); } 
-      else { terms = terms.filter(t => t !== item); }
-      input.value = terms.join(' ');
-      document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
+      if (btn.classList.contains('active')) { if (!terms.includes(item)) terms.push(item); } else { terms = terms.filter(t => t !== item); }
+      input.value = terms.join(' '); document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
       filterRecipes();
     }
 
@@ -644,15 +649,13 @@
       document.getElementById('themeSelect').value = savedTheme; applyTheme(savedTheme);
     }
     function changeTheme(t) { localStorage.setItem('gartenMuttiTheme', t); applyTheme(t); }
-    function applyTheme(t) {
-      if (t === 'warm-dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
-    }
+    function applyTheme(t) { if (t === 'warm-dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); }
 
     async function loadSharedGeminiKeyFromDB() {
       if (MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); return; }
       try {
         const { data, error } = await supabaseClient.from('Notizen').select('content').eq('author', 'SYSTEM_GEMINI_KEY').limit(1);
-        if (!error && data && data.length > 0 && data[0].content) { sharedGeminiApiKey = data[0].content.trim(); return; }
+        if (!error && data && data.length > 0 && data[0].content) sharedGeminiApiKey = data[0].content.trim();
       } catch (e) {}
     }
 
@@ -694,7 +697,7 @@
               id: item.id, title: item.title || item.titel || 'Rezept', emoji: item.emoji || '🍲', category: cat,
               airfryer: item.airfryer === true || item.airfryer === 'true', score: score, scoreClass: getScoreClass(score),
               selectedSide: item.selectedSide || 'keine', ingredients: ing, zutatenListe: item.zutaten_liste || ing.join(', '),
-              tipps: item.tipps || '', docCheck: item.doc_check || '',
+              tipps: item.tipps || '', docCheck: item.doc_check || '', image_url: item.image_url || null,
               baseNutri: { kcal: item.kcal != null ? Number(item.kcal) : 300, kh: item.kh != null ? Number(item.kh) : 5, sugar: item.sugar != null ? Number(item.sugar) : 2.0, fat: item.fat != null ? Number(item.fat) : 10, prot: item.prot != null ? Number(item.prot) : 25 },
               prep: item.prep || 'Zutaten vorbereiten.', stoveStep: item.stove_step || '', ovenStep: item.oven_step || '', airfryerStep: item.airfryer_step || ''
             };
@@ -707,15 +710,11 @@
     }
 
     function calculateTotalNutri(recipe, tempSide = null, portions = 1) {
-      const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine');
-      const side = sideOptions[sideKey] || sideOptions['keine'];
+      const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine'); const side = sideOptions[sideKey] || sideOptions['keine'];
       let baseKcal = Number(recipe.baseNutri.kcal) + Number(side.kcal); let baseKh = Number(recipe.baseNutri.kh) + Number(side.kh);
       let baseSugar = Number(recipe.baseNutri.sugar || 2) + Number(side.sugar || 0); let baseFat = Number(recipe.baseNutri.fat) + Number(side.fat);
       let baseProt = Number(recipe.baseNutri.prot) + Number(side.prot);
-      return {
-        kcal: Math.round(baseKcal * portions), kh: (baseKh * portions).toFixed(1), sugar: (baseSugar * portions).toFixed(1),
-        fat: (baseFat * portions).toFixed(1), prot: (baseProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil"
-      };
+      return { kcal: Math.round(baseKcal * portions), kh: (baseKh * portions).toFixed(1), sugar: (baseSugar * portions).toFixed(1), fat: (baseFat * portions).toFixed(1), prot: (baseProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil" };
     }
 
     function generateScaledIngredients(rawText, portions) {
@@ -769,10 +768,14 @@
 
     function buildCardHtml(r) {
       const total = calculateTotalNutri(r, 'keine', 1); const isFav = favorites.includes(String(r.id));
+      const imageOrEmoji = r.image_url 
+        ? `<div class="card-icon" style="background-image: url('${r.image_url}'); background-size: cover; background-position: center; border: 1px solid var(--border);"></div>`
+        : `<div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>`;
+
       return `
         <div class="recipe-card" onclick="openDetails('${escapeHtml(r.id)}')">
           <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${escapeHtml(r.id)}', event)">${isFav ? '❤️' : '🤍'}</button>
-          <div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>
+          ${imageOrEmoji}
           <div class="card-meta">
             <h3>${escapeHtml(r.title)}</h3>
             <div class="card-badges"><span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri ${escapeHtml(r.score || 'A')}</span>${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}</div>
@@ -820,8 +823,12 @@
       const isFav = favorites.includes(String(r.id));
       let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
 
+      const imageOrEmojiHtml = r.image_url
+        ? `<div style="text-align:center; margin-bottom: 15px;"><img src="${r.image_url}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>`
+        : `<div style="font-size: 2.4rem; text-align:center;">${escapeHtml(r.emoji || '🍲')}</div>`;
+
       document.getElementById('sheetContent').innerHTML = `
-        <div style="font-size: 2.4rem; text-align:center;">${escapeHtml(r.emoji || '🍲')}</div>
+        ${imageOrEmojiHtml}
         <h2 style="font-size: 1.35rem; margin: 10px 0; text-align:center;">${escapeHtml(r.title)}</h2>
         <div style="display:flex; justify-content:center; gap:8px; margin-bottom: 14px;">
           <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0; padding: 6px 14px;" onclick="toggleFavorite('${safeId}', event)">${isFav ? '❤️ Favorit' : '🤍 Merken'}</button>
@@ -862,7 +869,6 @@
       document.getElementById('modalBackdrop').classList.add('active'); lockScroll();
     }
 
-    // --- SICHERHEITSABFRAGEN EINGEBAUT ---
     async function saveRecipeTipps(recipeId) {
       if (!checkAdmin()) return;
       const newTipps = document.getElementById(`editTipps-${recipeId}`).value;
@@ -877,32 +883,6 @@
       await supabaseClient.from('Rezepte').delete().eq('id', recipeId);
       closeSheetForce(); triggerRefresh();
     }
-
-    async function saveNewRecipe() {
-      if (!checkAdmin()) return;
-      const title = document.getElementById('newTitle').value.trim();
-      if (!title) { alert('Titel fehlt!'); return; }
-      const saveBtn = document.querySelector('.btn-save'); if (saveBtn) { saveBtn.innerText = '⏳ Speichere...'; saveBtn.disabled = true; }
-      
-      let cat = document.getElementById('newMealCat').value; const categories = [cat, 'lowcarb'];
-      if (document.getElementById('newAirfryer').value === 'true') categories.push('airfryer');
-
-      const { error } = await supabaseClient.from('Rezepte').insert([{
-        title: title, emoji: document.getElementById('newEmoji').value || '🍲', score: document.getElementById('newScore').value || 'A',
-        category: categories, airfryer: document.getElementById('newAirfryer').value === 'true',
-        kcal: Number(document.getElementById('newKcal').value) || 0, prot: Number(document.getElementById('newProt').value) || 0,
-        kh: Number(document.getElementById('newKh').value) || 0, sugar: Number(document.getElementById('newSugar').value) || 0,
-        fat: Number(document.getElementById('newFat').value) || 0, ingredients: document.getElementById('newIngredients').value.trim(),
-        zutaten_liste: document.getElementById('newZutaten').value.trim(), prep: document.getElementById('newPrep').value.trim(),
-        stove_step: document.getElementById('newStove').value.trim(), oven_step: document.getElementById('newOven').value.trim(),
-        airfryer_step: document.getElementById('newAirfryerStep').value.trim(), doc_check: document.getElementById('newDocCheck').value.trim(),
-        tipps: document.getElementById('newTipps').value.trim()
-      }]);
-
-      if (!error) { if (saveBtn) saveBtn.innerText = '✅ Gespeichert!'; setTimeout(() => { closeSheetForce(); triggerRefresh(); clearCapturedImage(); }, 600); } 
-      else { alert('Fehler: ' + error.message); if (saveBtn) { saveBtn.innerText = '💾 Rezept in Datenbank speichern'; saveBtn.disabled = false; } }
-    }
-    // ----------------------------------------
 
     async function addIngredientsToNotes(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
@@ -936,8 +916,7 @@
     function openNotesView() { hideAllViews(); document.getElementById('navBtnNotes').classList.add('active'); document.getElementById('notesSection').style.display = 'flex'; loadNotesFromSupabase(); }
     function openSettingsView() { 
       hideAllViews(); document.getElementById('navBtnSettings').classList.add('active'); document.getElementById('settingsSection').style.display = 'flex'; 
-      const savedPin = localStorage.getItem('gartenAdminPin');
-      if(savedPin) document.getElementById('adminPinInput').value = savedPin;
+      const savedPin = localStorage.getItem('gartenAdminPin'); if(savedPin) document.getElementById('adminPinInput').value = savedPin;
     }
     function openCycleView() { hideAllViews(); document.getElementById('navBtnCycle').classList.add('active'); document.getElementById('cycleSection').style.display = 'flex'; }
     
@@ -1071,6 +1050,49 @@
       if (data.tipps !== undefined) document.getElementById('newTipps').value = data.tipps;
     }
 
+    async function saveNewRecipe() {
+      if (!checkAdmin()) return;
+      const title = document.getElementById('newTitle').value.trim();
+      if (!title) { alert('Titel fehlt!'); return; }
+      const saveBtn = document.querySelector('.btn-save'); 
+      
+      let cat = document.getElementById('newMealCat').value; const categories = [cat, 'lowcarb'];
+      if (document.getElementById('newAirfryer').value === 'true') categories.push('airfryer');
+
+      let imageUrl = null;
+      if (capturedBase64Image) {
+        if (saveBtn) { saveBtn.innerText = '📸 Lade Foto in die Cloud...'; saveBtn.disabled = true; }
+        try {
+          const blob = dataURItoBlob(capturedBase64Image);
+          const fileExt = blob.type.split('/')[1] || 'jpg';
+          const fileName = 'rezept_' + Date.now() + '.' + fileExt;
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('RezeptBilder').upload(fileName, blob, { contentType: blob.type });
+          if (!uploadError) {
+            const { data: publicUrlData } = supabaseClient.storage.from('RezeptBilder').getPublicUrl(fileName);
+            imageUrl = publicUrlData.publicUrl;
+          }
+        } catch (e) { console.error("Bild-Upload Fehler", e); }
+      }
+
+      if (saveBtn) saveBtn.innerText = '⏳ Speichere Rezept...';
+
+      const { error } = await supabaseClient.from('Rezepte').insert([{
+        title: title, emoji: document.getElementById('newEmoji').value || '🍲', score: document.getElementById('newScore').value || 'A',
+        category: categories, airfryer: document.getElementById('newAirfryer').value === 'true',
+        kcal: Number(document.getElementById('newKcal').value) || 0, prot: Number(document.getElementById('newProt').value) || 0,
+        kh: Number(document.getElementById('newKh').value) || 0, sugar: Number(document.getElementById('newSugar').value) || 0,
+        fat: Number(document.getElementById('newFat').value) || 0, ingredients: document.getElementById('newIngredients').value.trim(),
+        zutaten_liste: document.getElementById('newZutaten').value.trim(), prep: document.getElementById('newPrep').value.trim(),
+        stove_step: document.getElementById('newStove').value.trim(), oven_step: document.getElementById('newOven').value.trim(),
+        airfryer_step: document.getElementById('newAirfryerStep').value.trim(), doc_check: document.getElementById('newDocCheck').value.trim(),
+        tipps: document.getElementById('newTipps').value.trim(),
+        image_url: imageUrl
+      }]);
+
+      if (!error) { if (saveBtn) saveBtn.innerText = '✅ Gespeichert!'; setTimeout(() => { closeSheetForce(); triggerRefresh(); clearCapturedImage(); }, 600); } 
+      else { alert('Fehler: ' + error.message); if (saveBtn) { saveBtn.innerText = '💾 Rezept speichern'; saveBtn.disabled = false; } }
+    }
+
     function exportBackupJson() {
       const dlAnchor = document.createElement('a'); dlAnchor.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recipes, null, 2)));
       dlAnchor.setAttribute("download", `Backup_${new Date().toISOString().slice(0,10)}.json`); document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
@@ -1121,4 +1143,4 @@
     });
   </script>
 </body>
-</http>
+</html>
