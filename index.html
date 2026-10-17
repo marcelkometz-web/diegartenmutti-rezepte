@@ -311,7 +311,7 @@
   </style>
 </head>
 <body>
-  <header>
+	  <header>
     <div class="brand-title">DieGartenMutti86</div>
     <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
@@ -438,40 +438,97 @@
       <div id="sheetContent"></div>
     </div>
   </div>
-  <div class="modal-backdrop" id="subfilterBackdrop" onclick="closeSubfilterModal(event)">
-    <div class="modal-sheet" id="subfilterSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeSubfilterModalForce()">&times;</button>
-      <h2 id="subfilterTitle" style="font-size: 1.25rem; color: var(--text); margin-bottom: 6px;">Kategorie</h2>
-      <div class="subfilter-grid" id="subfilterGrid"></div>
-    </div>
-  </div>
+  <!-- READ.TXT MODAL -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
-      <h2>📄 Read.txt</h2>
-      <p style="margin-top:10px; line-height: 1.5; color: var(--text-muted);">
-        Sortiert nach Frühstück, Mittagessen, Abendessen, Nachtisch und Dessert.<br>
-        Standard-Portionierung: 1 Person mit dynamischer Mengenanpassung.<br>
-        Inklusive integrierter Gemini 4 Argon / 3.8 Flash Gourmet-Rezept-KI & Kamera-Scan für alle Nutzer.
-      </p>
-      <button class="btn-save" style="margin-top:16px;" onclick="closeReadmeModalForce()">Schließen</button>
+      <h2>📄 Alle Funktionen der App</h2>
+      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+        <p>Diese App ist ein intelligenter Begleiter für Ernährung, Einkaufsplanung und Alltag. Hier ist die vollständige Übersicht aller Funktionen:</p>
+        
+        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">🤖 KI-Spitzenkoch & Kamera-Scan</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px;">
+          <li><b>Text-zu-Rezept:</b> Gib Reste-Zutaten ein (z. B. "Brokkoli und Hack") und die Gemini-KI erstellt ein komplettes, berechnetes Rezept.</li>
+          <li><b>Foto-Scan:</b> Fotografiere ein Kochbuch, ein Produkt oder einen handschriftlichen Zettel – die KI (Argon Vision) liest das Bild aus und trägt Titel, Zutaten und Zubereitung automatisch in das Formular ein.</li>
+          <li><b>Modellauswahl:</b> Flexibler Wechsel zwischen verschiedenen KI-Modellen (Flash für Tempo, Argon für komplexe Bilder/Aufgaben).</li>
+        </ul>
+
+        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">🍳 Rezept-Verwaltung & Makros</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px;">
+          <li><b>Smarte Portionen:</b> Alle Rezepte sind auf exakt 1 Portion normiert. Über den Zähler lassen sich die Zutaten und Nährwerte stufenlos für beliebig viele Personen hochrechnen.</li>
+          <li><b>Beilagen-Tausch:</b> Wechsle flexibel Beilagen (z. B. Zoodles statt Reis) – die berechneten Kalorien, Kohlenhydrate und Insulin-Vorhersagen passen sich live an.</li>
+          <li><b>Gesundheit & Doc-Check:</b> Jedes Rezept enthält eine ernährungsphysiologische Einschätzung zu Blutzucker und Sättigung.</li>
+          <li><b>Reste-Verwertung:</b> Die Schnell-Filter (Chips) oben in der Suchleiste filtern die Rezept-Datenbank sofort nach vorhandenen Zutaten.</li>
+        </ul>
+
+        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">🩸 Zyklus-Ernährungsplaner</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px;">
+          <li>Berechnet anhand des eingegebenen Startdatums automatisch die aktuelle Zyklusphase (Menstruation, Follikel, Eisprung, Luteal).</li>
+          <li>Gibt spezifische Ernährungs-Tipps (z. B. eisenreich oder komplexe Kohlenhydrate) passend zum aktuellen Hormonstatus.</li>
+        </ul>
+
+        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">📝 Notizen & Einkaufslisten</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px;">
+          <li>Live synchronisierte Listen, aufteilbar nach Personen (z. B. Ramona, Matze).</li>
+          <li><b>Direkt-Übertrag:</b> Zutaten aus einem Rezept können mit einem Klick, berechnet auf die eingestellte Personenzahl, auf die Einkaufsliste gesetzt werden.</li>
+          <li><b>WhatsApp-Export:</b> Teile die genaue Einkaufsliste eines Rezepts direkt per WhatsApp.</li>
+        </ul>
+
+        <h3 style="margin-top: 14px; color: var(--text); font-size: 1rem;">⚙️ Extras & Sicherheit</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px;">
+          <li><b>Eier-Timer:</b> Integrierte Eieruhr direkt als Pop-up-Modul auf der Startseite.</li>
+          <li><b>Offline-Backup:</b> Sichere die komplette Rezeptdatenbank als JSON-Datei oder stelle sie wieder her.</li>
+          <li><b>Themes:</b> 4 verschiedene Farbschemata (Warm Dark, Light Mode, Berry Pink, Tech Dark) zur Anpassung der Oberfläche.</li>
+        </ul>
+      </div>
+      <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
     </div>
   </div>
+
+  <!-- IMPRESSUM MODAL -->
   <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
     <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
-      <h2>⚖️ Impressum</h2>
-      <p style="margin-top:10px; line-height: 1.5; color: var(--text-muted);">
-        Marcel Kometz, Duisburg.
-      </p>
-      <button class="btn-save" style="margin-top:16px;" onclick="closeImpressumModalForce()">Schließen</button>
+      <h2>⚖️ Impressum & Rechtliches</h2>
+      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+        
+        <!-- PRIVAT-NUTZUNG DISCLAIMER -->
+        <p style="color: #da3633; border: 1px solid #da3633; padding: 12px; border-radius: 8px; background: rgba(218, 54, 51, 0.1); margin-bottom: 16px;">
+          <b>WICHTIGER HINWEIS: Diese Web-Applikation ist ein reines Hobby-Projekt und dient ausschließlich der privaten, familiären Nutzung.</b>
+        </p>
+
+        <p><b>Angaben gemäß § 5 TMG</b></p>
+        <p style="margin-top: 8px; color: var(--text);">
+          Marcel Kometz<br>
+          Manfredstr. 15<br>
+          47178 Duisburg
+        </p>
+        
+        <p style="margin-top: 14px;"><b>Kontakt</b></p>
+        <p style="color: var(--text);">
+          Telefon: 015901486107<br>
+          E-Mail: marcelkometz@icloud.com
+        </p>
+
+        <!-- HIER WURDE DER STRICH ENTFERNT (border-top gelöscht) -->
+        <p style="margin-top: 18px; font-size: 0.8rem; padding-top: 10px;">
+          <b>Haftungsausschluss (Disclaimer):</b><br><br>
+          <b>Haftung für Inhalte:</b><br>
+          Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen. Wir übernehmen ausdrücklich keine Gewähr für die Richtigkeit von durch KI generierten Inhalten.
+          <br><br>
+          <b>Medizinischer & Ernährungswissenschaftlicher Hinweis:</b><br>
+          Die in dieser App generierten Rezepte, Nährwertangaben, Makro-Berechnungen und Gesundheitstipps (inkl. Doc-Check und Zyklus-Ernährungsplaner) werden automatisiert durch Modelle der Künstlichen Intelligenz (Google Gemini) erstellt. Sie dienen ausschließlich zu Informationszwecken und ersetzen <b>keinesfalls</b> eine professionelle medizinische Beratung, Diagnose oder Behandlung durch einen approbierten Arzt oder zertifizierten Ernährungsberater. Alle berechneten Werte (wie Kalorien, Makronährstoffe, Insulin-Wirkung) sind maschinelle Schätzwerte ohne Gewähr auf gesundheitliche oder physiologische Richtigkeit.
+        </p>
+      </div>
+      <button class="btn-save" style="margin-top:18px;" onclick="closeImpressumModalForce()">Schließen</button>
     </div>
-  </div>
-    <div class="modal-backdrop" id="eierBackdrop" onclick="closeEierModal(event)">
+  </div>=
+
+  <!-- DAS EIER-MODAL -->
+  <div class="modal-backdrop" id="eierBackdrop" onclick="closeEierModal(event)">
     <div class="modal-sheet" id="eierSheet" onclick="event.stopPropagation()" style="height: 85dvh; display: flex; flex-direction: column; padding: 16px;">
       <button class="close-sheet" onclick="closeEierModalForce()">&times;</button>
       <h2 style="font-size: 1.25rem; margin-bottom: 12px; text-align: center;">🥚 Eier-Timer</h2>
-      <!-- Hier laden wir deine ei.html direkt in das Pop-up -->
       <iframe src="https://marcelkometz-web.github.io/diegartenmutti-rezepte/ei.html" style="width: 100%; flex: 1; border: none; border-radius: 12px; background: var(--bg);"></iframe>
     </div>
   </div>
@@ -494,7 +551,7 @@
     <button class="nav-btn" id="navBtnNotes" onclick="openNotesView(this)"><span class="icon">📝</span><span>Notizen</span></button>
     <button class="nav-btn" id="navBtnSettings" onclick="openSettingsView(this)"><span class="icon">⚙️</span><span>Setup</span></button>
   </nav>
-   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_8-MkCdXRxN-GagE0g4GYrQ_TY3I6RmD';
@@ -504,7 +561,7 @@
 
     let searchTimeout = null;
     let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
-    let currentSelectedPortions = 1; // STANDARD PORTIONEN NUN AUF 1
+    let currentSelectedPortions = 1; 
     let sharedGeminiApiKey = MASTER_GEMINI_API_KEY;
 
     const GEMINI_MODELS = {
@@ -556,6 +613,11 @@
     function closeImpressumModalForce() { document.getElementById('impressumBackdrop').classList.remove('active'); }
     function closeSubfilterModal(e) { if (e.target.id === 'subfilterBackdrop') closeSubfilterModalForce(); }
     function closeSubfilterModalForce() { document.getElementById('subfilterBackdrop').classList.remove('active'); }
+
+    // HIER IST DIE FEHLENDE LOGIK FÜR DAS EIER-MODAL
+    function openEierModal() { document.getElementById('eierBackdrop').classList.add('active'); }
+    function closeEierModal(e) { if (e.target.id === 'eierBackdrop') closeEierModalForce(); }
+    function closeEierModalForce() { document.getElementById('eierBackdrop').classList.remove('active'); }
 
     function clearSubFilter() {
       currentSubFilter = null;
@@ -753,7 +815,6 @@
 
       renderList(filtered);
     }
-
     function onSearchManual() {
       const input = document.getElementById('searchInput');
       document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
@@ -857,7 +918,8 @@
       document.getElementById(`valInsulin-${recipeId}`).innerText = total.insulin;
       document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(r.zutatenListe, currentSelectedPortions);
     }
-     function openDetails(recipeId) {
+
+    function openDetails(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId));
       if (!r) return;
       currentSelectedPortions = 1; // STANDARD BEIM ÖFFNEN IMMER 1 PORTION
