@@ -219,7 +219,6 @@
     .btn-save { background: #238636; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; }
     [data-theme="pink-red"] .btn-save { background: #be123c; }
 
-    /* DIE KI-BOX MIT LILA RAHMEN */
     .ki-box { background: rgba(163, 113, 247, 0.1); border: 2px solid #a371f7; border-radius: 14px; padding: 14px; margin-bottom: 16px; position: relative; }
     .ki-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap; }
     .gemini-model-trigger {
@@ -562,6 +561,26 @@
       return new Blob([ia], { type: mimeString });
     }
 
+    // --- DIE NEUE MULTI-REZEPT-ENGINE FÜR DIPS & SOßEN ---
+    const SPECIAL_VARIATIONS = {
+      "5 gesunde dips": {
+        "aioli": { name: "🧄 Aioli", kcal: 180, prot: 0.5, kh: 1.0, sugar: 0.5, fat: 19.0, zutaten: "• 120 ml Mayonnaise\n• 2 Knoblauchzehen (gepresst)\n• 1 EL frischer Zitronensaft\n• Prise Salz & Pfeffer", prep: "Knoblauch pressen, mit Mayonnaise und Zitronensaft glatt rühren." },
+        "honig_senf": { name: "🍯 Honig-Senf", kcal: 140, prot: 0.5, kh: 6.0, sugar: 5.5, fat: 12.0, zutaten: "• 120 ml Mayonnaise\n• 2 EL Dijon-Senf\n• 2 EL Honig\n• 1 TL Apfelessig", prep: "Alle Zutaten gründlich verrühren, bis sich der Honig komplett gelöst hat." },
+        "salsa": { name: "🍅 Tomaten-Salsa", kcal: 35, prot: 1.0, kh: 6.0, sugar: 4.0, fat: 0.5, zutaten: "• 4 reife Tomaten\n• 1/2 rote Zwiebel\n• 1 Jalapeño (ohne Kerne)\n• Handvoll frischer Koriander\n• Saft von 1 Limette", prep: "Tomaten, Zwiebel und Jalapeño extrem fein würfeln. Koriander hacken. Mit Limettensaft vermengen. 30 Min ziehen lassen." },
+        "teriyaki": { name: "🥢 Teriyaki Soße", kcal: 65, prot: 3.0, kh: 13.0, sugar: 11.0, fat: 0.1, zutaten: "• 120 ml Sojasauce\n• 2 EL brauner Zucker\n• 1 EL Honig\n• 1 EL Reisessig\n• 1 TL Ingwer (gerieben)\n• 1 Knoblauchzehe", prep: "Alle Zutaten aufkochen. Hitze reduzieren und ca. 5-10 Minuten einköcheln lassen, bis es leicht andickt." },
+        "tzatziki": { name: "🥒 Tzatziki", kcal: 55, prot: 4.0, kh: 3.5, sugar: 3.0, fat: 2.5, zutaten: "• 240 ml Griechischer Joghurt\n• 1/2 Salatgurke\n• 2 EL frischer Dill\n• 1 EL Zitronensaft\n• 1 Knoblauchzehe", prep: "Gurke raspeln, salzen und Wasser auspressen. Knoblauch pressen. Mit Joghurt, Zitrone und Dill verrühren." }
+      }
+    };
+
+    function getVariationsForRecipe(title) {
+       if(!title) return null;
+       const t = title.toLowerCase();
+       for (const key in SPECIAL_VARIATIONS) {
+           if (t.includes(key.toLowerCase())) return SPECIAL_VARIATIONS[key];
+       }
+       return null;
+    }
+
     const INGREDIENT_GROUPS = {
       'fleisch': { icon: '🥩', title: 'Fleisch & Fisch', items: ['Hähnchen', 'Rind', 'Hackfleisch', 'Schwein', 'Pute', 'Lachs', 'Garnelen', 'Thunfisch', 'Speck'] },
       'gemuese': { icon: '🥦', title: 'Gemüse & Grünzeug', items: ['Brokkoli', 'Wirsing', 'Zucchini', 'Blumenkohl', 'Spinat', 'Kohlrabi', 'Lauch', 'Möhren', 'Kartoffeln', 'Süßkartoffel', 'Paprika', 'Tomaten', 'Gurke', 'Pilze', 'Bohnen', 'Erbsen', 'Spitzkohl', 'Avocado', 'Kürbis', 'Aubergine'] },
@@ -709,12 +728,32 @@
       filterRecipes();
     }
 
-    function calculateTotalNutri(recipe, tempSide = null, portions = 1) {
-      const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine'); const side = sideOptions[sideKey] || sideOptions['keine'];
-      let baseKcal = Number(recipe.baseNutri.kcal) + Number(side.kcal); let baseKh = Number(recipe.baseNutri.kh) + Number(side.kh);
-      let baseSugar = Number(recipe.baseNutri.sugar || 2) + Number(side.sugar || 0); let baseFat = Number(recipe.baseNutri.fat) + Number(side.fat);
-      let baseProt = Number(recipe.baseNutri.prot) + Number(side.prot);
-      return { kcal: Math.round(baseKcal * portions), kh: (baseKh * portions).toFixed(1), sugar: (baseSugar * portions).toFixed(1), fat: (baseFat * portions).toFixed(1), prot: (baseProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil" };
+    function calculateTotalNutri(recipe, tempSide = null, portions = 1, variationKey = null) {
+      let baseKcal = Number(recipe.baseNutri.kcal);
+      let baseKh = Number(recipe.baseNutri.kh);
+      let baseSugar = Number(recipe.baseNutri.sugar || 2);
+      let baseFat = Number(recipe.baseNutri.fat);
+      let baseProt = Number(recipe.baseNutri.prot);
+
+      const vars = getVariationsForRecipe(recipe.title);
+      if (vars && variationKey && vars[variationKey]) {
+        baseKcal = vars[variationKey].kcal;
+        baseKh = vars[variationKey].kh;
+        baseSugar = vars[variationKey].sugar;
+        baseFat = vars[variationKey].fat;
+        baseProt = vars[variationKey].prot;
+      }
+
+      const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine'); 
+      const side = sideOptions[sideKey] || sideOptions['keine'];
+      
+      let totalKcal = baseKcal + Number(side.kcal);
+      let totalKh = baseKh + Number(side.kh);
+      let totalSugar = baseSugar + Number(side.sugar || 0);
+      let totalFat = baseFat + Number(side.fat);
+      let totalProt = baseProt + Number(side.prot);
+
+      return { kcal: Math.round(totalKcal * portions), kh: (totalKh * portions).toFixed(1), sugar: (totalSugar * portions).toFixed(1), fat: (totalFat * portions).toFixed(1), prot: (totalProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil" };
     }
 
     function generateScaledIngredients(rawText, portions) {
@@ -809,19 +848,59 @@
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
       const sideSelect = document.getElementById(`sideSelect-${recipeId}`); const chosenSide = sideSelect ? sideSelect.value : 'keine'; r.selectedSide = chosenSide;
 
-      const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions);
+      const varSelect = document.getElementById(`variationSelect-${recipeId}`);
+      const chosenVar = varSelect ? varSelect.value : null;
+
+      const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions, chosenVar);
+
       document.getElementById(`valKcal-${recipeId}`).innerText = total.kcal; document.getElementById(`valProt-${recipeId}`).innerText = `${total.prot} g`;
       document.getElementById(`valKh-${recipeId}`).innerText = `${total.kh} g`; document.getElementById(`valSugar-${recipeId}`).innerText = `${total.sugar} g`;
       document.getElementById(`valFat-${recipeId}`).innerText = `${total.fat} g`; document.getElementById(`valInsulin-${recipeId}`).innerText = total.insulin;
-      document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(r.zutatenListe, currentSelectedPortions);
+      
+      let currentZutaten = r.zutatenListe;
+      let currentPrep = r.prep;
+      const vars = getVariationsForRecipe(r.title);
+
+      if (vars && chosenVar && vars[chosenVar]) {
+        currentZutaten = vars[chosenVar].zutaten;
+        currentPrep = vars[chosenVar].prep;
+        const prepEl = document.getElementById(`prepText-${recipeId}`);
+        if(prepEl) prepEl.innerText = currentPrep;
+      }
+
+      document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(currentZutaten, currentSelectedPortions);
     }
 
     function openDetails(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
       currentSelectedPortions = 1; const safeId = escapeHtml(r.id);
-      const chosenSide = r.selectedSide || 'keine'; const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions);
+      const chosenSide = r.selectedSide || 'keine'; 
       const isFav = favorites.includes(String(r.id));
       let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
+
+      let variationHtml = '';
+      let initialVarKey = null;
+      let displayZutaten = r.zutatenListe;
+      let displayPrep = r.prep;
+
+      const vars = getVariationsForRecipe(r.title);
+      if (vars) {
+        initialVarKey = Object.keys(vars)[0];
+        displayZutaten = vars[initialVarKey].zutaten;
+        displayPrep = vars[initialVarKey].prep;
+        let varOptions = Object.entries(vars).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+        
+        variationHtml = `
+          <div class="swap-row" style="border-color: #a371f7; background: rgba(163, 113, 247, 0.05); margin-bottom: 12px;">
+            <label style="color: #a371f7; font-weight: 800;">🥣 Sorte wählen:</label>
+            <select id="variationSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)" style="background: var(--bg); color: #a371f7; border: 1px solid #a371f7; border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 700; outline: none; max-width: 60%;">
+              ${varOptions}
+            </select>
+          </div>
+        `;
+      }
+
+      const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions, initialVarKey);
 
       const imageOrEmojiHtml = r.image_url
         ? `<div style="text-align:center; margin-bottom: 15px;"><img src="${r.image_url}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>`
@@ -834,12 +913,16 @@
           <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0; padding: 6px 14px;" onclick="toggleFavorite('${safeId}', event)">${isFav ? '❤️ Favorit' : '🤍 Merken'}</button>
           <span class="badge-ampel" style="background: ${r.scoreClass}; display:inline-flex; align-items:center; padding: 6px 10px; font-size:0.78rem;">Nutri-Score ${escapeHtml(r.score || 'A')}</span>
         </div>
+        
         <div class="portion-row">
           <label>👥 Portionen:</label>
           <button class="portion-btn" onclick="updatePortionOrSide('${safeId}', -1)">-</button>
           <span class="portion-display" id="portionCount-${safeId}">${currentSelectedPortions}</span>
           <button class="portion-btn" onclick="updatePortionOrSide('${safeId}', 1)">+</button>
         </div>
+        
+        ${variationHtml}
+
         <div class="swap-row"><label>🔄 Beilagen-Tausch:</label><select id="sideSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)">${sideOptionsHtml}</select></div>
         <div class="nutri-carousel">
           <div class="nutri-pill"><span>Kcal</span><strong id="valKcal-${safeId}">${total.kcal}</strong></div>
@@ -851,14 +934,14 @@
         </div>
         ${r.docCheck ? `<div class="step-section" style="border-color:#3fb950; background:rgba(46,160,67,0.1);"><h4>🩺 Doc-Check & Gesundheit</h4><p style="color:var(--text);">${escapeHtml(r.docCheck)}</p></div>` : ''}
         <div class="section-title">🛒 Zutatenliste (${currentSelectedPortions} Port.):</div>
-        <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(r.zutatenListe, currentSelectedPortions))}</div>
+        <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(displayZutaten, currentSelectedPortions))}</div>
         <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Einkaufsliste per WhatsApp senden</button>
         <button class="add-notes-btn" onclick="addIngredientsToNotes('${safeId}')">📝 Auf unsere Notiz-Einkaufsliste setzen</button>
         <div class="section-title">👩‍🍳 Zubereitung:</div>
-        <div class="step-section"><h4>🔪 Vorbereitung</h4><p>${escapeHtml(r.prep)}</p></div>
-        ${r.stoveStep ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
-        ${r.ovenStep ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
-        ${r.airfryerStep ? `<div class="step-section"><h4>🌪️ Airfryer</h4><p>${escapeHtml(r.airfryerStep)}</p></div>` : ''}
+        <div class="step-section"><h4>🔪 Vorbereitung / Zubereitung</h4><p id="prepText-${safeId}">${escapeHtml(displayPrep)}</p></div>
+        ${(!vars && r.stoveStep) ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
+        ${(!vars && r.ovenStep) ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
+        ${(!vars && r.airfryerStep) ? `<div class="step-section"><h4>🌪️ Airfryer</h4><p>${escapeHtml(r.airfryerStep)}</p></div>` : ''}
         <div class="section-title">💡 Eigene Tipps & Notizen zum Rezept:</div>
         <textarea id="editTipps-${safeId}" class="editable-tipps" placeholder="Eigene Erfahrungen, Gewürze oder Anpassungen hier eintragen...">${escapeHtml(r.tipps || '')}</textarea>
         <div style="display:flex; justify-content:space-between; gap:10px; margin-top:6px;">
@@ -886,14 +969,16 @@
 
     async function addIngredientsToNotes(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
-      const content = `🛒 Einkauf für ${r.title} (${currentSelectedPortions} Port.): ` + generateScaledIngredients(r.zutatenListe, currentSelectedPortions).replace(/\n/g, ', ');
+      const zutatenText = document.getElementById(`ingredientsBox-${recipeId}`).innerText;
+      const content = `🛒 Einkauf für ${r.title} (${currentSelectedPortions} Port.): ` + zutatenText.replace(/\n/g, ', ');
       await supabaseClient.from('Notizen').insert([{ author: 'Ramona', content: content, is_done: false }]);
       alert('Zutaten wurden in eure Notizliste eingetragen!');
     }
 
     function shareWhatsApp(recipeId) {
       const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
-      let text = `🛒 *Einkaufsliste: ${r.title} (${currentSelectedPortions} Portionen)*\n\n` + generateScaledIngredients(r.zutatenListe, currentSelectedPortions);
+      const zutatenText = document.getElementById(`ingredientsBox-${recipeId}`).innerText;
+      let text = `🛒 *Einkaufsliste: ${r.title} (${currentSelectedPortions} Portionen)*\n\n` + zutatenText;
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
