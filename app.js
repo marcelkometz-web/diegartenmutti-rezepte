@@ -75,11 +75,12 @@ const INGREDIENT_GROUPS = {
 };
 
 const GEMINI_MODELS = {
-  'flash-lite': { label: '3.5 Flash-Lite', sub: 'Schnellste Antworten', apiModels: ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'], temp: 0.65 },
+  'flash-lite': { label: '3.5 Flash-Lite', sub: 'Schnellste Antworten', apiModels: ['gemini-2.5-flash', 'gemini-2.0-flash'], temp: 0.65 },
   'flash': { label: '3.8 Flash', sub: 'Vielseitige Unterstützung', apiModels: ['gemini-2.5-flash', 'gemini-2.0-flash'], temp: 0.72 },
-  'pro': { label: '3.1 Pro', sub: 'Logisches Schlussfolgern', apiModels: ['gemini-2.5-pro', 'gemini-2.5-flash'], temp: 0.78 },
-  'argon': { label: '4 Argon', sub: 'Komplexe Aufgaben (Vision)', apiModels: ['gemini-2.5-pro', 'gemini-2.5-flash'], temp: 0.82 }
+  'pro': { label: '3.1 Pro', sub: 'Logisches Schlussfolgern', apiModels: ['gemini-3.1-pro-preview', 'gemini-2.5-flash'], temp: 0.78 },
+  'argon': { label: '4 Argon', sub: 'Komplexe Aufgaben (Vision)', apiModels: ['gemini-3.1-pro-preview', 'gemini-2.5-flash'], temp: 0.82 }
 };
+
 let selectedGeminiModelKey = localStorage.getItem('gartenMuttiGeminiModel') || 'argon';
 let selectedThinkingEffort = localStorage.getItem('gartenMuttiThinkingEffort') || 'mittel';
 
