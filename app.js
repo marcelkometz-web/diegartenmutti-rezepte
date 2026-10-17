@@ -565,8 +565,7 @@ async function generateWithGemini() {
   if (capturedBase64Image) {
     contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
   }
-  
-  const candidateModels = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
+  const candidateModels = mCfg.apiModels;⁠
   
   for (const modelName of candidateModels) {
     try {
