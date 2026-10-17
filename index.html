@@ -317,9 +317,9 @@
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
   </header>
 
-    <div class="quick-actions-bar">
+  <div class="quick-actions-bar">
     <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
-    <button onclick="window.location.href='https://marcelkometz-web.github.io/diegartenmutti-rezepte/ei.html'" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
+    <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
     <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
     <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
   </div>
@@ -465,6 +465,14 @@
         Marcel Kometz, Duisburg.
       </p>
       <button class="btn-save" style="margin-top:16px;" onclick="closeImpressumModalForce()">Schließen</button>
+    </div>
+  </div>
+    <div class="modal-backdrop" id="eierBackdrop" onclick="closeEierModal(event)">
+    <div class="modal-sheet" id="eierSheet" onclick="event.stopPropagation()" style="height: 85dvh; display: flex; flex-direction: column; padding: 16px;">
+      <button class="close-sheet" onclick="closeEierModalForce()">&times;</button>
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px; text-align: center;">🥚 Eier-Timer</h2>
+      <!-- Hier laden wir deine ei.html direkt in das Pop-up -->
+      <iframe src="https://marcelkometz-web.github.io/diegartenmutti-rezepte/ei.html" style="width: 100%; flex: 1; border: none; border-radius: 12px; background: var(--bg);"></iframe>
     </div>
   </div>
 
