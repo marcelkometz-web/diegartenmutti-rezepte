@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DieGartenMutti86 – Rezepte</title>
+  
+  <link rel="icon" href="IMG_0526.png" type="image/png">
+  <link rel="apple-touch-icon" href="IMG_0526.png">
+  <meta name="apple-mobile-web-app-title" content="Rezepte">
+  <style>
+    /* --- DIE GUTEN THEMES SIND ZURÜCK --- */
+    :root {
+      --bg: #1c1917; --card-bg: #292524; --card-sub: #44403c;
+      --accent: #2ea043; --accent-glow: rgba(46, 160, 67, 0.2);
+      --text: #f5f5f4; --text-muted: #a8a29e; --border: #57534e;
+      --score-a: #238636; --score-b: #2ea043; --score-c: #d29922;
+      --score-d: #db6d28; --score-e: #da3633; --nav-bg: rgba(41, 37, 36, 0.94);
+    }
+    [data-theme="light"] {
+      --bg: #f6f8fa; --card-bg: #ffffff; --card-sub: #f0f6fc;
+      --text: #1F2328; --text-muted: #656d76; --border: #d0d7de; --nav-bg: rgba(255, 255, 255, 0.94);
+    }
+    [data-theme="tech-dark"] {
+      --bg: #0d1117; --card-bg: #161b22; --card-sub: #1f242d;
+      --text: #f0f6fc; --text-muted: #8b949e; --border: #30363d; --nav-bg: rgba(22, 27, 34, 0.94);
+    }
+    [data-theme="pink-red"] {
+      --bg: #2d111d; --card-bg: #401426; --card-sub: #5c1b37;
+      --accent: #e11d48; --accent-glow: rgba(225, 29, 72, 0.2);
+      --text: #fff1f2; --text-muted: #fda4af; --border: #881337; --nav-bg: rgba(64, 20, 38, 0.94);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+    body {
+      background: var(--bg); color: var(--text); padding: 14px 14px 110px 14px; max-width: 650px; margin: 0 auto;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body.modal-open { overflow: hidden; }
+
+    header { padding: 6px 0 10px 0; text-align: center; }
+
+    .brand-title {
+      font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #3fb950, #2ea043);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;
+    }
+    [data-theme="pink-red"] .brand-title { background: linear-gradient(135deg, #f43f5e, #be123c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .brand-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+    .sync-status { font-size: 0.72rem; color: #3fb950; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    [data-theme="pink-red"] .sync-status { color: #fb7185; }
+
+    .quick-actions-bar { display: flex; justify-content: center; gap: 8px; margin: 10px 0 14px 0; flex-wrap: wrap; }
+    .quick-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
+      font-size: 0.76rem; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .quick-btn.highlight { background: rgba(46, 160, 67, 0.15); border-color: #3fb950; color: #3fb950; }
+    [data-theme="pink-red"] .quick-btn.highlight { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #f43f5e; }
+    .quick-btn:active { transform: scale(0.96); }
+
+    .top-actions {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;
+      position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 5px 0;
+    }
+    .search-row { display: flex; gap: 8px; align-items: center; }
+    .search-box {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 12px; display: flex; align-items: center; gap: 8px; flex: 1;
+    }
+    .search-box input { background: transparent; border: none; color: var(--text); font-size: 0.95rem; width: 100%; outline: none; }
+    .search-box input::placeholder { color: var(--text-muted); }
+    .clear-search-btn { background: none; border: none; color: #ff4d4d; font-size: 1.15rem; font-weight: bold; cursor: pointer; display: none; padding: 0 4px; }
+
+    .btn-add-compact {
+      background: #238636; color: #fff; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; padding: 0 14px; height: 42px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+    }
+    [data-theme="pink-red"] .btn-add-compact { background: #be123c; }
+
+    .reste-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px 0; -webkit-overflow-scrolling: touch; }
+    .reste-chips::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
+      border-radius: 20px; padding: 8px 14px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .cat-btn:active { transform: scale(0.96); }
+
+    .chip-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; cursor: pointer; flex-shrink: 0;
+    }
+    .chip-btn.active { background: rgba(46, 160, 67, 0.2); border-color: #3fb950; color: #3fb950; }
+    [data-theme="pink-red"] .chip-btn.active { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #f43f5e; }
+
+    .active-subfilter-badge {
+      display: none; align-items: center; justify-content: space-between;
+      background: rgba(46, 160, 67, 0.15); border: 1px solid #3fb950; border-radius: 10px;
+      padding: 8px 12px; margin-bottom: 4px; font-size: 0.82rem; color: #3fb950;
+    }
+    [data-theme="pink-red"] .active-subfilter-badge { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #f43f5e; }
+    .active-subfilter-badge button { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0 4px; }
+
+    .category-divider {
+      display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700;
+      color: #3fb950; text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 10px 0;
+      padding-bottom: 4px; border-bottom: 1px solid var(--border); grid-column: 1 / -1;
+    }
+    [data-theme="pink-red"] .category-divider { color: #f43f5e; }
+
+    .recipe-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .recipe-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+      padding: 14px 10px; display: flex; flex-direction: column; align-items: center; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; position: relative;
+    }
+    .recipe-card:active { transform: scale(0.96); }
+
+    .fav-btn-card {
+      position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.25);
+      border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; border: none; cursor: pointer; z-index: 10;
+    }
+    .fav-btn-card.is-fav { background: rgba(255, 255, 255, 0.9); color: #e11d48; }
+
+    .card-icon {
+      font-size: 2.2rem; background: var(--card-sub); width: 56px; height: 56px;
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    }
+    .card-meta h3 {
+      font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.25; height: 2.5em;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 8px; padding: 0 4px;
+    }
+    .card-badges { display: flex; gap: 6px; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .badge-ampel { padding: 2px 6px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; color: #fff; }
+    .badge-airfryer { background: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.4); padding: 1px 5px; border-radius: 6px; font-size: 0.65rem; font-weight: 600; }
+
+    .card-quick-macros {
+      display: flex; gap: 8px; justify-content: center; font-size: 0.72rem; font-weight: 600;
+      color: var(--text-muted); background: var(--bg); padding: 4px 8px; border-radius: 8px; width: 100%;
+    }
+    .card-quick-macros .prot { color: #3fb950; }
+    [data-theme="pink-red"] .card-quick-macros .prot { color: #fb7185; }
+
+    /* Modals */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
+      z-index: 1000; align-items: flex-end; justify-content: center;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-sheet {
+      background: var(--card-bg); width: 100%; max-width: 650px; max-height: 88dvh;
+      border-radius: 20px 20px 0 0; border: 1px solid var(--border); overflow-y: auto; padding: 20px 16px 36px 16px; position: relative;
+    }
+    .close-sheet {
+      position: sticky; top: 16px; float: right; margin-bottom: -34px; background: var(--card-sub);
+      border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; width: 34px; height: 34px; border-radius: 50%;
+      cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center;
+    }
+
+    .nav-filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+    .nav-filter-btn {
+      background: var(--card-sub); border: 1px solid var(--border); color: var(--text);
+      padding: 16px 10px; border-radius: 16px; font-weight: 700; text-align: center; font-size: 0.95rem;
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .nav-filter-btn:active { transform: scale(0.96); }
+    .nav-filter-btn .icon { font-size: 1.8rem; }
+
+    .portion-row {
+      display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px;
+      background: var(--card-sub); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+    }
+    .portion-row label { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .portion-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px;
+      border-radius: 50%; font-weight: 800; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .portion-display { font-size: 1.15rem; font-weight: 800; color: #3fb950; min-width: 24px; text-align: center; }
+    [data-theme="pink-red"] .portion-display { color: #fb7185; }
+
+    .swap-row {
+      background: var(--card-sub); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px;
+    }
+    .swap-row label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+    .swap-row select { background: var(--bg); color: #3fb950; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; outline: none; max-width: 65%; }
+    [data-theme="pink-red"] .swap-row select { color: #fb7185; }
+
+    .nutri-carousel { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; margin: 14px 0; }
+    .nutri-carousel::-webkit-scrollbar { display: none; }
+    .nutri-pill { scroll-snap-align: start; flex: 0 0 auto; background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 78px; }
+    .nutri-pill span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+    .nutri-pill strong { font-size: 0.95rem; color: var(--text); }
+
+    .section-title { font-size: 0.95rem; font-weight: 700; margin: 16px 0 8px 0; color: var(--text); }
+    .ingredients-box { background: var(--card-sub); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 0.85rem; line-height: 1.6; color: var(--text); white-space: pre-line; }
+
+    .whatsapp-btn { background: #25D366; color: #fff; border: none; border-radius: 8px; padding: 10px 14px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
+    .add-notes-btn { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-weight: bold; width: 100%; margin-top: 8px; cursor: pointer; }
+
+    .step-section { margin-top: 10px; background: var(--card-sub); border-radius: 10px; padding: 12px; border: 1px solid var(--border); }
+    .step-section h4 { font-size: 0.88rem; margin-bottom: 6px; color: var(--text); }
+    .step-section p { font-size: 0.85rem; line-height: 1.5; color: var(--text-muted); }
+
+    .editable-tipps { width: 100%; background: rgba(210, 153, 34, 0.08); border: 1px dashed rgba(210, 153, 34, 0.4); color: var(--text); border-radius: 10px; padding: 12px; font-size: 0.88rem; min-height: 80px; outline: none; margin: 8px 0; }
+    .btn-save-small { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+    [data-theme="pink-red"] .btn-save-small { background: #be123c; }
+
+    /* HIER SIND DIE WICHTIGEN, ENGEN EINGABEFELDER WIEDER DA (Layout ist repariert!) */
+    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+    .form-group input, .form-group textarea, .form-group select { background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 12px; font-size: 0.88rem; outline: none; width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .btn-save { background: #238636; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; }
+    [data-theme="pink-red"] .btn-save { background: #be123c; }
+
+    /* DIE KI-BOX MIT LILA RAHMEN */
+    .ki-box { background: rgba(163, 113, 247, 0.1); border: 2px solid #a371f7; border-radius: 14px; padding: 14px; margin-bottom: 16px; position: relative; }
+    .ki-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap; }
+    .gemini-model-trigger {
+      background: rgba(28, 25, 23, 0.85); border: 1px solid rgba(163, 113, 247, 0.5); color: var(--text);
+      padding: 6px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .gemini-popover {
+      display: none; position: absolute; top: 48px; right: 12px; width: 250px;
+      background: rgba(38, 36, 40, 0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 10px 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.65); z-index: 200;
+    }
+    .gemini-popover.open { display: block; }
+    .gemini-model-opt { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 12px; cursor: pointer; transition: background 0.15s; }
+    .gemini-model-opt:hover, .gemini-model-opt.selected { background: rgba(255,255,255,0.08); }
+    .gemini-model-opt .m-title { font-size: 0.88rem; font-weight: 700; color: #fff; display: block; }
+    .gemini-model-opt .m-sub { font-size: 0.72rem; color: #a8a29e; display: block; margin-top: 1px; }
+    .gemini-model-opt .m-check { color: #fff; font-size: 0.95rem; font-weight: bold; opacity: 0; }
+    .gemini-model-opt.selected .m-check { opacity: 1; }
+    .gemini-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 6px 8px; }
+    .gemini-thinking-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; color: #fff; font-size: 0.82rem; font-weight: 600; }
+    .gemini-thinking-select { background: rgba(0,0,0,0.4); color: #a371f7; border: 1px solid rgba(163, 113, 247, 0.4); border-radius: 8px; padding: 4px 8px; font-size: 0.76rem; font-weight: 700; outline: none; }
+    .ki-btn { background: linear-gradient(135deg, #a371f7, #7c3aed); color: #fff; border: none; border-radius: 10px; padding: 11px; font-weight: bold; width: 100%; margin-top: 8px; cursor: pointer; }
+
+    .fab-refresh {
+      position: fixed; right: 18px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 48px; height: 48px;
+      border-radius: 50%; background: #238636; color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: 0 4px 16px rgba(0,0,0,0.3); cursor: pointer; z-index: 100;
+    }
+    [data-theme="pink-red"] .fab-refresh { background: #be123c; }
+
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--nav-bg); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px;
+      display: flex; justify-content: space-around; align-items: center; z-index: 500; max-width: 650px; margin: 0 auto;
+    }
+    .nav-btn {
+      background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px;
+      font-size: 0.68rem; font-weight: 500; cursor: pointer; flex: 1;
+    }
+    .nav-btn .icon { font-size: 1.4rem; }
+    .nav-btn.active { color: #3fb950; font-weight: 700; }
+    [data-theme="pink-red"] .nav-btn.active { color: #fb7185; }
+
+    .notes-container, .cycle-container, .settings-container { display: none; flex-direction: column; gap: 14px; }
+    .note-create-card, .settings-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .note-create-title { font-size: 1.05rem; margin-bottom: 12px; color: #3fb950; display: flex; align-items: center; gap: 6px; }
+    .note-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .note-select, .note-input-custom, .note-input-main { background: var(--card-sub); color: var(--text); border-radius: 8px; outline: none; border: 1px solid var(--border); }
+    .note-select { flex: 1; padding: 10px 12px; font-weight: 600; }
+    .note-input-custom { display: none; flex: 1; border-color: #3fb950; padding: 10px 12px; }
+    .note-input-main-wrapper { margin-bottom: 10px; }
+    .note-input-main { width: 100%; padding: 11px 12px; font-size: 0.95rem; }
+    .btn-save-note { margin-top: 0; padding: 11px; font-size: 0.95rem; width: 100%; }
+
+    .note-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .note-card.done { opacity: 0.55; }
+    .note-card.done .note-text { text-decoration: line-through; }
+    .note-content { flex: 1; min-width: 0; word-break: break-word; }
+    .note-author-badge { font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; display: inline-block; margin-bottom: 4px; }
+    .note-author-ramona { background: rgba(236, 72, 153, 0.18); color: #f472b6; }
+    .note-author-matze { background: rgba(59, 130, 246, 0.18); color: #60a5fa; }
+    .note-text { font-size: 0.92rem; color: var(--text); line-height: 1.4; }
+    .note-btn-action { background: var(--card-sub); border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .phase-indicator { background: var(--card-sub); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 14px; text-align: center; }
+    .phase-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; }
+    .phase-text { font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+
+    .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .settings-select { background: var(--card-sub); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; outline: none; font-weight: bold; }
+    .contact-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--card-sub); border: 1px solid var(--border); color: var(--text); text-decoration: none; padding: 11px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 8px; }
+
+    footer.app-footer { text-align: center; padding: 30px 10px 20px 10px; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">DieGartenMutti86</div>
+    <div class="brand-sub">Ernährungs- & Rezepte-App • Smart Nutrition</div>
+    <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
+  </header>
+
+  <div class="quick-actions-bar">
+    <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
+    <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
+    <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
+    <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
+  </div>
+
+  <div id="recipesSection">
+    <div class="top-actions">
+      <div class="search-row">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Zutaten kombinieren..." oninput="onSearchManual()">
+          <button id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" aria-label="Suche leeren">✖</button>
+        </div>
+        <label class="btn-add-compact" style="background: #a371f7; border-color: rgba(163, 113, 247, 0.4); padding: 0 12px; font-size: 1.15rem;" title="Foto scannen">
+          📸
+          <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleHomeImageCapture(event)">
+        </label>
+        <button class="btn-add-compact" onclick="openAddModal()"><span>➕ Neu</span></button>
+      </div>
+
+      <div class="reste-chips" id="categoryChips">
+        <button type="button" class="cat-btn" onclick="openIngredientModal('fleisch')">🥩 Fleisch & Fisch</button>
+        <button type="button" class="cat-btn" onclick="openIngredientModal('gemuese')">🥦 Gemüse</button>
+        <button type="button" class="cat-btn" onclick="openIngredientModal('milch')">🧀 Proteine & Milch</button>
+        <button type="button" class="cat-btn" onclick="openIngredientModal('basics')">🧄 Basics & Gewürze</button>
+      </div>
+
+      <div class="active-subfilter-badge" id="subfilterBadge">
+        <span id="subfilterText">Gefiltert</span>
+        <button onclick="clearSubFilter()" title="Filter aufheben">&times;</button>
+      </div>
+    </div>
+
+    <div class="recipe-list" id="recipeList"></div>
+  </div>
+
+  <div id="cycleSection" class="cycle-container">
+    <div class="note-create-card">
+      <h3 class="note-create-title">🩸 Zyklus & Ernährung</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Letzte Periode</label><input type="date" id="cycleStartDate" onchange="calculateCycle()"></div>
+        <div class="form-group"><label>Zykluslänge (Tage)</label><input type="number" id="cycleLength" value="28" onchange="calculateCycle()"></div>
+      </div>
+      <div id="currentPhaseInfo" style="display: none;">
+        <div class="phase-indicator"><div id="phaseBadge" class="phase-badge">Phase</div><div id="phaseText" class="phase-text">Text...</div></div>
+        <button class="btn-save btn-save-note" style="margin-top: 14px;" onclick="filterRecipesForCycle()">✨ Passende Rezepte anzeigen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notesSection" class="notes-container">
+    <div class="note-create-card">
+      <h3 class="note-create-title">📝 Neue Notiz / Einkaufsliste</h3>
+      <div class="note-input-row">
+        <select id="noteAuthor" onchange="toggleCustomAuthorInput(this.value)" class="note-select">
+          <option value="Ramona">🌸 Ramona</option>
+          <option value="Matze">🔧 Matze</option>
+          <option value="custom">✍️ Eigener Name...</option>
+        </select>
+        <input type="text" id="noteAuthorCustom" placeholder="Name..." class="note-input-custom">
+      </div>
+      <div class="note-input-main-wrapper"><input type="text" id="noteInput" placeholder="Was notieren oder einkaufen..." class="note-input-main" onkeydown="if(event.key === 'Enter') addNote()"></div>
+      <button onclick="addNote()" class="btn-save btn-save-note">➕ Notiz speichern</button>
+    </div>
+    <div class="category-divider">📋 Eure Notizen</div>
+    <div id="notesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+  </div>
+
+  <div id="settingsSection" class="settings-container">
+    <div class="settings-card">
+      <h3 style="margin-bottom: 8px; color: #da3633;">🔒 Admin-Passwort</h3>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+        Speichere hier das Passwort, um Rezepte anlegen, löschen oder bearbeiten zu können. Fremde Besucher können ohne Passwort nichts verändern.
+      </p>
+      <div style="display: flex; gap: 8px;">
+        <input type="password" id="adminPinInput" placeholder="Passwort..." class="note-input-main" style="margin-bottom: 0;">
+        <button onclick="saveAdminPin()" class="btn-save btn-save-note" style="margin-top: 0; width: auto; background: #da3633;">Speichern</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h3 style="margin-bottom: 12px;">🎨 Design & Darstellung</h3>
+      <div class="settings-row">
+        <span>Farbschema</span>
+        <select class="settings-select" id="themeSelect" onchange="changeTheme(this.value)">
+          <option value="warm-dark">🌿 Warm Dark</option>
+          <option value="pink-red">🌺 Berry Pink</option>
+          <option value="light">☀️ Light Mode</option>
+          <option value="tech-dark">💻 Tech Dark</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h3 style="margin-bottom: 8px;">💾 Sicherheits-Backup (JSON)</h3>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+        Lade alle Rezepte als Sicherheitskopie herunter oder spiele ein Backup ein.
+      </p>
+      <button class="contact-btn" onclick="exportBackupJson()">⬇️ Alle Rezepte als JSON-Backup speichern</button>
+      <label class="contact-btn" style="margin-top: 8px;">
+        ⬆️ JSON-Backup importieren
+        <input type="file" accept=".json" style="display: none;" onchange="importBackupJson(event)">
+      </label>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeSheet(event)">
+    <div class="modal-sheet" id="modalSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeSheetForce()">&times;</button>
+      <div id="sheetContent"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="ingredientBackdrop" onclick="closeIngredientModal(event)">
+    <div class="modal-sheet" id="ingredientSheet" onclick="event.stopPropagation()" style="padding-bottom: 24px;">
+      <button class="close-sheet" onclick="closeIngredientModalForce()">&times;</button>
+      <h2 id="ingModalTitle" style="font-size: 1.25rem; margin-bottom: 16px; text-align: center; color: var(--text);">Kategorie</h2>
+      <div id="ingModalGrid" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;"></div>
+      <button class="btn-save" style="margin-top: 20px;" onclick="closeIngredientModalForce()">✅ Fertig & Filtern</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="navFilterBackdrop" onclick="closeNavFilterModal(event)">
+    <div class="modal-sheet" id="navFilterSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeNavFilterModalForce()">&times;</button>
+      <h2 style="font-size: 1.3rem; margin-bottom: 8px; text-align: center;">Mahlzeiten & Filter</h2>
+      <div class="nav-filter-grid">
+        <button class="nav-filter-btn" onclick="handleNavCategory('fruehstueck')"><span class="icon">🍳</span>Frühstück</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('mittag')"><span class="icon">🍲</span>Mittag</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('abend')"><span class="icon">🥩</span>Abend</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('snacks')"><span class="icon">🧁</span>Snacks & Süßes</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('highprotein')" style="border-color: #3fb950;"><span class="icon">💪</span>High-Protein</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('lowcarb')" style="border-color: #3fb950;"><span class="icon">🥗</span>Low-Carb</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('airfryer')" style="border-color: #d29922;"><span class="icon">🌪️</span>Airfryer</button>
+        <button class="nav-filter-btn" onclick="handleNavCategory('favoriten')" style="border-color: #e11d48;"><span class="icon">❤️</span>Favoriten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIE VOLLE READ.TXT -->
+  <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
+    <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
+      <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 8px;">📄 Das ultimative App-Handbuch</h2>
+      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+        <p>Willkommen in deiner persönlichen, KI-gestützten Ernährungszentrale. Diese App vereint modernstes Web-Design mit echtem ernährungswissenschaftlichen Know-how. Hier ist alles, was die App kann:</p>
+        
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🤖 Gemini KI-Spitzenkoch & Vision-Scan</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Kamera-Scan (Vision):</b> Fotografiere Kochbücher, Zeitschriften oder handgeschriebene Zettel. Die KI analysiert das Foto und extrahiert den Rezepttitel, Zutaten, Mengen und Arbeitsschritte vollautomatisch in die Datenbank.</li>
+          <li><b>Reste-Verwertung per Text:</b> Gib einfach Zutaten ein (z. B. "Hähnchen, Spinat, Feta") und die KI kreiert dir ein maßgeschneidertes, komplett berechnetes Rezept.</li>
+          <li><b>Modell-Auswahl & Deep Think:</b> Wähle flexibel zwischen schnellen KI-Modellen (3.8 Flash) für den Alltag oder tiefgründigen Analyse-Modellen (4 Argon) für komplexe Rezept-Bilder. Du kannst sogar den "Denkaufwand" der KI manuell steuern.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🍳 Dynamisches Makro- & Rezept-Management</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Smarte Portionierung:</b> Alle Rezepte sind präzise auf 1 Portion normiert. Änderst du die Personenanzahl, berechnet die App die Zutatenmengen sowie Kalorien, Eiweiß, Kohlenhydrate und Fett in Echtzeit hoch oder runter.</li>
+          <li><b>Live Beilagen-Tausch:</b> Tausche z. B. Zucchini-Nudeln gegen Vollkorn-Spaghetti – die App passt die Nährwerte und den Blutzucker-/Insulin-Einfluss sofort live an.</li>
+          <li><b>Medizinischer Doc-Check:</b> Ernährungsmedizinische und physiologische Tipps zu jedem Rezept (z. B. Blutzucker-Wirkung, Aminosäurenprofil, Entzündungshemmung).</li>
+          <li><b>Clevere Filter:</b> Finde über das Kategorien-Menü sofort Gerichte für den Airfryer, Low-Carb-Meals oder High-Protein-Bomben (automatisch gefiltert auf >25g Eiweiß pro Portion).</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">🩸 Zyklus-Ernährungsplaner</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Hormonelle Anpassung:</b> Berechnet die aktuelle Zyklusphase (Menstruation, Follikel, Eisprung, Luteal) basierend auf dem eingegebenen Startdatum.</li>
+          <li><b>Maßgeschneiderte Ernährung:</b> Gibt exakte Empfehlungen, welche Nährstoffe (z. B. Eisen, komplexe Kohlenhydrate, Fette) der Körper in der jeweiligen Phase gerade am meisten braucht, um Heißhunger zu vermeiden und den Stoffwechsel optimal zu unterstützen.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">📝 Live-Einkaufslisten & Notizen</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>1-Klick-Einkauf:</b> Mit nur einem Klick landen alle Zutaten eines Rezepts auf der gemeinsamen Einkaufsliste.</li>
+          <li><b>WhatsApp-Export:</b> Teile exakte Einkaufslisten direkt über WhatsApp mit der Familie.</li>
+          <li><b>Echtzeit-Sync:</b> Notizen synchronisieren sich über Supabase sofort in der Cloud. Wähle aus, wer die Notiz geschrieben hat oder trage eigene Namen ein.</li>
+        </ul>
+
+        <h3 style="margin-top: 18px; color: var(--text); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">⚙️ Profi-Tools & Setup</h3>
+        <ul style="padding-left: 20px; margin-bottom: 10px; margin-top: 8px;">
+          <li><b>Integrierter Eier-Timer:</b> Perfekte Frühstückseier dank direkt eingebundenem Pop-up-Timer auf der Startseite.</li>
+          <li><b>Cloud & Offline-Sicherheit:</b> Alle Rezepte liegen sicher in der Supabase-Datenbank. Über das Setup kannst du ein JSON-Backup herunterladen oder wieder einspielen.</li>
+          <li><b>4 Premium-Themes:</b> Wähle passend zu deiner Stimmung zwischen Warm Dark, Light Mode, Berry Pink und Tech Dark.</li>
+        </ul>
+      </div>
+      <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
+    <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
+      <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
+      <h2>⚖️ Impressum & Rechtliches</h2>
+      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+        <p style="color: #da3633; border: 1px solid #da3633; padding: 12px; border-radius: 8px; background: rgba(218, 54, 51, 0.1); margin-bottom: 16px;">
+          <b>WICHTIGER HINWEIS: Diese Web-Applikation ist ein reines Hobby-Projekt und dient ausschließlich der privaten, familiären Nutzung.</b>
+        </p>
+        <p><b>Angaben gemäß § 5 TMG</b></p>
+        <p style="margin-top: 8px; color: var(--text);">Marcel Kometz<br>Manfredstr. 15<br>47178 Duisburg</p>
+        <p style="margin-top: 14px;"><b>Kontakt</b></p>
+        <p style="color: var(--text);">Telefon: 015901486107<br>E-Mail: marcelkometz@icloud.com</p>
+        <p style="margin-top: 18px; font-size: 0.8rem; padding-top: 10px;">
+          <b>Haftungsausschluss (Disclaimer):</b><br><br>
+          Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte verantwortlich. Wir übernehmen ausdrücklich keine Gewähr für die Richtigkeit von durch KI generierten Inhalten. Die in dieser App generierten Nährwertangaben und Gesundheitstipps dienen ausschließlich zu Informationszwecken und ersetzen keinesfalls eine medizinische Beratung durch einen Arzt.
+        </p>
+      </div>
+      <button class="btn-save" style="margin-top:18px;" onclick="closeImpressumModalForce()">Schließen</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="eierBackdrop" onclick="closeEierModal(event)">
+    <div class="modal-sheet" id="eierSheet" onclick="event.stopPropagation()" style="height: 85dvh; display: flex; flex-direction: column; padding: 16px;">
+      <button class="close-sheet" onclick="closeEierModalForce()">&times;</button>
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px; text-align: center;">🥚 Eier-Timer</h2>
+      <iframe src="https://marcelkometz-web.github.io/diegartenmutti-rezepte/ei.html" style="width: 100%; flex: 1; border: none; border-radius: 12px; background: var(--bg);"></iframe>
+    </div>
+  </div>
+
+  <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()"><span>🔄</span></button>
+
+  <footer class="app-footer"><p>© DieGartenMutti86 | Marcel Kometz</p></footer>
+
+  <nav class="bottom-bar">
+    <button class="nav-btn active" id="nav-btn-home" onclick="handleNavCategory('all')">
+      <span class="icon">🏠</span><span>Home</span>
+    </button>
+    <button class="nav-btn" id="nav-btn-filter" onclick="openNavFilterModal()">
+      <span class="icon">🔍</span><span>Kategorien</span>
+    </button>
+    <button class="nav-btn" id="navBtnCycle" onclick="openCycleView()">
+      <span class="icon">🩸</span><span>Zyklus</span>
+    </button>
+    <button class="nav-btn" id="navBtnNotes" onclick="openNotesView()">
+      <span class="icon">📝</span><span>Notizen</span>
+    </button>
+    <button class="nav-btn" id="navBtnSettings" onclick="openSettingsView()">
+      <span class="icon">⚙️</span><span>Setup</span>
+    </button>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://kzxzhpebugvzyqfjqedx.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_8-MkCdXRxN-GagE0g4GYrQ_TY3I6RmD';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const MASTER_GEMINI_API_KEY = ''; 
+    const ADMIN_PIN = 'Garten86'; // Dein Admin-Passwort
+
+    let searchTimeout = null;
+    let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
+    let currentSelectedPortions = 1; 
+    let sharedGeminiApiKey = MASTER_GEMINI_API_KEY;
+
+    function lockScroll() { document.body.classList.add('modal-open'); }
+    function unlockScroll() { document.body.classList.remove('modal-open'); }
+
+    function saveAdminPin() {
+      const pin = document.getElementById('adminPinInput').value;
+      localStorage.setItem('gartenAdminPin', pin);
+      alert(pin === ADMIN_PIN ? '✅ Passwort korrekt gespeichert! Du hast jetzt volle Admin-Rechte.' : '⚠️ Passwort gespeichert, es ist aber falsch!');
+    }
+
+    function checkAdmin() {
+      if (localStorage.getItem('gartenAdminPin') === ADMIN_PIN) return true;
+      const input = prompt('🔒 Geschützter Bereich! Bitte Admin-Passwort eingeben:');
+      if (input === ADMIN_PIN) return true;
+      alert('❌ Falsches Passwort! Zugriff verweigert.'); return false;
+    }
+
+    function dataURItoBlob(dataURI) {
+      let byteString;
+      if (dataURI.split(',')[0].indexOf('base64') >= 0) byteString = atob(dataURI.split(',')[1]);
+      else byteString = unescape(dataURI.split(',')[1]);
+      let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      let ia = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+      return new Blob([ia], { type: mimeString });
+    }
+
+    const SPECIAL_VARIATIONS = {
+      "5 gesunde dips": {
+        "aioli": { name: "🧄 Aioli", kcal: 180, prot: 0.5, kh: 1.0, sugar: 0.5, fat: 19.0, zutaten: "• 120 ml Mayonnaise\n• 2 Knoblauchzehen (gepresst)\n• 1 EL frischer Zitronensaft\n• Prise Salz & Pfeffer", prep: "Knoblauch pressen, mit Mayonnaise und Zitronensaft glatt rühren." },
+        "honig_senf": { name: "🍯 Honig-Senf", kcal: 140, prot: 0.5, kh: 6.0, sugar: 5.5, fat: 12.0, zutaten: "• 120 ml Mayonnaise\n• 2 EL Dijon-Senf\n• 2 EL Honig\n• 1 TL Apfelessig", prep: "Alle Zutaten gründlich verrühren, bis sich der Honig komplett gelöst hat." },
+        "salsa": { name: "🍅 Tomaten-Salsa", kcal: 35, prot: 1.0, kh: 6.0, sugar: 4.0, fat: 0.5, zutaten: "• 4 reife Tomaten\n• 1/2 rote Zwiebel\n• 1 Jalapeño (ohne Kerne)\n• Handvoll frischer Koriander\n• Saft von 1 Limette", prep: "Tomaten, Zwiebel und Jalapeño extrem fein würfeln. Koriander hacken. Mit Limettensaft vermengen. 30 Min ziehen lassen." },
+        "teriyaki": { name: "🥢 Teriyaki Soße", kcal: 65, prot: 3.0, kh: 13.0, sugar: 11.0, fat: 0.1, zutaten: "• 120 ml Sojasauce\n• 2 EL brauner Zucker\n• 1 EL Honig\n• 1 EL Reisessig\n• 1 TL Ingwer (gerieben)\n• 1 Knoblauchzehe", prep: "Alle Zutaten aufkochen. Hitze reduzieren und ca. 5-10 Minuten einköcheln lassen, bis es leicht andickt." },
+        "tzatziki": { name: "🥒 Tzatziki", kcal: 55, prot: 4.0, kh: 3.5, sugar: 3.0, fat: 2.5, zutaten: "• 240 ml Griechischer Joghurt\n• 1/2 Salatgurke\n• 2 EL frischer Dill\n• 1 EL Zitronensaft\n• 1 Knoblauchzehe", prep: "Gurke raspeln, salzen und Wasser auspressen. Knoblauch pressen. Mit Joghurt, Zitrone und Dill verrühren." }
+      }
+    };
+
+    function getVariationsForRecipe(title) {
+       if(!title) return null; const t = title.toLowerCase();
+       for (const key in SPECIAL_VARIATIONS) { if (t.includes(key.toLowerCase())) return SPECIAL_VARIATIONS[key]; } return null;
+    }
+
+    const INGREDIENT_GROUPS = {
+      'fleisch': { icon: '🥩', title: 'Fleisch & Fisch', items: ['Hähnchen', 'Rind', 'Hackfleisch', 'Schwein', 'Pute', 'Lachs', 'Garnelen', 'Thunfisch', 'Speck'] },
+      'gemuese': { icon: '🥦', title: 'Gemüse & Grünzeug', items: ['Brokkoli', 'Wirsing', 'Zucchini', 'Blumenkohl', 'Spinat', 'Kohlrabi', 'Lauch', 'Möhren', 'Kartoffeln', 'Süßkartoffel', 'Paprika', 'Tomaten', 'Gurke', 'Pilze', 'Bohnen', 'Erbsen', 'Spitzkohl', 'Avocado', 'Kürbis', 'Aubergine'] },
+      'milch': { icon: '🧀', title: 'Proteine & Milch', items: ['Eier', 'Quark', 'Feta', 'Mozzarella', 'Parmesan', 'Frischkäse', 'Sahne', 'Joghurt', 'Butter', 'Tofu'] },
+      'basics': { icon: '🧄', title: 'Basics', items: ['Knoblauch', 'Zwiebel', 'Schalotte', 'Chili', 'Ingwer', 'Kräuter', 'Senf', 'Tomatenmark', 'Nüsse', 'Mandeln'] }
+    };
+
+    const GEMINI_MODELS = {
+      'flash-lite': { label: '3.5 Flash-Lite', sub: 'Schnellste Antworten', apiModels: ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'], temp: 0.65 },
+      'flash': { label: '3.8 Flash', sub: 'Vielseitige Unterstützung', apiModels: ['gemini-2.5-flash', 'gemini-2.0-flash'], temp: 0.72 },
+      'pro': { label: '3.1 Pro', sub: 'Logisches Schlussfolgern', apiModels: ['gemini-2.5-pro', 'gemini-2.5-flash'], temp: 0.78 },
+      'argon': { label: '4 Argon', sub: 'Komplexe Aufgaben (Vision)', apiModels: ['gemini-2.5-pro', 'gemini-2.5-flash'], temp: 0.82 }
+    };
+    let selectedGeminiModelKey = localStorage.getItem('gartenMuttiGeminiModel') || 'argon';
+    let selectedThinkingEffort = localStorage.getItem('gartenMuttiThinkingEffort') || 'standard';
+
+    const sideOptions = {
+      "keine": { name: "Ohne Extra-Beilage", kcal: 0, kh: 0, sugar: 0, fat: 0, prot: 0, insulin: "Optimal stabil" },
+      "protein_nudeln": { name: "Protein-Nudeln (+100g)", kcal: 145, kh: 18, sugar: 1.5, fat: 1.8, prot: 14.0, insulin: "Stabil" },
+      "zoodles": { name: "Zucchini-Nudeln (+150g)", kcal: 22, kh: 3.1, sugar: 2.2, fat: 0.4, prot: 1.8, insulin: "Ketogen" },
+      "basmati_reis": { name: "Basmati-Reis (+100g)", kcal: 130, kh: 28, sugar: 0.1, fat: 0.3, prot: 2.7, insulin: "Mäßig" },
+      "kartoffeln": { name: "Kartoffeln (+150g)", kcal: 110, kh: 23, sugar: 1.2, fat: 0.2, prot: 3.0, insulin: "Peak" }
+    };
+
+    const CATEGORY_NAMES = { 'fruehstueck': { label: 'Frühstück', icon: '🍳' }, 'mittag': { label: 'Mittagessen', icon: '🍲' }, 'abend': { label: 'Abendessen', icon: '🥩' }, 'snacks': { label: 'Snacks', icon: '🧁' } };
+
+    let recipes = []; let currentCategory = 'all'; let currentSubFilter = null; let capturedBase64Image = null;
+
+    function escapeHtml(text) { return String(text||'').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+
+    function openGartenApp() { window.open('https://marcelkometz-web.github.io/Mona/', '_blank'); }
+    
+    // --- HIER SIND DIE FEHLENDEN KLICK-FUNKTIONEN WIEDER DRIN ---
+    function openReadmeModal() { document.getElementById('readmeBackdrop').classList.add('active'); lockScroll(); }
+    function closeReadmeModalForce() { document.getElementById('readmeBackdrop').classList.remove('active'); unlockScroll(); }
+    
+    function openImpressumModal() { document.getElementById('impressumBackdrop').classList.add('active'); lockScroll(); }
+    function closeImpressumModalForce() { document.getElementById('impressumBackdrop').classList.remove('active'); unlockScroll(); }
+    
+    function openEierModal() { document.getElementById('eierBackdrop').classList.add('active'); lockScroll(); }
+    function closeEierModalForce() { document.getElementById('eierBackdrop').classList.remove('active'); unlockScroll(); }
+    // -------------------------------------------------------------
+
+    function openIngredientModal(groupKey) {
+      const group = INGREDIENT_GROUPS[groupKey]; if (!group) return;
+      document.getElementById('ingModalTitle').innerHTML = `${group.icon} ${group.title}`;
+      const terms = document.getElementById('searchInput').value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
+      document.getElementById('ingModalGrid').innerHTML = group.items.map(item => {
+        const isActive = terms.includes(item.toLowerCase());
+        return `<button class="chip-btn ${isActive ? 'active' : ''}" style="margin:4px; font-size:0.9rem; padding:8px 14px;" onclick="toggleModalIngredient('${item.toLowerCase()}', this)">${item}</button>`;
+      }).join('');
+      document.getElementById('ingredientBackdrop').classList.add('active'); lockScroll();
+    }
+
+    function toggleModalIngredient(item, btn) {
+      btn.classList.toggle('active'); let input = document.getElementById('searchInput');
+      let terms = input.value.toLowerCase().split(/[\s,]+/).filter(t => t.length > 0);
+      if (btn.classList.contains('active')) { if (!terms.includes(item)) terms.push(item); } else { terms = terms.filter(t => t !== item); }
+      input.value = terms.join(' '); document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
+      filterRecipes();
+    }
+
+    function closeIngredientModalForce() { document.getElementById('ingredientBackdrop').classList.remove('active'); unlockScroll(); }
+    function closeIngredientModal(e) { if (e.target.id === 'ingredientBackdrop') closeIngredientModalForce(); }
+    function openNavFilterModal() { document.getElementById('navFilterBackdrop').classList.add('active'); lockScroll(); }
+    function closeNavFilterModalForce() { document.getElementById('navFilterBackdrop').classList.remove('active'); unlockScroll(); }
+    function closeNavFilterModal(e) { if (e.target.id === 'navFilterBackdrop') closeNavFilterModalForce(); }
+    function clearSubFilter() { currentSubFilter = null; document.getElementById('subfilterBadge').style.display = 'none'; filterRecipes(); }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('gartenMuttiTheme') || 'warm-dark';
+      document.getElementById('themeSelect').value = savedTheme; applyTheme(savedTheme);
+    }
+    function changeTheme(t) { localStorage.setItem('gartenMuttiTheme', t); applyTheme(t); }
+    function applyTheme(t) { if (t === 'warm-dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); }
+
+    async function loadSharedGeminiKeyFromDB() {
+      if (MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); return; }
+      try {
+        const { data, error } = await supabaseClient.from('Notizen').select('content').eq('author', 'SYSTEM_GEMINI_KEY').limit(1);
+        if (!error && data && data.length > 0 && data[0].content) sharedGeminiApiKey = data[0].content.trim();
+      } catch (e) {}
+    }
+
+    function toggleFavorite(id, event) {
+      if (event) event.stopPropagation(); const idx = favorites.indexOf(String(id));
+      if (idx === -1) favorites.push(String(id)); else favorites.splice(idx, 1);
+      localStorage.setItem('gartenMuttiFavs', JSON.stringify(favorites)); filterRecipes();
+      const modalBtn = document.getElementById('modalFavBtn');
+      if (modalBtn) modalBtn.innerHTML = favorites.includes(String(id)) ? '❤️ Favorit' : '🤍 Merken';
+    }
+    
+    function getMealType(r) {
+      const t = (r.title || '').toLowerCase(); const c = Array.isArray(r.category) ? r.category.join(' ').toLowerCase() : '';
+      if (t.includes('frühstück') || c.includes('fruehstueck')) return 'fruehstueck';
+      if (t.includes('nachtisch') || c.includes('dessert') || c.includes('snacks')) return 'snacks';
+      if (t.includes('brot') || c.includes('abend')) return 'abend'; return 'mittag';
+    }
+
+    function getScoreClass(score) {
+      const s = String(score || 'A').toUpperCase();
+      if (s === 'A') return 'var(--score-a)'; if (s === 'B') return 'var(--score-b)';
+      if (s === 'C') return 'var(--score-c)'; if (s === 'D') return 'var(--score-d)'; return 'var(--score-e)';
+    }
+
+    async function loadRecipesFromSupabase() {
+      const status = document.getElementById('syncStatus'); status.innerText = '⏳ Lade...';
+      try {
+        const { data, error } = await supabaseClient.from('Rezepte').select('*').order('id', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          recipes = data.map(item => {
+            let cat = Array.isArray(item.category) ? item.category : (item.category ? [item.category] : []);
+            let ing = Array.isArray(item.ingredients) ? item.ingredients : (item.ingredients ? item.ingredients.split(',').map(s=>s.trim().toLowerCase()) : []);
+            let score = item.score || 'A';
+            let rec = {
+              id: item.id, title: item.title || item.titel || 'Rezept', emoji: item.emoji || '🍲', category: cat,
+              airfryer: item.airfryer === true || item.airfryer === 'true', score: score, scoreClass: getScoreClass(score),
+              selectedSide: item.selectedSide || 'keine', ingredients: ing, zutatenListe: item.zutaten_liste || ing.join(', '),
+              tipps: item.tipps || '', docCheck: item.doc_check || '', image_url: item.image_url || null,
+              baseNutri: { kcal: item.kcal != null ? Number(item.kcal) : 300, kh: item.kh != null ? Number(item.kh) : 5, sugar: item.sugar != null ? Number(item.sugar) : 2.0, fat: item.fat != null ? Number(item.fat) : 10, prot: item.prot != null ? Number(item.prot) : 25 },
+              prep: item.prep || 'Zutaten vorbereiten.', stoveStep: item.stove_step || '', ovenStep: item.oven_step || '', airfryerStep: item.airfryer_step || ''
+            };
+            rec.mealType = getMealType(rec); return rec;
+          });
+          status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
+        }
+      } catch (err) { status.innerText = '⚡ Offline-Modus aktiv'; }
+      filterRecipes();
+    }
+
+    function calculateTotalNutri(recipe, tempSide = null, portions = 1, variationKey = null) {
+      let baseKcal = Number(recipe.baseNutri.kcal); let baseKh = Number(recipe.baseNutri.kh);
+      let baseSugar = Number(recipe.baseNutri.sugar || 2); let baseFat = Number(recipe.baseNutri.fat);
+      let baseProt = Number(recipe.baseNutri.prot);
+
+      const vars = getVariationsForRecipe(recipe.title);
+      if (vars && variationKey && vars[variationKey]) {
+        baseKcal = vars[variationKey].kcal; baseKh = vars[variationKey].kh;
+        baseSugar = vars[variationKey].sugar; baseFat = vars[variationKey].fat; baseProt = vars[variationKey].prot;
+      }
+
+      const sideKey = tempSide !== null ? tempSide : (recipe.selectedSide || 'keine'); 
+      const side = sideOptions[sideKey] || sideOptions['keine'];
+      
+      let totalKcal = baseKcal + Number(side.kcal); let totalKh = baseKh + Number(side.kh);
+      let totalSugar = baseSugar + Number(side.sugar || 0); let totalFat = baseFat + Number(side.fat); let totalProt = baseProt + Number(side.prot);
+
+      return { kcal: Math.round(totalKcal * portions), kh: (totalKh * portions).toFixed(1), sugar: (totalSugar * portions).toFixed(1), fat: (totalFat * portions).toFixed(1), prot: (totalProt * portions).toFixed(1), insulin: side.insulin || "Optimal stabil" };
+    }
+
+    function generateScaledIngredients(rawText, portions) {
+      if (!rawText) return 'Keine Zutatenliste hinterlegt.';
+      return rawText.split('\n').map(line => {
+        let clean = line.replace(/•/g, '').trim(); if (!clean) return '';
+        let scaled = clean.replace(/^([\d.,]+)\s*(g|ml|EL|TL|Stück|Dose|Prise|Scheiben|Kopf|Becher)?/i, (match, num, unit) => {
+          let parsed = parseFloat(num.replace(',', '.'));
+          if (!isNaN(parsed)) { let res = parsed * portions; return `${Number.isInteger(res) ? res : res.toFixed(1).replace('.', ',')} ${unit || ''}`; }
+          return match;
+        }); return `• ${scaled}`;
+      }).join('\n');
+    }
+
+    function filterRecipes() {
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+      const terms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
+
+      const filtered = recipes.filter(r => {
+        let matchesCat = true;
+        if (currentCategory === 'favoriten') matchesCat = favorites.includes(String(r.id));
+        else if (currentCategory === 'airfryer') matchesCat = r.airfryer === true;
+        else if (currentCategory === 'highprotein') matchesCat = r.baseNutri.prot >= 25;
+        else if (['fruehstueck', 'mittag', 'abend', 'snacks'].includes(currentCategory)) matchesCat = r.mealType === currentCategory;
+        else if (currentCategory !== 'all') matchesCat = Array.isArray(r.category) ? r.category.some(c => String(c).toLowerCase().includes(currentCategory)) : false;
+
+        let matchesSub = true;
+        if (currentSubFilter) {
+          const subRegex = new RegExp(`(^|[^a-zäöüß])${currentSubFilter}([^a-zäöüß]|$)`, 'i');
+          matchesSub = subRegex.test(r.title) || (r.ingredients && r.ingredients.some(i => subRegex.test(i))) || subRegex.test(r.zutatenListe);
+        }
+
+        let matchesTerms = true;
+        if (terms.length > 0) {
+          matchesTerms = terms.every(term => {
+            const regex = new RegExp(`(^|[^a-zäöüß])${term}`, 'i');
+            return regex.test(r.title) || (r.ingredients && r.ingredients.some(i => regex.test(i))) || regex.test(r.zutatenListe);
+          });
+        }
+        return matchesCat && matchesSub && matchesTerms;
+      });
+      renderList(filtered);
+    }
+
+    function onSearchManual() {
+      const input = document.getElementById('searchInput'); document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
+      if (searchTimeout) clearTimeout(searchTimeout); searchTimeout = setTimeout(filterRecipes, 250);
+    }
+
+    function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('clearSearchBtn').style.display = 'none'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); filterRecipes(); }
+
+    function buildCardHtml(r) {
+      const total = calculateTotalNutri(r, 'keine', 1); const isFav = favorites.includes(String(r.id));
+      const imageOrEmoji = r.image_url 
+        ? `<div class="card-icon" style="background-image: url('${r.image_url}'); background-size: cover; background-position: center; border: 1px solid var(--border);"></div>`
+        : `<div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>`;
+
+      return `
+        <div class="recipe-card" onclick="openDetails('${escapeHtml(r.id)}')">
+          <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${escapeHtml(r.id)}', event)">${isFav ? '❤️' : '🤍'}</button>
+          ${imageOrEmoji}
+          <div class="card-meta">
+            <h3>${escapeHtml(r.title)}</h3>
+            <div class="card-badges"><span class="badge-ampel" style="background: ${r.scoreClass || 'var(--score-a)'}">Nutri ${escapeHtml(r.score || 'A')}</span>${r.airfryer ? '<span class="badge-airfryer">🌪️ Airfryer</span>' : ''}</div>
+          </div>
+          <div class="card-quick-macros"><span>🔥 ${total.kcal} kcal</span><span class="prot">💪 ${total.prot}g EW</span></div>
+        </div>
+      `;
+    }
+
+    function renderList(list) {
+      const container = document.getElementById('recipeList'); if (!container) return; container.innerHTML = '';
+      if (list.length === 0) { container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Keine passenden Rezepte gefunden.</div>`; return; }
+      if (currentCategory !== 'all') { container.innerHTML = list.map(r => buildCardHtml(r)).join(''); return; }
+      const groups = { 'fruehstueck': [], 'mittag': [], 'abend': [], 'snacks': [] };
+      list.forEach(r => { if (groups[r.mealType]) groups[r.mealType].push(r); else groups['mittag'].push(r); });
+      let html = '';
+      for (const [key, items] of Object.entries(groups)) {
+        if (items.length > 0 && CATEGORY_NAMES[key]) {
+          html += `<div class="category-divider">${CATEGORY_NAMES[key].icon} ${CATEGORY_NAMES[key].label} (${items.length})</div>`;
+          html += items.map(r => buildCardHtml(r)).join('');
+        }
+      }
+      container.innerHTML = html;
+    }
+
+    function updatePortionOrSide(recipeId, changePortion = 0) {
+      let next = currentSelectedPortions + changePortion;
+      if (next < 1) next = 1; if (next > 20) next = 20; currentSelectedPortions = next;
+      const portEl = document.getElementById(`portionCount-${recipeId}`); if (portEl) portEl.innerText = currentSelectedPortions;
+
+      const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
+      const sideSelect = document.getElementById(`sideSelect-${recipeId}`); const chosenSide = sideSelect ? sideSelect.value : 'keine'; r.selectedSide = chosenSide;
+
+      const varSelect = document.getElementById(`variationSelect-${recipeId}`);
+      const chosenVar = varSelect ? varSelect.value : null;
+
+      const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions, chosenVar);
+
+      document.getElementById(`valKcal-${recipeId}`).innerText = total.kcal; document.getElementById(`valProt-${recipeId}`).innerText = `${total.prot} g`;
+      document.getElementById(`valKh-${recipeId}`).innerText = `${total.kh} g`; document.getElementById(`valSugar-${recipeId}`).innerText = `${total.sugar} g`;
+      document.getElementById(`valFat-${recipeId}`).innerText = `${total.fat} g`; document.getElementById(`valInsulin-${recipeId}`).innerText = total.insulin;
+      
+      let currentZutaten = r.zutatenListe; let currentPrep = r.prep; const vars = getVariationsForRecipe(r.title);
+
+      if (vars && chosenVar && vars[chosenVar]) {
+        currentZutaten = vars[chosenVar].zutaten; currentPrep = vars[chosenVar].prep;
+        const prepEl = document.getElementById(`prepText-${recipeId}`); if(prepEl) prepEl.innerText = currentPrep;
+      }
+      document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(currentZutaten, currentSelectedPortions);
+    }
+
+    function openDetails(recipeId) {
+      const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
+      currentSelectedPortions = 1; const safeId = escapeHtml(r.id);
+      const chosenSide = r.selectedSide || 'keine'; const total = calculateTotalNutri(r, chosenSide, currentSelectedPortions);
+      const isFav = favorites.includes(String(r.id));
+      let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
+
+      let variationHtml = ''; let initialVarKey = null; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
+      const vars = getVariationsForRecipe(r.title);
+      if (vars) {
+        initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
+        let varOptions = Object.entries(vars).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+        variationHtml = `
+          <div class="swap-row" style="border-color: #a371f7; background: rgba(163, 113, 247, 0.05); margin-bottom: 12px;">
+            <label style="color: #a371f7; font-weight: 800;">🥣 Sorte wählen:</label>
+            <select id="variationSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)" style="background: var(--bg); color: #a371f7; border: 1px solid #a371f7; border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 700; outline: none; max-width: 60%;">${varOptions}</select>
+          </div>
+        `;
+      }
+
+      const imageOrEmojiHtml = r.image_url
+        ? `<div style="text-align:center; margin-bottom: 15px;"><img src="${r.image_url}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>`
+        : `<div style="font-size: 2.4rem; text-align:center;">${escapeHtml(r.emoji || '🍲')}</div>`;
+
+      document.getElementById('sheetContent').innerHTML = `
+        ${imageOrEmojiHtml}
+        <h2 style="font-size: 1.35rem; margin: 10px 0; text-align:center;">${escapeHtml(r.title)}</h2>
+        <div style="display:flex; justify-content:center; gap:8px; margin-bottom: 14px;">
+          <button id="modalFavBtn" class="add-notes-btn" style="width: auto; margin:0; padding: 6px 14px;" onclick="toggleFavorite('${safeId}', event)">${isFav ? '❤️ Favorit' : '🤍 Merken'}</button>
+          <span class="badge-ampel" style="background: ${r.scoreClass}; display:inline-flex; align-items:center; padding: 6px 10px; font-size:0.78rem;">Nutri-Score ${escapeHtml(r.score || 'A')}</span>
+        </div>
+        
+        <div class="portion-row">
+          <label>👥 Portionen:</label>
+          <button class="portion-btn" onclick="updatePortionOrSide('${safeId}', -1)">-</button>
+          <span class="portion-display" id="portionCount-${safeId}">${currentSelectedPortions}</span>
+          <button class="portion-btn" onclick="updatePortionOrSide('${safeId}', 1)">+</button>
+        </div>
+        
+        ${variationHtml}
+
+        <div class="swap-row"><label>🔄 Beilagen-Tausch:</label><select id="sideSelect-${safeId}" onchange="updatePortionOrSide('${safeId}', 0)">${sideOptionsHtml}</select></div>
+        <div class="nutri-carousel">
+          <div class="nutri-pill"><span>Kcal</span><strong id="valKcal-${safeId}">${total.kcal}</strong></div>
+          <div class="nutri-pill"><span style="color:#3fb950;">Eiweiß</span><strong id="valProt-${safeId}" style="color:#3fb950;">${total.prot} g</strong></div>
+          <div class="nutri-pill"><span>Kohlenh.</span><strong id="valKh-${safeId}">${total.kh} g</strong></div>
+          <div class="nutri-pill"><span>Zucker</span><strong id="valSugar-${safeId}">${total.sugar} g</strong></div>
+          <div class="nutri-pill"><span>Fett</span><strong id="valFat-${safeId}">${total.fat} g</strong></div>
+          <div class="nutri-pill"><span>Insulin</span><strong id="valInsulin-${safeId}" style="font-size:0.78rem;">${total.insulin}</strong></div>
+        </div>
+        ${r.docCheck ? `<div class="step-section" style="border-color:#3fb950; background:rgba(46,160,67,0.1);"><h4>🩺 Doc-Check & Gesundheit</h4><p style="color:var(--text);">${escapeHtml(r.docCheck)}</p></div>` : ''}
+        <div class="section-title">🛒 Zutatenliste (${currentSelectedPortions} Port.):</div>
+        <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(displayZutaten, currentSelectedPortions))}</div>
+        <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Einkaufsliste per WhatsApp senden</button>
+        <button class="add-notes-btn" onclick="addIngredientsToNotes('${safeId}')">📝 Auf unsere Notiz-Einkaufsliste setzen</button>
+        <div class="section-title">👩‍🍳 Zubereitung:</div>
+        <div class="step-section"><h4>🔪 Vorbereitung / Zubereitung</h4><p id="prepText-${safeId}">${escapeHtml(displayPrep)}</p></div>
+        ${(!vars && r.stoveStep) ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
+        ${(!vars && r.ovenStep) ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
+        ${(!vars && r.airfryerStep) ? `<div class="step-section"><h4>🌪️ Airfryer</h4><p>${escapeHtml(r.airfryerStep)}</p></div>` : ''}
+        <div class="section-title">💡 Eigene Tipps & Notizen zum Rezept:</div>
+        <textarea id="editTipps-${safeId}" class="editable-tipps" placeholder="Eigene Erfahrungen, Gewürze oder Anpassungen hier eintragen...">${escapeHtml(r.tipps || '')}</textarea>
+        <div style="display:flex; justify-content:space-between; gap:10px; margin-top:6px;">
+          <button class="btn-save-small" style="flex:1;" onclick="saveRecipeTipps('${safeId}')">💾 Tipps speichern</button>
+          <button class="btn-save-small" style="background:#da3633;" onclick="deleteRecipeFromDB('${safeId}')">🗑️ Löschen</button>
+        </div>
+      `;
+      document.getElementById('modalBackdrop').classList.add('active'); lockScroll();
+    }
+
+    async function saveRecipeTipps(recipeId) {
+      if (!checkAdmin()) return;
+      const newTipps = document.getElementById(`editTipps-${recipeId}`).value;
+      const r = recipes.find(x => String(x.id) === String(recipeId)); if (r) r.tipps = newTipps;
+      await supabaseClient.from('Rezepte').update({ tipps: newTipps }).eq('id', recipeId);
+      alert('Tipps erfolgreich gespeichert!');
+    }
+
+    async function deleteRecipeFromDB(recipeId) {
+      if (!checkAdmin()) return;
+      if (!confirm('Möchtest du dieses Rezept wirklich dauerhaft löschen?')) return;
+      await supabaseClient.from('Rezepte').delete().eq('id', recipeId);
+      closeSheetForce(); triggerRefresh();
+    }
+
+    async function addIngredientsToNotes(recipeId) {
+      const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
+      const zutatenText = document.getElementById(`ingredientsBox-${recipeId}`).innerText;
+      const content = `🛒 Einkauf für ${r.title} (${currentSelectedPortions} Port.): ` + zutatenText.replace(/\n/g, ', ');
+      await supabaseClient.from('Notizen').insert([{ author: 'Ramona', content: content, is_done: false }]);
+      alert('Zutaten wurden in eure Notizliste eingetragen!');
+    }
+
+    function shareWhatsApp(recipeId) {
+      const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
+      const zutatenText = document.getElementById(`ingredientsBox-${recipeId}`).innerText;
+      let text = `🛒 *Einkaufsliste: ${r.title} (${currentSelectedPortions} Portionen)*\n\n` + zutatenText;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); unlockScroll(); }
+    function closeSheet(e) { if (e.target.id === 'modalBackdrop') closeSheetForce(); }
+    function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
+    function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
+    function closeEierModal(e) { if (e.target.id === 'eierBackdrop') closeEierModalForce(); }
+
+    function hideAllViews() {
+      document.getElementById('recipesSection').style.display = 'none'; document.getElementById('notesSection').style.display = 'none';
+      document.getElementById('settingsSection').style.display = 'none'; document.getElementById('cycleSection').style.display = 'none';
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    function handleNavCategory(cat) {
+      hideAllViews(); closeNavFilterModalForce(); document.getElementById('recipesSection').style.display = 'block';
+      if(cat === 'all') { document.getElementById('nav-btn-home').classList.add('active'); } 
+      else { document.getElementById('nav-btn-filter').classList.add('active'); }
+      currentCategory = cat; filterRecipes();
+    }
+
+    function openNotesView() { hideAllViews(); document.getElementById('navBtnNotes').classList.add('active'); document.getElementById('notesSection').style.display = 'flex'; loadNotesFromSupabase(); }
+    function openSettingsView() { 
+      hideAllViews(); document.getElementById('navBtnSettings').classList.add('active'); document.getElementById('settingsSection').style.display = 'flex'; 
+      const savedPin = localStorage.getItem('gartenAdminPin'); if(savedPin) document.getElementById('adminPinInput').value = savedPin;
+    }
+    function openCycleView() { hideAllViews(); document.getElementById('navBtnCycle').classList.add('active'); document.getElementById('cycleSection').style.display = 'flex'; }
+    
+    function toggleGeminiPopover(e) { if (e) e.stopPropagation(); document.getElementById('geminiModelPopover')?.classList.toggle('open'); }
+    function selectGeminiModel(key, e) {
+      if (e) e.stopPropagation(); selectedGeminiModelKey = key; localStorage.setItem('gartenMuttiGeminiModel', key);
+      document.getElementById('currentGeminiModelLabel').innerText = `✨ Gemini ${GEMINI_MODELS[key].label} ▾`;
+      document.querySelectorAll('.gemini-model-opt').forEach(el => el.classList.toggle('selected', el.getAttribute('data-model') === key));
+      document.getElementById('geminiModelPopover')?.classList.remove('open');
+    }
+    function changeThinkingEffort(val) { selectedThinkingEffort = val; localStorage.setItem('gartenMuttiThinkingEffort', val); }
+
+    function handleHomeImageCapture(event) {
+      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+      reader.onload = function(e) {
+        capturedBase64Image = e.target.result; openAddModal();
+        setTimeout(() => { document.getElementById('imagePreview').src = capturedBase64Image; document.getElementById('imagePreviewContainer').style.display = 'block'; document.getElementById('kiPromptInput').value = "Erstelle ein Rezept aus diesem Foto."; generateWithGemini(); }, 300);
+      };
+      reader.readAsDataURL(file); event.target.value = '';
+    }
+
+    function handleImageCapture(event) {
+      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+      reader.onload = function(e) { capturedBase64Image = e.target.result; document.getElementById('imagePreview').src = capturedBase64Image; document.getElementById('imagePreviewContainer').style.display = 'block'; };
+      reader.readAsDataURL(file);
+    }
+    function clearCapturedImage() { capturedBase64Image = null; document.getElementById('imagePreviewContainer').style.display = 'none'; document.getElementById('recipeImageInput').value = ''; }
+
+    function openAddModal() {
+      const mCfg = GEMINI_MODELS[selectedGeminiModelKey] || GEMINI_MODELS['argon'];
+      let modelOptsHtml = Object.entries(GEMINI_MODELS).map(([k, v]) => `<div class="gemini-model-opt ${selectedGeminiModelKey === k ? 'selected' : ''}" data-model="${k}" onclick="selectGeminiModel('${k}', event)"><div><span class="m-title">${v.label}</span><span class="m-sub">${v.sub}</span></div><span class="m-check">✓</span></div>`).join('');
+
+      document.getElementById('sheetContent').innerHTML = `
+        <h2 style="font-size: 1.3rem; margin-bottom: 12px; text-align: center;">➕ Neues Rezept erstellen</h2>
+        <div class="ki-box" onclick="document.getElementById('geminiModelPopover')?.classList.remove('open')">
+          <div class="ki-header-row">
+            <strong style="font-size: 0.9rem; color: #a371f7;">✨ Gemini Spitzenkoch-KI</strong>
+            <button type="button" class="gemini-model-trigger" onclick="toggleGeminiPopover(event)"><span id="currentGeminiModelLabel">✨ Gemini ${mCfg.label} ▾</span></button>
+          </div>
+          <div class="gemini-popover" id="geminiModelPopover" onclick="event.stopPropagation()">
+            ${modelOptsHtml}
+            <div class="gemini-divider"></div>
+            <div class="gemini-thinking-row">
+              <span>Denkaufwand</span>
+              <select class="gemini-thinking-select" onchange="changeThinkingEffort(this.value)">
+                <option value="schnell" ${selectedThinkingEffort === 'schnell' ? 'selected' : ''}>⚡ Schnell</option>
+                <option value="standard" ${selectedThinkingEffort === 'standard' ? 'selected' : ''}>🧠 Standard</option>
+                <option value="deep" ${selectedThinkingEffort === 'deep' ? 'selected' : ''}>🔬 Deep Think</option>
+              </select>
+            </div>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 8px 0;">Text eingeben oder Foto scannen:</p>
+          <textarea id="kiPromptInput" rows="2" style="width:100%; background:var(--card-sub); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:8px; font-size:0.85rem; outline:none; margin-bottom: 8px;" placeholder="z. B. Lauch mit Fleisch oder Foto scannen..."></textarea>
+          <div style="display:flex; gap:8px; margin-bottom: 8px;">
+            <label class="ki-btn" style="flex:1; margin:0; text-align:center; cursor:pointer; background: rgba(163, 113, 247, 0.2); border: 1px dashed #a371f7; font-size:0.8rem; padding:8px;">📸 Foto aufnehmen / wählen<input type="file" id="recipeImageInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageCapture(event)"></label>
+          </div>
+          <div id="imagePreviewContainer" style="display:none; margin-bottom: 8px; text-align:center;">
+            <img id="imagePreview" src="" alt="Vorschau" style="max-height: 90px; border-radius: 8px; border: 1px solid var(--border);">
+            <button type="button" style="background:none; border:none; color:#ff4d4d; font-size:0.75rem; display:block; margin: 4px auto 0 auto; cursor:pointer;" onclick="clearCapturedImage()">Foto entfernen ✖</button>
+          </div>
+          <button type="button" class="ki-btn" id="kiGenBtn" onclick="generateWithGemini()">🪄 Mit Gemini automatisch ausfüllen</button>
+        </div>
+        <div class="form-row"><div class="form-group"><label>Rezept-Titel *</label><input type="text" id="newTitle"></div><div class="form-group"><label>Emoji & Score</label><div style="display:flex; gap:6px;"><input type="text" id="newEmoji" value="🍲" style="width: 50px; text-align:center;"><select id="newScore" style="flex:1;"><option value="A">Nutri A</option><option value="B">Nutri B</option><option value="C">Nutri C</option><option value="D">Nutri D</option><option value="E">Nutri E</option></select></div></div></div>
+        <div class="form-row"><div class="form-group"><label>Mahlzeit</label><select id="newMealCat"><option value="mittag">🍲 Mittag</option><option value="fruehstueck">🍳 Frühstück</option><option value="abend">🥩 Abendessen</option><option value="snacks">🧁 Snacks & Süßes</option></select></div><div class="form-group"><label>Airfryer?</label><select id="newAirfryer"><option value="false">Nein</option><option value="true">🌪️ Ja</option></select></div></div>
+        <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display:block; margin-bottom: 5px;">🔥 Nährwerte (pro 1 Portion)</label>
+        <div class="form-row-3" style="margin-bottom: 8px;"><div class="form-group" style="margin:0;"><label>Kcal</label><input type="number" id="newKcal"></div><div class="form-group" style="margin:0;"><label>Eiweiß (g)</label><input type="number" step="0.1" id="newProt"></div><div class="form-group" style="margin:0;"><label>Kohlenh. (g)</label><input type="number" step="0.1" id="newKh"></div></div>
+        <div class="form-row" style="margin-bottom: 12px;"><div class="form-group" style="margin:0;"><label>Zucker (g)</label><input type="number" step="0.1" id="newSugar"></div><div class="form-group" style="margin:0;"><label>Fett (g)</label><input type="number" step="0.1" id="newFat"></div></div>
+        <div class="form-group"><label>🔍 Such-Schlagworte</label><input type="text" id="newIngredients"></div>
+        <div class="form-group"><label>🛒 Zutatenliste (für 1 Port.)</label><textarea id="newZutaten" rows="5"></textarea></div>
+        <div class="form-group"><label>🔪 Vorbereitung</label><textarea id="newPrep" rows="2"></textarea></div>
+        <div class="form-group"><label>🍳 Herd</label><textarea id="newStove" rows="2"></textarea></div>
+        <div class="form-row"><div class="form-group"><label>🔥 Backofen</label><textarea id="newOven" rows="2"></textarea></div><div class="form-group"><label>🌪️ Airfryer</label><textarea id="newAirfryerStep" rows="2"></textarea></div></div>
+        <div class="form-group"><label>🩺 Doc-Check</label><input type="text" id="newDocCheck"></div>
+        <div class="form-group"><label>💡 Tipps</label><input type="text" id="newTipps"></div>
+        <button class="btn-save" onclick="saveNewRecipe()">💾 Rezept speichern</button>
+      `;
+      document.getElementById('modalBackdrop').classList.add('active'); lockScroll();
+    }
+
+    async function generateWithGemini() {
+      const promptText = document.getElementById('kiPromptInput').value.trim();
+      const btn = document.getElementById('kiGenBtn'); const mCfg = GEMINI_MODELS[selectedGeminiModelKey] || GEMINI_MODELS['argon'];
+      if (!promptText && !capturedBase64Image) { alert('Bitte Text oder Foto!'); return; }
+      btn.innerText = `⏳ Gemini ${mCfg.label} arbeitet...`; btn.disabled = true;
+
+      if (!sharedGeminiApiKey || !sharedGeminiApiKey.startsWith('AIza')) await loadSharedGeminiKeyFromDB();
+
+      if (sharedGeminiApiKey && sharedGeminiApiKey.startsWith('AIza')) {
+        let sysPrompt = `Du bist Spitzenkoch für Low-Carb. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
+        let contentParts = [{ text: sysPrompt + "\n\nRezeptwunsch: " + (promptText || 'Erstelle ein Rezept aus diesem Foto.') }];
+        if (capturedBase64Image) contentParts.push({ inline_data: { mime_type: capturedBase64Image.split(';')[0].split(':')[1] || 'image/jpeg', data: capturedBase64Image.split(',')[1] } });
+        
+        const candidateModels = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
+        for (const modelName of candidateModels) {
+          try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: contentParts }], generationConfig: { temperature: mCfg.temp, responseMimeType: "application/json" } })
+            });
+            if (response.ok) {
+              const resData = await response.json(); let rawJson = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              fillModalFields(JSON.parse(rawJson.replace(/```json/g, '').replace(/```/g, '').trim()));
+              btn.innerText = `✅ Erfolgreich erstellt!`; setTimeout(() => { btn.innerText = '🪄 Mit Gemini automatisch ausfüllen'; btn.disabled = false; }, 2200); return;
+            }
+          } catch (err) {}
+        }
+      }
+      setTimeout(() => {
+        fillModalFields({ title: "Cremige Gemüse-Pfanne", emoji: "🥘", score: "A", mealCat: "mittag", kcal: 375, prot: 38, kh: 6.5, sugar: 2, fat: 15, airfryer: false, ingredients: "gemüse, frischkäse, lowcarb", zutaten_liste: "• 160 g Fleisch\n• 150 g Gemüse", prep: "Schneiden.", stove_step: "Anbraten.", doc_check: "Gesund.", tipps: "" });
+        btn.innerText = `✅ Ausgefüllt!`; setTimeout(() => { btn.innerText = '🪄 Mit Gemini ausfüllen'; btn.disabled = false; }, 2200);
+      }, 400);
+    }
+
+    function fillModalFields(data) {
+      if (data.title) document.getElementById('newTitle').value = data.title;
+      if (data.emoji) document.getElementById('newEmoji').value = data.emoji;
+      if (data.score) document.getElementById('newScore').value = data.score;
+      if (data.mealCat) document.getElementById('newMealCat').value = data.mealCat;
+      if (data.kcal !== undefined) document.getElementById('newKcal').value = data.kcal;
+      if (data.prot !== undefined) document.getElementById('newProt').value = data.prot;
+      if (data.kh !== undefined) document.getElementById('newKh').value = data.kh;
+      if (data.sugar !== undefined) document.getElementById('newSugar').value = data.sugar;
+      if (data.fat !== undefined) document.getElementById('newFat').value = data.fat;
+      if (data.airfryer !== undefined) document.getElementById('newAirfryer').value = String(data.airfryer);
+      if (data.ingredients) document.getElementById('newIngredients').value = data.ingredients;
+      if (data.zutaten_liste) document.getElementById('newZutaten').value = data.zutaten_liste;
+      if (data.prep) document.getElementById('newPrep').value = data.prep;
+      if (data.stove_step !== undefined) document.getElementById('newStove').value = data.stove_step;
+      if (data.oven_step !== undefined) document.getElementById('newOven').value = data.oven_step;
+      if (data.airfryer_step !== undefined) document.getElementById('newAirfryerStep').value = data.airfryer_step;
+      if (data.doc_check !== undefined) document.getElementById('newDocCheck').value = data.doc_check;
+      if (data.tipps !== undefined) document.getElementById('newTipps').value = data.tipps;
+    }
+
+    async function saveNewRecipe() {
+      if (!checkAdmin()) return;
+      const title = document.getElementById('newTitle').value.trim();
+      if (!title) { alert('Titel fehlt!'); return; }
+      const saveBtn = document.querySelector('.btn-save'); 
+      
+      let cat = document.getElementById('newMealCat').value; const categories = [cat, 'lowcarb'];
+      if (document.getElementById('newAirfryer').value === 'true') categories.push('airfryer');
+
+      let imageUrl = null;
+      if (capturedBase64Image) {
+        if (saveBtn) { saveBtn.innerText = '📸 Lade Foto in die Cloud...'; saveBtn.disabled = true; }
+        try {
+          const blob = dataURItoBlob(capturedBase64Image);
+          const fileExt = blob.type.split('/')[1] || 'jpg';
+          const fileName = 'rezept_' + Date.now() + '.' + fileExt;
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('RezeptBilder').upload(fileName, blob, { contentType: blob.type });
+          if (!uploadError) {
+            const { data: publicUrlData } = supabaseClient.storage.from('RezeptBilder').getPublicUrl(fileName);
+            imageUrl = publicUrlData.publicUrl;
+          }
+        } catch (e) { console.error("Bild-Upload Fehler", e); }
+      }
+
+      if (saveBtn) saveBtn.innerText = '⏳ Speichere Rezept...';
+
+      const { error } = await supabaseClient.from('Rezepte').insert([{
+        title: title, emoji: document.getElementById('newEmoji').value || '🍲', score: document.getElementById('newScore').value || 'A',
+        category: categories, airfryer: document.getElementById('newAirfryer').value === 'true',
+        kcal: Number(document.getElementById('newKcal').value) || 0, prot: Number(document.getElementById('newProt').value) || 0,
+        kh: Number(document.getElementById('newKh').value) || 0, sugar: Number(document.getElementById('newSugar').value) || 0,
+        fat: Number(document.getElementById('newFat').value) || 0, ingredients: document.getElementById('newIngredients').value.trim(),
+        zutaten_liste: document.getElementById('newZutaten').value.trim(), prep: document.getElementById('newPrep').value.trim(),
+        stove_step: document.getElementById('newStove').value.trim(), oven_step: document.getElementById('newOven').value.trim(),
+        airfryer_step: document.getElementById('newAirfryerStep').value.trim(), doc_check: document.getElementById('newDocCheck').value.trim(),
+        tipps: document.getElementById('newTipps').value.trim(),
+        image_url: imageUrl
+      }]);
+
+      if (!error) { if (saveBtn) saveBtn.innerText = '✅ Gespeichert!'; setTimeout(() => { closeSheetForce(); triggerRefresh(); clearCapturedImage(); }, 600); } 
+      else { alert('Fehler: ' + error.message); if (saveBtn) { saveBtn.innerText = '💾 Rezept speichern'; saveBtn.disabled = false; } }
+    }
+
+    function exportBackupJson() {
+      const dlAnchor = document.createElement('a'); dlAnchor.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recipes, null, 2)));
+      dlAnchor.setAttribute("download", `Backup_${new Date().toISOString().slice(0,10)}.json`); document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
+    }
+    async function importBackupJson(event) {
+      const reader = new FileReader(); reader.onload = async (e) => { try { const imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { recipes = imp; filterRecipes(); } } catch (err) { alert('Ungültig.'); } }; reader.readAsText(event.target.files[0]);
+    }
+
+    function calculateCycle() {
+      const startInput = document.getElementById('cycleStartDate').value; const length = Number(document.getElementById('cycleLength').value) || 28;
+      if (!startInput) return; localStorage.setItem('gartenMuttiCycleStart', startInput); localStorage.setItem('gartenMuttiCycleLen', length);
+      const diffDays = Math.floor((new Date() - new Date(startInput)) / (1000 * 60 * 60 * 24)); const currentDay = ((diffDays % length) + length) % length + 1;
+      const badge = document.getElementById('phaseBadge'); const text = document.getElementById('phaseText'); document.getElementById('currentPhaseInfo').style.display = 'block';
+      if (currentDay <= 5) { badge.innerText = `🩸 Tag ${currentDay}: Menstruation`; badge.style.background = 'rgba(225, 29, 72, 0.2)'; badge.style.color = '#fb7185'; text.innerText = 'Eisenreich & wärmend.'; }
+      else if (currentDay <= 13) { badge.innerText = `🌱 Tag ${currentDay}: Follikelphase`; badge.style.background = 'rgba(46, 160, 67, 0.2)'; badge.style.color = '#3fb950'; text.innerText = 'Leichte Proteine & frisches Gemüse.'; }
+      else if (currentDay <= 16) { badge.innerText = `✨ Tag ${currentDay}: Eisprung`; badge.style.background = 'rgba(210, 153, 34, 0.2)'; badge.style.color = '#d29922'; text.innerText = 'Gesunde Fette & viel Eiweiß.'; }
+      else { badge.innerText = `🍂 Tag ${currentDay}: Lutealphase`; badge.style.background = 'rgba(163, 113, 247, 0.2)'; badge.style.color = '#a371f7'; text.innerText = 'Blutzucker stabil halten.'; }
+    }
+    function filterRecipesForCycle() { handleNavCategory('fruehstueck'); }
+
+    function toggleCustomAuthorInput(val) { document.getElementById('noteAuthorCustom').style.display = val === 'custom' ? 'block' : 'none'; }
+    async function loadNotesFromSupabase() {
+      const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
+      const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY');
+      document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
+        <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id}, ${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author||'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
+      `).join('');
+    }
+    async function toggleNoteDone(id, currentStatus) { await supabaseClient.from('Notizen').update({ is_done: !currentStatus }).eq('id', id); loadNotesFromSupabase(); }
+    async function addNote() {
+      const input = document.getElementById('noteInput'); if (!input.value.trim()) return;
+      let author = document.getElementById('noteAuthor').value; if (author === 'custom') author = document.getElementById('noteAuthorCustom').value.trim() || 'Gast';
+      await supabaseClient.from('Notizen').insert([{ author, content: input.value.trim(), is_done: false }]); input.value = ''; loadNotesFromSupabase();
+    }
+    async function deleteNote(id) { await supabaseClient.from('Notizen').delete().eq('id', id); loadNotesFromSupabase(); }
+    async function triggerRefresh() { await loadRecipesFromSupabase(); }
+
+    function setupRealtimeSync() {
+      supabaseClient.channel('public:Notizen').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, payload => {
+        if (document.getElementById('notesSection').style.display === 'flex') loadNotesFromSupabase();
+      }).subscribe();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      if (localStorage.getItem('gartenMuttiCycleStart')) { document.getElementById('cycleStartDate').value = localStorage.getItem('gartenMuttiCycleStart'); document.getElementById('cycleLength').value = localStorage.getItem('gartenMuttiCycleLen') || 28; calculateCycle(); }
+      loadSharedGeminiKeyFromDB(); loadRecipesFromSupabase(); setupRealtimeSync();
+    });
+  </script>
+</body>
+</html>
