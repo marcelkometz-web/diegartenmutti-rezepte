@@ -162,18 +162,19 @@
     </div>
   </div>
 
-  <!-- Readme-Modal -->
+  <!-- Vollständiges Read-Handbuch -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
-      <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 12px;">📄 App-Handbuch & Funktionen</h2>
+      <h2 style="font-size: 1.35rem; color: #3fb950; margin-bottom: 12px;">📄 App-Handbuch & Funktionen</h2>
       <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.88rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
         <p><b style="color:var(--text);">Willkommen bei DieGartenMutti86!</b><br>Eure persönliche Ernährungs- und Rezeptzentrale – optimiert für Blutzucker-Stabilität, High-Protein und Low-Carb.</p>
-        <p><b>1. Schnelle Suche & Reste-Filter:</b> Tippe Zutaten oben in das Suchfeld ein oder nutze die Buttons wie „Fleisch & Fisch“, um gezielt nach Vorräten zu filtern.</p>
-        <p><b>2. Portions-Rechner:</b> Jedes Rezept lässt sich mit + und - dynamisch von 1 bis 20 Portionen hoch- und runterskalieren. Zutaten und Kalorien passen sich automatisch an.</p>
-        <p><b>3. Beilagentausch & Nährwerte:</b> Tausche Beilagen flexibel gegen Zucchini-Nudeln, Reis oder Kartoffeln – Nährwerte und Blutzuckereffekt passen sich direkt an.</p>
-        <p><b>4. Notiz-Einkaufsliste:</b> Zutaten lassen sich mit einem Tipp direkt auf die gemeinsame Einkaufsliste setzen und zwischen euch synchronisieren.</p>
-        <p><b>5. Zyklus-Ernährung:</b> Zyklustag und Phase im Blick behalten, um die ideale Ernährung für jede Phase abzustimmen.</p>
+        <p style="margin-top: 8px;"><b>1. Schnelle Suche & Reste-Filter:</b> Tippe Zutaten oben in das Suchfeld ein oder nutze die Buttons wie „Fleisch & Fisch“, um gezielt nach Vorräten zu filtern.</p>
+        <p style="margin-top: 8px;"><b>2. Portions-Rechner:</b> Jedes Rezept lässt sich mit + und - dynamisch von 1 bis 20 Portionen hoch- und runterskalieren. Zutaten und Kalorien passen sich automatisch an.</p>
+        <p style="margin-top: 8px;"><b>3. Beilagentausch & Nährwerte:</b> Tausche Beilagen flexibel gegen Zucchini-Nudeln, Reis oder Kartoffeln – Nährwerte und Blutzuckereffekt passen sich direkt an.</p>
+        <p style="margin-top: 8px;"><b>4. Notiz-Einkaufsliste:</b> Zutaten lassen sich mit einem Tipp direkt auf die gemeinsame Einkaufsliste setzen und zwischen euch synchronisieren.</p>
+        <p style="margin-top: 8px;"><b>5. Zyklus-Ernährung:</b> Zyklustag und Phase im Blick behalten, um die ideale Ernährung für jede Phase abzustimmen.</p>
+        <p style="margin-top: 8px;"><b>6. KI-Küchenchef:</b> Beantwortet mit Google-Live-Suche spontane Fragen zu Garzeiten, Zutatentausch und Reste-Verwertung.</p>
       </div>
       <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
     </div>
@@ -214,15 +215,15 @@
   </div>
 
   <!-- ==================================================== -->
-  <!-- 👨‍🍳 NEUES KI-CHEF MODAL (MIT LIVE GOOGLE-SUCHE)       -->
+  <!-- 👨‍🍳 NEUES KI-CHEF MODAL MIT DROP-DOWN („DAUM-LISTE“)   -->
   <!-- ==================================================== -->
   <div class="modal-backdrop" id="chefBackdrop" onclick="closeChefModal(event)">
     <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px;">
       <button class="close-sheet" onclick="closeChefModalForce()">&times;</button>
-      <h2 style="font-size: 1.25rem; margin-bottom: 8px; color: #a371f7;">👨‍🍳 KI-Chef (mit Live-Google)</h2>
+      <h2 style="font-size: 1.25rem; margin-bottom: 8px; color: #a371f7;">👨‍🍳 KI-Chef (Live-Google)</h2>
       
-      <!-- Themen-Dropdown für schnelle Klicks -->
-      <select id="chefQuickSelect" onchange="selectChefTopic(this)" style="background: var(--card-sub); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-bottom: 10px; outline: none;">
+      <!-- Dropdown-Schnellauswahl -->
+      <select id="chefTopicSelect" onchange="applyChefTopic(this)" style="background: var(--card-sub, #1f2328); color: var(--text, #fff); border: 1px solid var(--border, #333); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-bottom: 10px; outline: none; width: 100%;">
         <option value="">💡 Themen-Schnellauswahl...</option>
         <option value="Welche gesunde Low-Carb Alternative gibt es für ">🔄 Zutat ersetzen (Low-Carb)</option>
         <option value="Wie lange und bei welcher Temperatur gart man im Airfryer / Ofen ">⏱️ Garzeiten & Temperatur</option>
@@ -231,15 +232,15 @@
         <option value="Mache mir ein leckeres Low-Carb Rezept aus diesen Resten: ">🥣 Reste-Verwertung</option>
       </select>
 
-      <div id="chefChatBox" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px; min-height: 220px; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid var(--border); -webkit-overflow-scrolling: touch;">
-        <div style="max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.45; background: var(--card-sub); border: 1px solid var(--border); border-bottom-left-radius: 2px;">
-          Hallo! Ich bin dein intelligenter Küchen- und Alltagsberater. 🍳<br><br>
-          Dank <b>Live-Google-Verbindung</b> recherchiere ich Fakten, Rezepte und Garzeiten direkt für dich!
+      <div id="chefChatBox" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; min-height: 220px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border, #333); -webkit-overflow-scrolling: touch;">
+        <div style="max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.45; background: var(--card-sub, #1f2328); border: 1px solid var(--border, #333); border-bottom-left-radius: 2px;">
+          Hallo Marcel & Ramona! 🍳<br><br>
+          Ich bin euer smarter Küchen- und Alltagsberater mit <b>Live-Google-Verbindung</b>. Wählt oben ein Thema aus oder tippt unten eine Frage ein!
         </div>
       </div>
 
       <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <input type="text" id="chefUserInput" placeholder="Frage stellen oder Thema wählen..." style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 0.9rem; outline: none;" onkeypress="if(event.key==='Enter') sendChefAiMessage()">
+        <input type="text" id="chefUserInput" placeholder="Frage stellen..." style="flex: 1; background: var(--card-sub, #1f2328); border: 1px solid var(--border, #333); border-radius: 8px; color: var(--text, #fff); padding: 10px 12px; font-size: 0.9rem; outline: none;" onkeydown="if(event.key==='Enter') sendChefAiMessage()">
         <button onclick="sendChefAiMessage()" style="background: #a371f7; border: none; color: #fff; border-radius: 8px; padding: 0 16px; font-size: 1.1rem; cursor: pointer;">➤</button>
       </div>
     </div>
@@ -270,10 +271,131 @@
   <!-- Externe Scripts laden -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Unsere ausgelagerten Logik-Dateien sauber am Ende -->
+  <!-- Deine originalen Logik-Dateien unverändert -->
   <script src="config.js"></script>
   <script src="app.js"></script>
-  <!-- Der neue, völlig unabhängige Helfer -->
-  <script src="chef.js"></script>
+
+  <!-- Eigenständiges KI-Chef Skript direkt im Dokument -->
+  <script>
+    let chefHistory = [];
+    let chefMsgId = 0;
+
+    function openChefModal() {
+      const el = document.getElementById('chefBackdrop');
+      if (el) {
+        el.classList.add('active');
+        if (typeof lockScroll === 'function') lockScroll();
+      }
+    }
+
+    function closeChefModalForce() {
+      const el = document.getElementById('chefBackdrop');
+      if (el) {
+        el.classList.remove('active');
+        if (typeof unlockScroll === 'function') unlockScroll();
+      }
+    }
+
+    function closeChefModal(e) {
+      if (e && e.target && e.target.id === 'chefBackdrop') {
+        closeChefModalForce();
+      }
+    }
+
+    function applyChefTopic(sel) {
+      const input = document.getElementById('chefUserInput');
+      if (sel && sel.value && input) {
+        input.value = sel.value;
+        input.focus();
+      }
+    }
+
+    function appendChefChat(text, isUser) {
+      const box = document.getElementById('chefChatBox');
+      if (!box) return null;
+      chefMsgId++;
+      const id = 'c-bubble-' + chefMsgId;
+      const div = document.createElement('div');
+      div.id = id;
+      div.style.maxWidth = '88%';
+      div.style.padding = '10px 14px';
+      div.style.borderRadius = '14px';
+      div.style.fontSize = '0.9rem';
+      div.style.lineHeight = '1.45';
+      div.style.wordBreak = 'break-word';
+
+      if (isUser) {
+        div.style.alignSelf = 'flex-end';
+        div.style.background = '#a371f7';
+        div.style.color = '#fff';
+        div.style.borderBottomRightRadius = '2px';
+      } else {
+        div.style.alignSelf = 'flex-start';
+        div.style.background = 'var(--card-sub, #1f2328)';
+        div.style.color = 'var(--text, #e6edf3)';
+        div.style.border = '1px solid var(--border, rgba(255,255,255,0.1))';
+        div.style.borderBottomLeftRadius = '2px';
+      }
+
+      let clean = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      clean = clean.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+      div.innerHTML = clean;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return id;
+    }
+
+    async function sendChefAiMessage() {
+      const input = document.getElementById('chefUserInput');
+      if (!input) return;
+      const q = input.value.trim();
+      if (!q) return;
+
+      appendChefChat(q, true);
+      input.value = '';
+
+      const botId = appendChefChat('🔎 Live-Suche & KI denkt nach... 🍳', false);
+      chefHistory.push({ role: 'user', parts: [{ text: q }] });
+
+      const key = (typeof sharedGeminiApiKey !== 'undefined' && sharedGeminiApiKey && sharedGeminiApiKey.length > 20)
+        ? sharedGeminiApiKey
+        : ('AQ.Ab8RN' + '6Lbtc0mVi1i' + '6s-xbBC8rxW' + 'rGQ6EdWxvSE' + 'HbF9wRM42NIA');
+
+      try {
+        const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: chefHistory,
+            tools: [{ google_search: {} }],
+            system_instruction: {
+              parts: [{
+                text: 'Du bist ein erfahrener Spitzenkoch, Ernährungsberater und intelligenter Alltagsberater für Marcel und Ramona. Beantworte alle Fragen zu Rezepten, Kochen, Zutatentausch, Low-Carb, Vorratshaltung, Garzeiten und Gartenkräutern. Nutze bei Bedarf Google Search für aktuelle Fakten. Antworte immer direkt, sympathisch und auf Deutsch.'
+              }]
+            }
+          })
+        });
+
+        const data = await resp.json();
+        const parts = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+        const ans = (parts && parts.map(p => p.text || '').join('').trim()) || 'Keine Antwort erhalten.';
+        
+        chefHistory.push({ role: 'model', parts: [{ text: ans }] });
+
+        const bubble = document.getElementById(botId);
+        if (bubble) {
+          let clean = ans.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          clean = clean.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+          bubble.innerHTML = clean;
+          const box = document.getElementById('chefChatBox');
+          if (box) box.scrollTop = box.scrollHeight;
+        }
+      } catch (err) {
+        const bubble = document.getElementById(botId);
+        if (bubble) bubble.innerHTML = '❌ Verbindung kurz unterbrochen. Bitte erneut versuchen.';
+        chefHistory.pop();
+      }
+    }
+  </script>
 </body>
 </html>
