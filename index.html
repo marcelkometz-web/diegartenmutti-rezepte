@@ -23,6 +23,7 @@
   <div class="quick-actions-bar">
     <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
     <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
+    <button onclick="openChefModal()" class="quick-btn" style="border-color: #a371f7; color: #a371f7; background: rgba(163, 113, 247, 0.15);">👨‍🍳 KI-Chef</button>
     <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
     <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
   </div>
@@ -161,6 +162,7 @@
     </div>
   </div>
 
+  <!-- Readme-Modal -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
@@ -177,6 +179,7 @@
     </div>
   </div>
 
+  <!-- Rechtssicheres Impressum -->
   <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
     <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
@@ -210,6 +213,38 @@
     </div>
   </div>
 
+  <!-- ==================================================== -->
+  <!-- 👨‍🍳 NEUES KI-CHEF MODAL (MIT LIVE GOOGLE-SUCHE)       -->
+  <!-- ==================================================== -->
+  <div class="modal-backdrop" id="chefBackdrop" onclick="closeChefModal(event)">
+    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px;">
+      <button class="close-sheet" onclick="closeChefModalForce()">&times;</button>
+      <h2 style="font-size: 1.25rem; margin-bottom: 8px; color: #a371f7;">👨‍🍳 KI-Chef (mit Live-Google)</h2>
+      
+      <!-- Themen-Dropdown für schnelle Klicks -->
+      <select id="chefQuickSelect" onchange="selectChefTopic(this)" style="background: var(--card-sub); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-bottom: 10px; outline: none;">
+        <option value="">💡 Themen-Schnellauswahl...</option>
+        <option value="Welche gesunde Low-Carb Alternative gibt es für ">🔄 Zutat ersetzen (Low-Carb)</option>
+        <option value="Wie lange und bei welcher Temperatur gart man im Airfryer / Ofen ">⏱️ Garzeiten & Temperatur</option>
+        <option value="Welche gesunde Soße oder Beilage passt am besten zu ">🥗 Passende Soße / Beilage</option>
+        <option value="Wie verarbeite und lagere ich frische Gartenkräuter am besten: ">🌿 Kräuter & Garten-Ernte</option>
+        <option value="Mache mir ein leckeres Low-Carb Rezept aus diesen Resten: ">🥣 Reste-Verwertung</option>
+      </select>
+
+      <div id="chefChatBox" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px; min-height: 220px; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid var(--border); -webkit-overflow-scrolling: touch;">
+        <div style="max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.45; background: var(--card-sub); border: 1px solid var(--border); border-bottom-left-radius: 2px;">
+          Hallo! Ich bin dein intelligenter Küchen- und Alltagsberater. 🍳<br><br>
+          Dank <b>Live-Google-Verbindung</b> recherchiere ich Fakten, Rezepte und Garzeiten direkt für dich!
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <input type="text" id="chefUserInput" placeholder="Frage stellen oder Thema wählen..." style="flex: 1; background: var(--card-sub); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 0.9rem; outline: none;" onkeypress="if(event.key==='Enter') sendChefAiMessage()">
+        <button onclick="sendChefAiMessage()" style="background: #a371f7; border: none; color: #fff; border-radius: 8px; padding: 0 16px; font-size: 1.1rem; cursor: pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+
   <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()"><span>🔄</span></button>
 
   <footer class="app-footer"><p>© DieGartenMutti86 | Marcel Kometz</p></footer>
@@ -238,5 +273,7 @@
   <!-- Unsere ausgelagerten Logik-Dateien sauber am Ende -->
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <!-- Der neue, völlig unabhängige Helfer -->
+  <script src="chef.js"></script>
 </body>
 </html>
