@@ -807,7 +807,7 @@ async function loadNotesFromSupabase() {
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
   const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
-    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id},${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author\vert{}\vert{}'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
+    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id},${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author \vert{}\vert{} '').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
   `).join('');
 }
 async function toggleNoteDone(id, currentStatus) { await supabaseClient.from('Notizen').update({ is_done: !currentStatus }).eq('id', id); loadNotesFromSupabase(); }
@@ -873,7 +873,7 @@ function toggleRecipeReadAloud(recipeId) {
   window.speechSynthesis.speak(utterance);
 }
 
-// Sofort-Start Logik (überwindet jede Cache- oder DOMContentLoaded-Blockade)
+// Sofort-Start Logik
 function startApp() {
   try { initTheme(); } catch(e) { console.error("Theme Error:", e); }
   try {
