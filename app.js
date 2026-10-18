@@ -1,15 +1,7 @@
 // app.js
 // Hauptlogik für DieGartenMutti86
 
-// Sichere Initialisierung von Supabase
-let supabaseClient = null;
-try {
-  if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-} catch (e) {
-  console.error("Supabase Init Error:", e);
-}
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let searchTimeout = null;
 let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
@@ -25,7 +17,6 @@ let secureAdminPin = null;
 async function fetchAdminPin() {
   if (secureAdminPin) return secureAdminPin; 
   try {
-    if (!supabaseClient) return null;
     const { data, error } = await supabaseClient
       .from('Notizen')
       .select('content')
@@ -50,7 +41,7 @@ async function saveAdminPin() {
   }
 }
 
-// Prüft das Passwort
+// Prüft das Passwort (mit lokalem Speicher, damit du es nur einmal eingeben musst)
 async function checkAdmin() {
   const realPin = await fetchAdminPin();
   if (!realPin) {
@@ -59,11 +50,11 @@ async function checkAdmin() {
   }
 
   const saved = localStorage.getItem('gartenAdminPin');
-  if (saved === realPin) return true;
+  if (saved === realPin) return true; // Du bist bereits eingeloggt!
   
   const input = prompt('🔒 Geschützter Bereich! Bitte Admin-Passwort eingeben:');
   if (input === realPin) {
-    localStorage.setItem('gartenAdminPin', realPin);
+    localStorage.setItem('gartenAdminPin', realPin); // Speichert es für dich ab
     return true;
   }
   alert('❌ Falsches Passwort! Zugriff verweigert.');
@@ -203,20 +194,14 @@ function clearSubFilter() { currentSubFilter = null; document.getElementById('su
 
 function initTheme() {
   const savedTheme = localStorage.getItem('gartenMuttiTheme') || 'warm-dark';
-  const el = document.getElementById('themeSelect');
-  if (el) el.value = savedTheme; 
-  applyTheme(savedTheme);
+  document.getElementById('themeSelect').value = savedTheme; applyTheme(savedTheme);
 }
 function changeTheme(t) { localStorage.setItem('gartenMuttiTheme', t); applyTheme(t); }
 function applyTheme(t) { if (t === 'warm-dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); }
 
 async function loadSharedGeminiKeyFromDB() {
+  if (MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); return; }
   try {
-    if (typeof MASTER_GEMINI_API_KEY !== 'undefined' && MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { 
-      sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); 
-      return; 
-    }
-    if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('Notizen').select('content').eq('author', 'SYSTEM_GEMINI_KEY').limit(1);
     if (!error && data && data.length > 0 && data[0].content) sharedGeminiApiKey = data[0].content.trim();
   } catch (e) {}
@@ -244,18 +229,8 @@ function getScoreClass(score) {
 }
 
 async function loadRecipesFromSupabase() {
-  const status = document.getElementById('syncStatus'); 
-  if (status) status.innerText = '⏳ Lade Rezepte...';
+  const status = document.getElementById('syncStatus'); status.innerText = '⏳ Lade...';
   try {
-    if (!supabaseClient) {
-      if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-    }
-    if (!supabaseClient) {
-      if (status) status.innerText = '❌ Supabase-Verbindung fehlt';
-      return;
-    }
     const { data, error } = await supabaseClient.from('Rezepte').select('*').order('id', { ascending: true });
     if (error) throw error;
     if (data && data.length > 0) {
@@ -273,11 +248,9 @@ async function loadRecipesFromSupabase() {
         };
         rec.mealType = getMealType(rec); return rec;
       });
-      if (status) status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
+      status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
     }
-  } catch (err) { 
-    if (status) status.innerText = '⚡ Offline-Modus aktiv'; 
-  }
+  } catch (err) { status.innerText = '⚡ Offline-Modus aktiv'; }
   filterRecipes();
 }
 
@@ -315,8 +288,7 @@ function generateScaledIngredients(rawText, portions) {
 
 function filterRecipes() {
   try {
-    const inputEl = document.getElementById('searchInput');
-    const searchVal = inputEl ? inputEl.value.toLowerCase().trim() : '';
+    const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
     const terms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
 
     const filtered = recipes.filter(r => {
@@ -348,29 +320,19 @@ function filterRecipes() {
     });
     renderList(filtered);
   } catch (err) {
-    console.error("Suchfehler:", err);
+    console.error("Suchfehler abgefangen:", err);
   }
 }
 
 function onSearchManual() {
-  const input = document.getElementById('searchInput'); 
-  const clearBtn = document.getElementById('clearSearchBtn');
-  if (clearBtn) clearBtn.style.display = input && input.value.trim().length > 0 ? 'block' : 'none';
+  const input = document.getElementById('searchInput'); document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
   if (searchTimeout) clearTimeout(searchTimeout); searchTimeout = setTimeout(filterRecipes, 250);
 }
 
-function clearSearch() { 
-  const input = document.getElementById('searchInput');
-  if (input) input.value = ''; 
-  const clearBtn = document.getElementById('clearSearchBtn');
-  if (clearBtn) clearBtn.style.display = 'none'; 
-  document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); 
-  filterRecipes(); 
-}
+function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('clearSearchBtn').style.display = 'none'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); filterRecipes(); }
 
 function buildCardHtml(r) {
-  const total = calculateTotalNutri(r, 'keine', 1); 
-  const isFav = favorites.includes(String(r.id));
+  const total = calculateTotalNutri(r, 'keine', 1); const isFav = favorites.includes(String(r.id));
   const imageOrEmoji = r.image_url 
     ? `<div class="card-icon" style="background-image: url('${r.image_url}'); background-size: cover; background-position: center; border: 1px solid var(--border);"></div>`
     : `<div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>`;
@@ -440,7 +402,7 @@ function openDetails(recipeId) {
   let variationHtml = ''; let initialVarKey = null; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
   const vars = getVariationsForRecipe(r.title);
   if (vars) {
-    const initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
+    initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
     let varOptions = Object.entries(vars).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
     variationHtml = `
       <div class="swap-row" style="border-color: #a371f7; background: rgba(163, 113, 247, 0.05); margin-bottom: 12px;">
@@ -485,12 +447,7 @@ function openDetails(recipeId) {
     <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(displayZutaten, currentSelectedPortions))}</div>
     <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Einkaufsliste per WhatsApp senden</button>
     <button class="add-notes-btn" onclick="addIngredientsToNotes('${safeId}')">📝 Auf unsere Notiz-Einkaufsliste setzen</button>
-    
-    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-      <span>👩‍🍳 Zubereitung:</span>
-      <button id="readRecipeBtn" class="add-notes-btn" style="width:auto; margin:0; padding:6px 12px; background:#238636; font-size:0.8rem;" onclick="toggleRecipeReadAloud('${safeId}')">🔊 Vorlesen</button>
-    </div>
-    
+    <div class="section-title">👩‍🍳 Zubereitung:</div>
     <div class="step-section"><h4>🔪 Vorbereitung / Zubereitung</h4><p id="prepText-${safeId}">${escapeHtml(displayPrep)}</p></div>
     ${(!vars && r.stoveStep) ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
     ${(!vars && r.ovenStep) ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
@@ -535,14 +492,7 @@ function shareWhatsApp(recipeId) {
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-function closeSheetForce() { 
-  if (window.speechSynthesis && window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    recipeSpeechActive = false;
-  }
-  document.getElementById('modalBackdrop').classList.remove('active'); 
-  unlockScroll(); 
-}
+function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); unlockScroll(); }
 function closeSheet(e) { if (e.target.id === 'modalBackdrop') closeSheetForce(); }
 function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
 function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
@@ -556,13 +506,8 @@ function hideAllViews() {
 
 function handleNavCategory(cat) {
   hideAllViews(); closeNavFilterModalForce(); document.getElementById('recipesSection').style.display = 'block';
-  if(cat === 'all') { 
-    const el = document.getElementById('nav-btn-home');
-    if (el) el.classList.add('active'); 
-  } else { 
-    const el = document.getElementById('nav-btn-filter');
-    if (el) el.classList.add('active'); 
-  }
+  if(cat === 'all') { document.getElementById('nav-btn-home').classList.add('active'); } 
+  else { document.getElementById('nav-btn-filter').classList.add('active'); }
   currentCategory = cat; filterRecipes();
 }
 
@@ -632,7 +577,7 @@ function openAddModal() {
       </div>
       <button type="button" class="ki-btn" id="kiGenBtn" onclick="generateWithGemini()">🪄 Mit Gemini automatisch ausfüllen</button>
     </div>
-    <div class="form-row"><div class="form-group"><label>Rezept-Titel *</label><input type="text" id="newTitle"></div><div class="form-group"><label>Emoji & Score</label><div style="flex:1; display:flex; gap:6px;"><input type="text" id="newEmoji" value="🍲" style="width: 50px; text-align:center;"><select id="newScore" style="flex:1;"><option value="A">Nutri A</option><option value="B">Nutri B</option><option value="C">Nutri C</option><option value="D">Nutri D</option><option value="E">Nutri E</option></select></div></div></div>
+    <div class="form-row"><div class="form-group"><label>Rezept-Titel *</label><input type="text" id="newTitle"></div><div class="form-group"><label>Emoji & Score</label><div style="display:flex; gap:6px;"><input type="text" id="newEmoji" value="🍲" style="width: 50px; text-align:center;"><select id="newScore" style="flex:1;"><option value="A">Nutri A</option><option value="B">Nutri B</option><option value="C">Nutri C</option><option value="D">Nutri D</option><option value="E">Nutri E</option></select></div></div></div>
     <div class="form-row"><div class="form-group"><label>Mahlzeit</label><select id="newMealCat"><option value="mittag">🍲 Mittag</option><option value="fruehstueck">🍳 Frühstück</option><option value="abend">🥩 Abendessen</option><option value="snacks">🧁 Snacks & Süßes</option></select></div><div class="form-group"><label>Airfryer?</label><select id="newAirfryer"><option value="false">Nein</option><option value="true">🌪️ Ja</option></select></div></div>
     <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display:block; margin-bottom: 5px;">🔥 Nährwerte (pro 1 Portion)</label>
     <div class="form-row-3" style="margin-bottom: 8px;"><div class="form-group" style="margin:0;"><label>Kcal</label><input type="number" id="newKcal"></div><div class="form-group" style="margin:0;"><label>Eiweiß (g)</label><input type="number" step="0.1" id="newProt"></div><div class="form-group" style="margin:0;"><label>Kohlenh. (g)</label><input type="number" step="0.1" id="newKh"></div></div>
@@ -659,10 +604,12 @@ async function generateWithGemini() {
   btn.innerText = `⏳ KI lädt...`; 
   btn.disabled = true;
 
+  // Schlüssel laden, falls noch nicht im Speicher
   if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
     await loadSharedGeminiKeyFromDB();
   }
 
+  // Wenn der Schlüssel immer noch fehlt:
   if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
     alert("Fehler: Kein gültiger API-Schlüssel in der Datenbank gefunden! (Suche nach Autor 'SYSTEM_GEMINI_KEY')");
     btn.innerText = '🪄 Mit Gemini ausfüllen'; 
@@ -681,7 +628,7 @@ async function generateWithGemini() {
   
   for (const modelName of candidateModels) {
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
+const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ 
@@ -703,7 +650,7 @@ async function generateWithGemini() {
         alert(`Google API Fehler (${modelName}): ` + (errorData.error?.message || "Unbekannter Fehler"));
         btn.innerText = '🪄 Mit Gemini ausfüllen'; 
         btn.disabled = false;
-        return;
+        return; // Stoppt hier und zeigt den Fehler am Bildschirm!
       }
     } catch (err) {
       console.error("Fetch Error:", err);
@@ -787,13 +734,10 @@ async function importBackupJson(event) {
 }
 
 function calculateCycle() {
-  const startInput = document.getElementById('cycleStartDate')?.value; const length = Number(document.getElementById('cycleLength')?.value) || 28;
+  const startInput = document.getElementById('cycleStartDate').value; const length = Number(document.getElementById('cycleLength').value) || 28;
   if (!startInput) return; localStorage.setItem('gartenMuttiCycleStart', startInput); localStorage.setItem('gartenMuttiCycleLen', length);
   const diffDays = Math.floor((new Date() - new Date(startInput)) / (1000 * 60 * 60 * 24)); const currentDay = ((diffDays % length) + length) % length + 1;
-  const badge = document.getElementById('phaseBadge'); const text = document.getElementById('phaseText'); 
-  const infoEl = document.getElementById('currentPhaseInfo');
-  if (infoEl) infoEl.style.display = 'block';
-  if (!badge || !text) return;
+  const badge = document.getElementById('phaseBadge'); const text = document.getElementById('phaseText'); document.getElementById('currentPhaseInfo').style.display = 'block';
   if (currentDay <= 5) { badge.innerText = `🩸 Tag ${currentDay}: Menstruation`; badge.style.background = 'rgba(225, 29, 72, 0.2)'; badge.style.color = '#fb7185'; text.innerText = 'Eisenreich & wärmend.'; }
   else if (currentDay <= 13) { badge.innerText = `🌱 Tag ${currentDay}: Follikelphase`; badge.style.background = 'rgba(46, 160, 67, 0.2)'; badge.style.color = '#3fb950'; text.innerText = 'Leichte Proteine & frisches Gemüse.'; }
   else if (currentDay <= 16) { badge.innerText = `✨ Tag ${currentDay}: Eisprung`; badge.style.background = 'rgba(210, 153, 34, 0.2)'; badge.style.color = '#d29922'; text.innerText = 'Gesunde Fette & viel Eiweiß.'; }
@@ -803,11 +747,10 @@ function filterRecipesForCycle() { handleNavCategory('fruehstueck'); }
 
 function toggleCustomAuthorInput(val) { document.getElementById('noteAuthorCustom').style.display = val === 'custom' ? 'block' : 'none'; }
 async function loadNotesFromSupabase() {
-  if (!supabaseClient) return;
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
   const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
-    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id},${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author \vert{}\vert{} '').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
+    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id}, ${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author||'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
   `).join('');
 }
 async function toggleNoteDone(id, currentStatus) { await supabaseClient.from('Notizen').update({ is_done: !currentStatus }).eq('id', id); loadNotesFromSupabase(); }
@@ -820,78 +763,13 @@ async function deleteNote(id) { await supabaseClient.from('Notizen').delete().eq
 async function triggerRefresh() { await loadRecipesFromSupabase(); }
 
 function setupRealtimeSync() {
-  if (!supabaseClient) return;
   supabaseClient.channel('public:Notizen').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, payload => {
-    if (document.getElementById('notesSection')?.style.display === 'flex') loadNotesFromSupabase();
+    if (document.getElementById('notesSection').style.display === 'flex') loadNotesFromSupabase();
   }).subscribe();
 }
 
-// 🔊 SPRACHAUSGABE FÜR REZEPTE
-let recipeSpeechActive = false;
-
-function toggleRecipeReadAloud(recipeId) {
-  if (!('speechSynthesis' in window)) {
-    alert('Sprachausgabe wird von diesem Browser nicht unterstützt.');
-    return;
-  }
-
-  const btn = document.getElementById('readRecipeBtn');
-
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Vorlesen';
-    return;
-  }
-
-  const r = recipes.find(x => String(x.id) === String(recipeId));
-  if (!r) return;
-
-  let textToRead = `${r.title}. `;
-  if (r.prep) textToRead += `Vorbereitung: ${r.prep}. `;
-  if (r.stoveStep) textToRead += `Auf dem Herd: ${r.stoveStep}. `;
-  if (r.ovenStep) textToRead += `Im Backofen: ${r.ovenStep}. `;
-  if (r.airfryerStep) textToRead += `Im Airfryer: ${r.airfryerStep}. `;
-  if (r.tipps) textToRead += `Tipp: ${r.tipps}`;
-
-  const clean = textToRead.replace(/[*#_`•]/g, '').trim();
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.lang = 'de-DE';
-  utterance.rate = 0.98;
-
-  utterance.onend = () => {
-    recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Vorlesen';
-  };
-  utterance.onerror = () => {
-    recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Vorlesen';
-  };
-
-  recipeSpeechActive = true;
-  if (btn) btn.innerHTML = '⏹️ Stop';
-  window.speechSynthesis.speak(utterance);
-}
-
-// Sofort-Start Logik
-function startApp() {
-  try { initTheme(); } catch(e) { console.error("Theme Error:", e); }
-  try {
-    if (localStorage.getItem('gartenMuttiCycleStart')) { 
-      const cDate = document.getElementById('cycleStartDate');
-      const cLen = document.getElementById('cycleLength');
-      if (cDate) cDate.value = localStorage.getItem('gartenMuttiCycleStart'); 
-      if (cLen) cLen.value = localStorage.getItem('gartenMuttiCycleLen') || 28; 
-      calculateCycle(); 
-    }
-  } catch(e) { console.error("Cycle Error:", e); }
-  try { loadSharedGeminiKeyFromDB(); } catch(e) { console.error("Key Error:", e); }
-  try { loadRecipesFromSupabase(); } catch(e) { console.error("Recipes Error:", e); }
-  try { setupRealtimeSync(); } catch(e) { console.error("Sync Error:", e); }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startApp);
-} else {
-  startApp();
-}
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  if (localStorage.getItem('gartenMuttiCycleStart')) { document.getElementById('cycleStartDate').value = localStorage.getItem('gartenMuttiCycleStart'); document.getElementById('cycleLength').value = localStorage.getItem('gartenMuttiCycleLen') || 28; calculateCycle(); }
+  loadSharedGeminiKeyFromDB(); loadRecipesFromSupabase(); setupRealtimeSync();
+});
