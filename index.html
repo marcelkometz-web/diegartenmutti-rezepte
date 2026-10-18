@@ -593,11 +593,14 @@
         observer.observe(recipeModal, { attributes: true, attributeFilter: ['class'] });
       }
 
-      // Haptik für alle wichtigen Buttons (Portionen, Tabs, Favoriten)
-      document.addEventListener('click', (e) => {
-        if (e.target.closest('.portion-btn, .fav-btn-card, .quick-btn, .chef-hero-btn, .nav-btn, .note-btn-action')) {
-          triggerHaptic(20);
-        }
+// Statt 12 ms -> 45 ms für einen spürbareren Stoß
+function triggerHaptic(ms = 45) {
+  if ('vibrate' in navigator) {
+    try {
+      navigator.vibrate(ms);
+    } catch (e) {}
+  }
+}
       });
     });
   </script>
