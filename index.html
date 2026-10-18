@@ -11,6 +11,61 @@
   
   <!-- Verknüpfung zur neuen CSS-Datei -->
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Aufgeräumtes, großzügiges Layout für die Schnellstart-Leiste */
+    .quick-actions-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 14px 6px 14px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .chef-hero-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(163, 113, 247, 0.28), rgba(10, 132, 255, 0.22));
+      border: 1.5px solid #a371f7;
+      color: #fff;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(163, 113, 247, 0.2);
+      transition: transform 0.1s ease;
+    }
+    .chef-hero-btn:active {
+      transform: scale(0.98);
+    }
+    .quick-sub-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .quick-sub-grid .quick-btn {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--card-sub, #1f2328);
+      border: 1px solid var(--border, rgba(255,255,255,0.12));
+      color: var(--text, #e6edf3);
+      cursor: pointer;
+    }
+    .quick-sub-grid .quick-btn:active {
+      transform: scale(0.97);
+    }
+  </style>
 </head>
 <body>
 
@@ -20,12 +75,18 @@
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
   </header>
 
+  <!-- Großzügiges, übersichtliches Menü oben -->
   <div class="quick-actions-bar">
-    <button onclick="openGartenApp()" class="quick-btn highlight">🌱 Garten-App</button>
-    <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.15);">🥚 Eier</button>
-    <button onclick="openChefModal()" class="quick-btn" style="border-color: #a371f7; color: #a371f7; background: rgba(163, 113, 247, 0.15);">👨‍🍳 KI-Chef</button>
-    <button onclick="openReadmeModal()" class="quick-btn">📄 Read</button>
-    <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
+    <button onclick="openChefModal()" class="chef-hero-btn">
+      <span>👨‍🍳</span>
+      <span>KI-Chef (Live-Google Helfer)</span>
+    </button>
+    <div class="quick-sub-grid">
+      <button onclick="openGartenApp()" class="quick-btn highlight" style="color:#3fb950; border-color: rgba(63, 185, 80, 0.4); background: rgba(63, 185, 80, 0.12);">🌱 Garten-App</button>
+      <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.12);">🥚 Eier-Timer</button>
+      <button onclick="openReadmeModal()" class="quick-btn">📄 Read-Handbuch</button>
+      <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
+    </div>
   </div>
 
   <div id="recipesSection">
@@ -185,7 +246,7 @@
     <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
       <h2>⚖️ Impressum</h2>
-      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+      <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
         <p style="color: #da3633; border: 1px solid #da3633; padding: 12px; border-radius: 8px; background: rgba(218, 54, 51, 0.1); margin-bottom: 16px;">
           <b>WICHTIGER HINWEIS: Diese Web-Applikation ist ein reines Hobby-Projekt und dient ausschließlich der privaten, familiären Nutzung.</b>
         </p>
@@ -215,12 +276,16 @@
   </div>
 
   <!-- ==================================================== -->
-  <!-- 👨‍🍳 NEUES KI-CHEF MODAL MIT DROP-DOWN („DAUM-LISTE“)   -->
+  <!-- 👨‍🍳 KI-CHEF MODAL (X JETZT FEST OBEN RECHTS)          -->
   <!-- ==================================================== -->
   <div class="modal-backdrop" id="chefBackdrop" onclick="closeChefModal(event)">
-    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px;">
-      <button class="close-sheet" onclick="closeChefModalForce()">&times;</button>
-      <h2 style="font-size: 1.25rem; margin-bottom: 8px; color: #a371f7;">👨‍🍳 KI-Chef (Live-Google)</h2>
+    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px; position: relative;">
+      
+      <!-- Saubere Kopfzeile: Titel links, Schließen-X rechts -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h2 style="font-size: 1.25rem; margin: 0; color: #a371f7;">👨‍🍳 KI-Chef (Live-Google)</h2>
+        <button onclick="closeChefModalForce()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border, #333); color: var(--text, #fff); font-size: 1.15rem; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
+      </div>
       
       <!-- Dropdown-Schnellauswahl -->
       <select id="chefTopicSelect" onchange="applyChefTopic(this)" style="background: var(--card-sub, #1f2328); color: var(--text, #fff); border: 1px solid var(--border, #333); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-bottom: 10px; outline: none; width: 100%;">
@@ -354,10 +419,9 @@
       appendChefChat(q, true);
       input.value = '';
 
-      const botId = appendChefChat('🔎 Live-Suche mit Google & KI antwortet... 🍳', false);
+      const botId = appendChefChat('🔎 Live-Suche & KI antwortet... 🍳', false);
       chefHistory.push({ role: 'user', parts: [{ text: q }] });
 
-      // Holt den echten API-Schlüssel aus Supabase, falls noch nicht im RAM
       if (typeof sharedGeminiApiKey === 'undefined' || !sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
         if (typeof loadSharedGeminiKeyFromDB === 'function') {
           await loadSharedGeminiKeyFromDB();
@@ -372,7 +436,6 @@
         return;
       }
 
-      // Probiert nacheinander die schnellsten aktuellen Modelle durch
       const candidateModels = ['gemini-2.5-flash', 'gemini-3.8-flash'];
       let answered = false;
 
@@ -393,11 +456,7 @@
           });
 
           const data = await resp.json();
-
-          if (!resp.ok) {
-            console.warn(`Fehler bei Modell ${model}:`, data);
-            continue;
-          }
+          if (!resp.ok) continue;
 
           const parts = data.candidates?.[0]?.content?.parts || [];
           const ans = parts.map(p => p.text || '').join('').trim();
@@ -416,13 +475,13 @@
             break;
           }
         } catch (err) {
-          console.warn(`Netzwerkfehler bei Modell ${model}:`, err);
+          console.warn(`Fehler bei Modell ${model}:`, err);
         }
       }
 
       if (!answered) {
         const bubble = document.getElementById(botId);
-        if (bubble) bubble.innerHTML = '❌ Konnte keine Antwort generieren. Bitte prüfe den SYSTEM_GEMINI_KEY in deiner Datenbank.';
+        if (bubble) bubble.innerHTML = '❌ Konnte keine Antwort generieren. Bitte kurz erneut versuchen.';
         chefHistory.pop();
       }
     }
