@@ -93,7 +93,7 @@
     <div class="settings-card">
       <h3 style="margin-bottom: 8px; color: #da3633;">🔒 Admin-Passwort</h3>
       <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
-        Speichere hier das Passwort, um Rezepte anlegen, löschen oder bearbeiten zu können. Fremde Besucher können ohne Passwort nichts verändern.
+        Speichere hier das Passwort, um Rezepte anlegen, löschen oder bearbeiten zu können.
       </p>
       <div style="display: flex; gap: 8px;">
         <input type="password" id="adminPinInput" placeholder="Passwort..." class="note-input-main" style="margin-bottom: 0;">
@@ -194,7 +194,7 @@
     </div>
   </div>
 
-  <!-- Rechter Button: Aktualisieren -->
+  <!-- Rechter Aktualisieren-Button -->
   <button class="fab-refresh" id="fabRefresh" onclick="triggerRefresh()"><span>🔄</span></button>
 
   <footer class="app-footer"><p>© DieGartenMutti86 | Marcel Kometz</p></footer>
@@ -222,7 +222,7 @@
   <!-- ========================================== -->
   <button id="chefAiTrigger" onclick="toggleChefAiModal()" title="Küchen-Assistent">👨‍🍳</button>
 
-  <div id="chefAiModal">
+  <div id="chefAiModal" style="display: none;">
     <div class="chef-ai-header">
       <div class="chef-ai-title">✨ Spitzenkoch KI-Helfer</div>
       <button class="chef-ai-close" onclick="toggleChefAiModal()">✕</button>
@@ -246,7 +246,6 @@
   </div>
 
   <style>
-    /* Linker Button: Exakt bündig zur rechten Refresh-Schaltfläche */
     #chefAiTrigger {
       position: fixed;
       bottom: 84px;
@@ -268,7 +267,6 @@
     #chefAiTrigger:active { transform: scale(0.92); }
 
     #chefAiModal {
-      display: none;
       position: fixed;
       bottom: 80px;
       right: 15px;
@@ -428,7 +426,7 @@
     }
   </script>
 
-  <!-- Skripte laden -->
+  <!-- Skripte zur Datenverbindung -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
