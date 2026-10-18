@@ -773,3 +773,52 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('gartenMuttiCycleStart')) { document.getElementById('cycleStartDate').value = localStorage.getItem('gartenMuttiCycleStart'); document.getElementById('cycleLength').value = localStorage.getItem('gartenMuttiCycleLen') || 28; calculateCycle(); }
   loadSharedGeminiKeyFromDB(); loadRecipesFromSupabase(); setupRealtimeSync();
 });
+// ==========================================
+// 🔊 SPRACHAUSGABE FÜR REZEPTE
+// ==========================================
+let recipeSpeechActive = false;
+
+function toggleRecipeReadAloud(recipeId) {
+  if (!('speechSynthesis' in window)) {
+    alert('Sprachausgabe wird von diesem Browser nicht unterstützt.');
+    return;
+  }
+
+  const btn = document.getElementById('readRecipeBtn');
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+    return;
+  }
+
+  const r = recipes.find(x => String(x.id) === String(recipeId));
+  if (!r) return;
+
+  // Text für die Sprachausgabe zusammenstellen
+  let textToRead = `${r.title}. `;
+  if (r.prep) textToRead += `Vorbereitung: ${r.prep}. `;
+  if (r.stoveStep) textToRead += `Auf dem Herd: ${r.stoveStep}. `;
+  if (r.ovenStep) textToRead += `Im Backofen: ${r.ovenStep}. `;
+  if (r.airfryerStep) textToRead += `Im Airfryer: ${r.airfryerStep}. `;
+  if (r.tipps) textToRead += `Tipp: ${r.tipps}`;
+
+  const clean = textToRead.replace(/[*#_`•]/g, '').trim();
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.lang = 'de-DE';
+  utterance.rate = 0.98; // Etwas ruhigeres Küchentempo
+
+  utterance.onend = () => {
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+  };
+  utterance.onerror = () => {
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+  };
+
+  recipeSpeechActive = true;
+  if (btn) btn.innerHTML = '⏹️ Vorlesen stoppen';
+  window.speechSynthesis.speak(utterance);
+}
