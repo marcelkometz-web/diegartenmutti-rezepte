@@ -373,11 +373,17 @@
 
     function toggleChefAiModal() {
       const modal = document.getElementById('chefAiModal');
-      modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+      if (!modal) return;
+      if (modal.style.display === 'none' || modal.style.display === '') {
+        modal.style.display = 'flex';
+      } else {
+        modal.style.display = 'none';
+      }
     }
 
     function appendChefMessage(text, sender) {
       const chat = document.getElementById('chefAiChat');
+      if (!chat) return '';
       const div = document.createElement('div');
       div.className = 'c-msg ' + sender;
       cMsgCount++;
@@ -390,6 +396,7 @@
 
     async function sendChefAiMessage() {
       const input = document.getElementById('cUserInput');
+      if (!input) return;
       const text = input.value.trim();
       if (!text) return;
 
@@ -417,7 +424,8 @@
         cChatHistory.push({ role: "model", parts: [{ text: reply }] });
         const el = document.getElementById(botId);
         if (el) el.innerHTML = reply.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-        document.getElementById('chefAiChat').scrollTop = document.getElementById('chefAiChat').scrollHeight;
+        const chat = document.getElementById('chefAiChat');
+        if (chat) chat.scrollTop = chat.scrollHeight;
       } catch (err) {
         const el = document.getElementById(botId);
         if (el) el.innerHTML = "❌ Fehler: " + err.message;
@@ -428,7 +436,7 @@
 
   <!-- Skripte zur Datenverbindung mit Cache-Busting -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20261018"></script>
-  <script src="app.js?v=20261018"></script>
+  <script src="config.js?v=20261018b"></script>
+  <script src="app.js?v=20261018b"></script>
 </body>
 </html>
