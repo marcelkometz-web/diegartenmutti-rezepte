@@ -437,7 +437,7 @@ function openDetails(recipeId) {
   const isFav = favorites.includes(String(r.id));
   let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
 
-  let variationHtml = ''; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
+  let variationHtml = ''; let initialVarKey = null; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
   const vars = getVariationsForRecipe(r.title);
   if (vars) {
     const initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
