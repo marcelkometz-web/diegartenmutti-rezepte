@@ -339,6 +339,7 @@ function buildCardHtml(r) {
 
   return `
     <div class="recipe-card" onclick="openDetails('${escapeHtml(r.id)}')">
+		<button id="readRecipeBtn" class="add-notes-btn" style="background:#238636; margin-bottom:12px;" onclick="toggleRecipeReadAloud('${safeId}')">🔊 Zubereitung vorlesen</button>
       <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${escapeHtml(r.id)}', event)">${isFav ? '❤️' : '🤍'}</button>
       ${imageOrEmoji}
       <div class="card-meta">
