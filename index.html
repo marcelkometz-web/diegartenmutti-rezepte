@@ -545,5 +545,61 @@
       }
     }
   </script>
+    <!-- Schritt 1: Display Always-On & Haptik -->
+  <script>
+    let appWakeLock = null;
+
+    // Hält das Display aktiv, solange ein Rezept offen ist
+    async function enableWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          appWakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.log('WakeLock nicht verfügbar oder blockiert:', err);
+      }
+    }
+
+    // Gibt das Display wieder für den Ruhezustand frei
+    function releaseWakeLock() {
+      if (appWakeLock) {
+        appWakeLock.release().then(() => {
+          appWakeLock = null;
+        });
+      }
+    }
+
+    // Feines haptisches Feedback bei Klicks
+    function triggerHaptic(ms = 12) {
+      if ('vibrate' in navigator) {
+        try {
+          navigator.vibrate(ms);
+        } catch (e) {}
+      }
+    }
+
+    // Automatische Verknüpfung mit deinen Modal-Öffnern und Buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      // Überwacht das Rezept-Modal: Display an, wenn aktiv; Display aus, wenn geschlossen
+      const recipeModal = document.getElementById('modalBackdrop');
+      if (recipeModal) {
+        const observer = new MutationObserver(() => {
+          if (recipeModal.classList.contains('active')) {
+            enableWakeLock();
+          } else {
+            releaseWakeLock();
+          }
+        });
+        observer.observe(recipeModal, { attributes: true, attributeFilter: ['class'] });
+      }
+
+      // Haptik für alle wichtigen Buttons (Portionen, Tabs, Favoriten)
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.portion-btn, .fav-btn-card, .quick-btn, .chef-hero-btn, .nav-btn, .note-btn-action')) {
+          triggerHaptic(12);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
