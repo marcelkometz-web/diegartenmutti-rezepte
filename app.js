@@ -1,7 +1,15 @@
 // app.js
 // Hauptlogik für DieGartenMutti86
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Sichere Initialisierung von Supabase
+let supabaseClient = null;
+try {
+  if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+} catch (e) {
+  console.error("Supabase Init Error:", e);
+}
 
 let searchTimeout = null;
 let favorites = JSON.parse(localStorage.getItem('gartenMuttiFavs')) || [];
@@ -17,6 +25,7 @@ let secureAdminPin = null;
 async function fetchAdminPin() {
   if (secureAdminPin) return secureAdminPin; 
   try {
+    if (!supabaseClient) return null;
     const { data, error } = await supabaseClient
       .from('Notizen')
       .select('content')
@@ -41,7 +50,7 @@ async function saveAdminPin() {
   }
 }
 
-// Prüft das Passwort (mit lokalem Speicher, damit du es nur einmal eingeben musst)
+// Prüft das Passwort
 async function checkAdmin() {
   const realPin = await fetchAdminPin();
   if (!realPin) {
@@ -194,14 +203,20 @@ function clearSubFilter() { currentSubFilter = null; document.getElementById('su
 
 function initTheme() {
   const savedTheme = localStorage.getItem('gartenMuttiTheme') || 'warm-dark';
-  document.getElementById('themeSelect').value = savedTheme; applyTheme(savedTheme);
+  const el = document.getElementById('themeSelect');
+  if (el) el.value = savedTheme; 
+  applyTheme(savedTheme);
 }
 function changeTheme(t) { localStorage.setItem('gartenMuttiTheme', t); applyTheme(t); }
 function applyTheme(t) { if (t === 'warm-dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); }
 
 async function loadSharedGeminiKeyFromDB() {
-  if (MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); return; }
   try {
+    if (typeof MASTER_GEMINI_API_KEY !== 'undefined' && MASTER_GEMINI_API_KEY && MASTER_GEMINI_API_KEY.length > 15) { 
+      sharedGeminiApiKey = MASTER_GEMINI_API_KEY.trim(); 
+      return; 
+    }
+    if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('Notizen').select('content').eq('author', 'SYSTEM_GEMINI_KEY').limit(1);
     if (!error && data && data.length > 0 && data[0].content) sharedGeminiApiKey = data[0].content.trim();
   } catch (e) {}
@@ -230,8 +245,17 @@ function getScoreClass(score) {
 
 async function loadRecipesFromSupabase() {
   const status = document.getElementById('syncStatus'); 
-  if (status) status.innerText = '⏳ Lade...';
+  if (status) status.innerText = '⏳ Lade Rezepte...';
   try {
+    if (!supabaseClient) {
+      if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    }
+    if (!supabaseClient) {
+      if (status) status.innerText = '❌ Supabase-Verbindung fehlt';
+      return;
+    }
     const { data, error } = await supabaseClient.from('Rezepte').select('*').order('id', { ascending: true });
     if (error) throw error;
     if (data && data.length > 0) {
@@ -291,7 +315,8 @@ function generateScaledIngredients(rawText, portions) {
 
 function filterRecipes() {
   try {
-    const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+    const inputEl = document.getElementById('searchInput');
+    const searchVal = inputEl ? inputEl.value.toLowerCase().trim() : '';
     const terms = searchVal ? searchVal.split(/[\s,]+/).filter(t => t.length > 0) : [];
 
     const filtered = recipes.filter(r => {
@@ -323,18 +348,26 @@ function filterRecipes() {
     });
     renderList(filtered);
   } catch (err) {
-    console.error("Suchfehler abgefangen:", err);
+    console.error("Suchfehler:", err);
   }
 }
 
 function onSearchManual() {
-  const input = document.getElementById('searchInput'); document.getElementById('clearSearchBtn').style.display = input.value.trim().length > 0 ? 'block' : 'none';
+  const input = document.getElementById('searchInput'); 
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.style.display = input && input.value.trim().length > 0 ? 'block' : 'none';
   if (searchTimeout) clearTimeout(searchTimeout); searchTimeout = setTimeout(filterRecipes, 250);
 }
 
-function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('clearSearchBtn').style.display = 'none'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); filterRecipes(); }
+function clearSearch() { 
+  const input = document.getElementById('searchInput');
+  if (input) input.value = ''; 
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.style.display = 'none'; 
+  document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); 
+  filterRecipes(); 
+}
 
-// Saubere Übersichtskarte OHNE Absturzfehler
 function buildCardHtml(r) {
   const total = calculateTotalNutri(r, 'keine', 1); 
   const isFav = favorites.includes(String(r.id));
@@ -397,7 +430,6 @@ function updatePortionOrSide(recipeId, changePortion = 0) {
   document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(currentZutaten, currentSelectedPortions);
 }
 
-// Detail-Ansicht MIT Vorlese-Knopf
 function openDetails(recipeId) {
   const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
   currentSelectedPortions = 1; const safeId = escapeHtml(r.id);
@@ -405,10 +437,10 @@ function openDetails(recipeId) {
   const isFav = favorites.includes(String(r.id));
   let sideOptionsHtml = Object.entries(sideOptions).map(([k, v]) => `<option value="${k}" ${chosenSide === k ? 'selected' : ''}>${v.name}</option>`).join('');
 
-  let variationHtml = ''; let initialVarKey = null; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
+  let variationHtml = ''; let displayZutaten = r.zutatenListe; let displayPrep = r.prep;
   const vars = getVariationsForRecipe(r.title);
   if (vars) {
-    initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
+    const initialVarKey = Object.keys(vars)[0]; displayZutaten = vars[initialVarKey].zutaten; displayPrep = vars[initialVarKey].prep;
     let varOptions = Object.entries(vars).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
     variationHtml = `
       <div class="swap-row" style="border-color: #a371f7; background: rgba(163, 113, 247, 0.05); margin-bottom: 12px;">
@@ -524,8 +556,13 @@ function hideAllViews() {
 
 function handleNavCategory(cat) {
   hideAllViews(); closeNavFilterModalForce(); document.getElementById('recipesSection').style.display = 'block';
-  if(cat === 'all') { document.getElementById('nav-btn-home').classList.add('active'); } 
-  else { document.getElementById('nav-btn-filter').classList.add('active'); }
+  if(cat === 'all') { 
+    const el = document.getElementById('nav-btn-home');
+    if (el) el.classList.add('active'); 
+  } else { 
+    const el = document.getElementById('nav-btn-filter');
+    if (el) el.classList.add('active'); 
+  }
   currentCategory = cat; filterRecipes();
 }
 
@@ -750,10 +787,13 @@ async function importBackupJson(event) {
 }
 
 function calculateCycle() {
-  const startInput = document.getElementById('cycleStartDate').value; const length = Number(document.getElementById('cycleLength').value) || 28;
+  const startInput = document.getElementById('cycleStartDate')?.value; const length = Number(document.getElementById('cycleLength')?.value) || 28;
   if (!startInput) return; localStorage.setItem('gartenMuttiCycleStart', startInput); localStorage.setItem('gartenMuttiCycleLen', length);
   const diffDays = Math.floor((new Date() - new Date(startInput)) / (1000 * 60 * 60 * 24)); const currentDay = ((diffDays % length) + length) % length + 1;
-  const badge = document.getElementById('phaseBadge'); const text = document.getElementById('phaseText'); document.getElementById('currentPhaseInfo').style.display = 'block';
+  const badge = document.getElementById('phaseBadge'); const text = document.getElementById('phaseText'); 
+  const infoEl = document.getElementById('currentPhaseInfo');
+  if (infoEl) infoEl.style.display = 'block';
+  if (!badge || !text) return;
   if (currentDay <= 5) { badge.innerText = `🩸 Tag ${currentDay}: Menstruation`; badge.style.background = 'rgba(225, 29, 72, 0.2)'; badge.style.color = '#fb7185'; text.innerText = 'Eisenreich & wärmend.'; }
   else if (currentDay <= 13) { badge.innerText = `🌱 Tag ${currentDay}: Follikelphase`; badge.style.background = 'rgba(46, 160, 67, 0.2)'; badge.style.color = '#3fb950'; text.innerText = 'Leichte Proteine & frisches Gemüse.'; }
   else if (currentDay <= 16) { badge.innerText = `✨ Tag ${currentDay}: Eisprung`; badge.style.background = 'rgba(210, 153, 34, 0.2)'; badge.style.color = '#d29922'; text.innerText = 'Gesunde Fette & viel Eiweiß.'; }
@@ -763,6 +803,7 @@ function filterRecipesForCycle() { handleNavCategory('fruehstueck'); }
 
 function toggleCustomAuthorInput(val) { document.getElementById('noteAuthorCustom').style.display = val === 'custom' ? 'block' : 'none'; }
 async function loadNotesFromSupabase() {
+  if (!supabaseClient) return;
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
   const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
@@ -779,20 +820,13 @@ async function deleteNote(id) { await supabaseClient.from('Notizen').delete().eq
 async function triggerRefresh() { await loadRecipesFromSupabase(); }
 
 function setupRealtimeSync() {
+  if (!supabaseClient) return;
   supabaseClient.channel('public:Notizen').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, payload => {
-    if (document.getElementById('notesSection').style.display === 'flex') loadNotesFromSupabase();
+    if (document.getElementById('notesSection')?.style.display === 'flex') loadNotesFromSupabase();
   }).subscribe();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  if (localStorage.getItem('gartenMuttiCycleStart')) { document.getElementById('cycleStartDate').value = localStorage.getItem('gartenMuttiCycleStart'); document.getElementById('cycleLength').value = localStorage.getItem('gartenMuttiCycleLen') || 28; calculateCycle(); }
-  loadSharedGeminiKeyFromDB(); loadRecipesFromSupabase(); setupRealtimeSync();
-});
-
-// ==========================================
 // 🔊 SPRACHAUSGABE FÜR REZEPTE
-// ==========================================
 let recipeSpeechActive = false;
 
 function toggleRecipeReadAloud(recipeId) {
@@ -837,4 +871,27 @@ function toggleRecipeReadAloud(recipeId) {
   recipeSpeechActive = true;
   if (btn) btn.innerHTML = '⏹️ Stop';
   window.speechSynthesis.speak(utterance);
+}
+
+// Sofort-Start Logik (überwindet jede Cache- oder DOMContentLoaded-Blockade)
+function startApp() {
+  try { initTheme(); } catch(e) { console.error("Theme Error:", e); }
+  try {
+    if (localStorage.getItem('gartenMuttiCycleStart')) { 
+      const cDate = document.getElementById('cycleStartDate');
+      const cLen = document.getElementById('cycleLength');
+      if (cDate) cDate.value = localStorage.getItem('gartenMuttiCycleStart'); 
+      if (cLen) cLen.value = localStorage.getItem('gartenMuttiCycleLen') || 28; 
+      calculateCycle(); 
+    }
+  } catch(e) { console.error("Cycle Error:", e); }
+  try { loadSharedGeminiKeyFromDB(); } catch(e) { console.error("Key Error:", e); }
+  try { loadRecipesFromSupabase(); } catch(e) { console.error("Recipes Error:", e); }
+  try { setupRealtimeSync(); } catch(e) { console.error("Sync Error:", e); }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
 }
