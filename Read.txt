@@ -1,0 +1,144 @@
+========================================================================
+🥗 DIEGARTENMUTTI86 – ERNÄHRUNGS- & REZEPTE-APP
+DOKUMENTATION & VOLLSTÄNDIGE BEDIENUNGSANLEITUNG
+========================================================================
+Entwickelt von: Marcel Kometz
+Version: 3.5 (Smart Low-Carb & High-Protein Edition | Stand: Oktober 2026)
+
+
+1. ÜBER DIESE APP
+------------------------------------------------------------------------
+"DieGartenMutti86" ist eine hochgradig spezialisierte, mobile Web-App 
+für Smartphone, Tablet und PC zur Förderung von Vitalität, gesunder 
+Gewichtsreduktion und maximaler Blutzucker-Stabilität. 
+
+Entwickelt für den familiären Alltag von Ramona und Marcel, kombiniert die 
+Plattform eine datenbankgestützte Rezeptverwaltung (über 260 Rezepte), 
+ein zyklusbasiertes Ernährungssystem für Frauen, Echtzeit-Notizlisten 
+sowie einen KI-gestützten 3-Sterne-Küchenchef mit Live-Google-Websuche.
+
+
+2. HAUPTFUNKTIONEN & SYSTEM-MODULE
+------------------------------------------------------------------------
+
+• 🔍 Intelligente Kombinations-Suche & Reste-Radar:
+  - Volltext- und Schlagwortsuche über Titel, Zutaten und Zubereitung.
+  - Kombinationsfilter: Gib z. B. "Hähnchen Brokkoli" ein, um sofort 
+    Rezepte zu finden, die beide Zutaten enthalten.
+  - Schnellauswahl-Chips:
+    🥩 Fleisch & Fisch | 🥦 Gemüse | 🧀 Proteine & Milch | 🧄 Basics
+  - Sofortiges Leeren der Suche über das "✖"-Symbol im Suchfeld.
+
+• 👥 Dynamische Portionsskalierung (1 bis 20 Portionen):
+  - Jedes Rezept lässt sich mit einem Tipp auf [+] oder [-] anpassen.
+  - Sämtliche Mengenangaben in der Zutatenliste (Gramm, Milliliter, 
+    Esslöffel, Stück) werden mathematisch exakt in Echtzeit umgerechnet.
+  - Makronährwerte (Kcal, Eiweiß, Kohlenhydrate, Zucker, Fett) 
+    passen sich parallel zur gewählten Portionsgröße dynamisch an.
+
+• 🔄 Smarter Beilagentausch & Insulin-Ampel:
+  - Jedes Hauptgericht verfügt über einen flexiblen Beilagen-Selektor:
+    * Ohne Extra-Beilage (+0 kcal | Optimal stabil)
+    * Zucchini-Nudeln / Zoodles (+22 kcal | Ketogen / Low-Carb)
+    * Protein-Nudeln (+145 kcal | Stabiler Blutzucker)
+    * Basmati-Reis (+130 kcal | Mäßiger Anstieg)
+    * Kartoffeln (+110 kcal | Höherer Insulin-Peak)
+  - Berechnung der Gesamtnährwerte erfolgt sofort nach Auswahl.
+
+• 🥣 Sorten- & Dip-Wechsler:
+  - Spezialrezepte wie "5 gesunde Dips" verfügen über ein internes 
+    Sorten-Dropdown (Aioli, Honig-Senf, Salsa, Teriyaki, Tzatziki).
+  - Bei Sortenwechsel aktualisieren sich Nährwertkarten, Zutatenliste 
+    und Zubereitungsschritte automatisch im selben Modal.
+
+• 📲 WhatsApp-Export & Synchronisierte Einkaufsliste:
+  - "Einkaufsliste per WhatsApp senden": Erstellt eine fertig 
+    formatierte Liste mit Häkchen und Mengenangaben für den Messenger.
+  - "Auf unsere Notiz-Einkaufsliste setzen": Überträgt die Zutaten 
+    per Knopfdruck direkt in die geteilte Supabase-Notizendatenbank.
+
+• 🔊 Integrierte Küchen-Sprachausgabe:
+  - Liest die kompletten Zubereitungsschritte (Vorbereitung, Herd, 
+    Backofen, Airfryer) über die native Sprachausgabe des Geräts vor.
+  - Freihändige Bedienung beim Kochen ohne Display-Berührung.
+  - Jederzeit per Klick auf "⏹️ Vorlesen stoppen" anhaltbar.
+
+• 🩸 Zyklus-Phasen & Hormongerechte Ernährung:
+  - Automatische Berechnung der aktuellen Zyklusphase nach Eingabe des 
+    ersten Periodentags und der Zykluslänge (Standard: 28 Tage).
+  - 4 definierte Ernährungsphasen:
+    1. Menstruation (Tag 1–5): Eisenreich, wärmend & entkrampfend.
+    2. Follikelphase (Tag 6–13): Leichte Proteine, Energie & Keimlinge.
+    3. Eisprung (Tag 14–16): Gesunde Fette, Antioxidantien & Zink.
+    4. Lutealphase (Tag 17–28): Blutzucker-Balance & Heißhunger-Schutz.
+  - "✨ Passende Rezepte anzeigen": Filtert den Rezeptkatalog direkt 
+    auf mahlzeitengerechte Rezepte für die aktuelle Phase.
+
+• 📝 Geteiltes Notiz- & Einkaufslisten-System:
+  - Echtzeit-Zwei-Wege-Synchronisation über Supabase PostgreSQL.
+  - Farbcodierte Autoren-Badges: 🌸 Ramona | 🔧 Matze | ✍️ Gast.
+  - Status "Erledigt" durch Antippen – durchgestrichene Anzeige.
+  - Schnelles Löschen per Papierkorb-Symbol.
+
+• 👨‍🍳 KI-Chef (Spitzenkoch mit Live-Google-Websuche):
+  - Direkte Verbindung zur Google Gemini API mit aktivierter Google-Suche.
+  - Themen-Schnellauswahl für typische Küchenfragen:
+    * 🔄 Zutat ersetzen (Low-Carb)
+    * ⏱️ Garzeiten & Temperatur (Ofen, Pfanne, Airfryer)
+    * 🥗 Passende Soßen- & Beilagen-Kombinationen
+    * 🌿 Ernte & Haltbarmachung frischer Gartenkräuter
+    * 🥣 Kreative Resteverwertung aus dem Kühlschrank
+  - Freies Eingabefeld für spontane Küchen- und Ernährungsfragen.
+
+
+3. ERNÄHRUNGS-PHILOSOPHIE & NUTRI-SCORE
+------------------------------------------------------------------------
+
+• Low-Carb-Fokus:
+  Alle Rezepte zielen auf minimale Insulinausschüttung ab. Kurzkettige 
+  Zuckerarten werden konsequent vermieden oder durch natürliche 
+  Alternativen ersetzt, um Heißhungerattacken vorzubeugen.
+
+• High-Protein-Standard:
+  Gerichte der Kategorie "High-Protein" liefern mindestens 25 g 
+  reines Eiweiß pro Einzelportion zum Erhalt und Aufbau fettfreier 
+  Muskelmasse sowie zur langanhaltenden Sättigung.
+
+• Airfryer-Kennzeichnung (🌪️):
+  Spezielle Markierung für fettarme Heißluftfritteusen-Zubereitung 
+  inklusive eigener Garzeiten und Temperaturempfehlungen.
+
+
+4. DATENSICHERHEIT, BACKUP & OFFLINE-NUTZUNG
+------------------------------------------------------------------------
+
+• Admin-Schutz:
+  - Bearbeiten, Anlegen und Löschen von Rezepten erfordert den 
+    autorisierten PIN-Code (gespeichert in der Supabase-Datenbank).
+  - Fremde Besucher können die App ansehen, aber nichts verändern.
+
+• 💾 JSON-Vollsicherung:
+  - Vollständiger Download aller Datenbank-Rezepte als Backup-Datei 
+    (Backup_YYYY-MM-DD.json) über den Setup-Bereich.
+  - Notfall-Wiederherstellung (Import) jederzeit per Klick möglich.
+
+• Lokale Speicherung (localStorage):
+  - Favoritenliste (❤️), Farbschema (Theme), PIN-Login und 
+    Zyklusdaten verbleiben verschlüsselt im lokalen Gerätespeicher.
+
+• Homescreen-Installation (PWA):
+  - iOS (Safari): Teilen-Symbol (Viereck mit Pfeil nach oben) 
+    antippen -> "Zum Home-Bildschirm".
+  - Android (Chrome): Dreipunkt-Menü -> "App installieren".
+
+
+5. KONTAKT & IMPRESSUM
+------------------------------------------------------------------------
+Betreiber & Entwickler:
+Marcel Kometz
+Manfredstr. 15 | 47178 Duisburg
+Telefon: 0152 03397547
+E-Mail: marcelkometz@icloud.com
+
+Hinweis: Privates Familienprojekt für Ramona & Marcel.
+========================================================================
