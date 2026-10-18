@@ -339,7 +339,6 @@ function buildCardHtml(r) {
 
   return `
     <div class="recipe-card" onclick="openDetails('${escapeHtml(r.id)}')">
-		<button id="readRecipeBtn" class="add-notes-btn" style="background:#238636; margin-bottom:12px;" onclick="toggleRecipeReadAloud('${safeId}')">🔊 Zubereitung vorlesen</button>
       <button class="fav-btn-card ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${escapeHtml(r.id)}', event)">${isFav ? '❤️' : '🤍'}</button>
       ${imageOrEmoji}
       <div class="card-meta">
@@ -448,7 +447,12 @@ function openDetails(recipeId) {
     <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(displayZutaten, currentSelectedPortions))}</div>
     <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Einkaufsliste per WhatsApp senden</button>
     <button class="add-notes-btn" onclick="addIngredientsToNotes('${safeId}')">📝 Auf unsere Notiz-Einkaufsliste setzen</button>
-    <div class="section-title">👩‍🍳 Zubereitung:</div>
+    
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>👩‍🍳 Zubereitung:</span>
+      <button id="readRecipeBtn" class="add-notes-btn" style="width:auto; margin:0; padding:6px 12px; background:#238636; font-size:0.8rem;" onclick="toggleRecipeReadAloud('${safeId}')">🔊 Vorlesen</button>
+    </div>
+    
     <div class="step-section"><h4>🔪 Vorbereitung / Zubereitung</h4><p id="prepText-${safeId}">${escapeHtml(displayPrep)}</p></div>
     ${(!vars && r.stoveStep) ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
     ${(!vars && r.ovenStep) ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
@@ -493,7 +497,14 @@ function shareWhatsApp(recipeId) {
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); unlockScroll(); }
+function closeSheetForce() { 
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    recipeSpeechActive = false;
+  }
+  document.getElementById('modalBackdrop').classList.remove('active'); 
+  unlockScroll(); 
+}
 function closeSheet(e) { if (e.target.id === 'modalBackdrop') closeSheetForce(); }
 function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
 function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
@@ -578,7 +589,7 @@ function openAddModal() {
       </div>
       <button type="button" class="ki-btn" id="kiGenBtn" onclick="generateWithGemini()">🪄 Mit Gemini automatisch ausfüllen</button>
     </div>
-    <div class="form-row"><div class="form-group"><label>Rezept-Titel *</label><input type="text" id="newTitle"></div><div class="form-group"><label>Emoji & Score</label><div style="display:flex; gap:6px;"><input type="text" id="newEmoji" value="🍲" style="width: 50px; text-align:center;"><select id="newScore" style="flex:1;"><option value="A">Nutri A</option><option value="B">Nutri B</option><option value="C">Nutri C</option><option value="D">Nutri D</option><option value="E">Nutri E</option></select></div></div></div>
+    <div class="form-row"><div class="form-group"><label>Rezept-Titel *</label><input type="text" id="newTitle"></div><div class="form-group"><label>Emoji & Score</label><div style="flex:1; display:flex; gap:6px;"><input type="text" id="newEmoji" value="🍲" style="width: 50px; text-align:center;"><select id="newScore" style="flex:1;"><option value="A">Nutri A</option><option value="B">Nutri B</option><option value="C">Nutri C</option><option value="D">Nutri D</option><option value="E">Nutri E</option></select></div></div></div>
     <div class="form-row"><div class="form-group"><label>Mahlzeit</label><select id="newMealCat"><option value="mittag">🍲 Mittag</option><option value="fruehstueck">🍳 Frühstück</option><option value="abend">🥩 Abendessen</option><option value="snacks">🧁 Snacks & Süßes</option></select></div><div class="form-group"><label>Airfryer?</label><select id="newAirfryer"><option value="false">Nein</option><option value="true">🌪️ Ja</option></select></div></div>
     <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display:block; margin-bottom: 5px;">🔥 Nährwerte (pro 1 Portion)</label>
     <div class="form-row-3" style="margin-bottom: 8px;"><div class="form-group" style="margin:0;"><label>Kcal</label><input type="number" id="newKcal"></div><div class="form-group" style="margin:0;"><label>Eiweiß (g)</label><input type="number" step="0.1" id="newProt"></div><div class="form-group" style="margin:0;"><label>Kohlenh. (g)</label><input type="number" step="0.1" id="newKh"></div></div>
@@ -605,12 +616,10 @@ async function generateWithGemini() {
   btn.innerText = `⏳ KI lädt...`; 
   btn.disabled = true;
 
-  // Schlüssel laden, falls noch nicht im Speicher
   if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
     await loadSharedGeminiKeyFromDB();
   }
 
-  // Wenn der Schlüssel immer noch fehlt:
   if (!sharedGeminiApiKey || sharedGeminiApiKey.length < 20) {
     alert("Fehler: Kein gültiger API-Schlüssel in der Datenbank gefunden! (Suche nach Autor 'SYSTEM_GEMINI_KEY')");
     btn.innerText = '🪄 Mit Gemini ausfüllen'; 
@@ -629,7 +638,7 @@ async function generateWithGemini() {
   
   for (const modelName of candidateModels) {
     try {
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${sharedGeminiApiKey}`, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ 
@@ -651,7 +660,7 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
         alert(`Google API Fehler (${modelName}): ` + (errorData.error?.message || "Unbekannter Fehler"));
         btn.innerText = '🪄 Mit Gemini ausfüllen'; 
         btn.disabled = false;
-        return; // Stoppt hier und zeigt den Fehler am Bildschirm!
+        return;
       }
     } catch (err) {
       console.error("Fetch Error:", err);
@@ -751,7 +760,7 @@ async function loadNotesFromSupabase() {
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
   const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
-    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id}, ${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author||'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
+    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id},${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author\vert{}\vert{}'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
   `).join('');
 }
 async function toggleNoteDone(id, currentStatus) { await supabaseClient.from('Notizen').update({ is_done: !currentStatus }).eq('id', id); loadNotesFromSupabase(); }
@@ -774,6 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('gartenMuttiCycleStart')) { document.getElementById('cycleStartDate').value = localStorage.getItem('gartenMuttiCycleStart'); document.getElementById('cycleLength').value = localStorage.getItem('gartenMuttiCycleLen') || 28; calculateCycle(); }
   loadSharedGeminiKeyFromDB(); loadRecipesFromSupabase(); setupRealtimeSync();
 });
+
 // ==========================================
 // 🔊 SPRACHAUSGABE FÜR REZEPTE
 // ==========================================
@@ -790,7 +800,7 @@ function toggleRecipeReadAloud(recipeId) {
   if (window.speechSynthesis.speaking) {
     window.speechSynthesis.cancel();
     recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
     return;
   }
 
@@ -812,14 +822,14 @@ function toggleRecipeReadAloud(recipeId) {
 
   utterance.onend = () => {
     recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
   };
   utterance.onerror = () => {
     recipeSpeechActive = false;
-    if (btn) btn.innerHTML = '🔊 Zubereitung vorlesen';
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
   };
 
   recipeSpeechActive = true;
-  if (btn) btn.innerHTML = '⏹️ Vorlesen stoppen';
+  if (btn) btn.innerHTML = '⏹️ Stop';
   window.speechSynthesis.speak(utterance);
 }
