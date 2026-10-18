@@ -9,6 +9,7 @@
   <link rel="apple-touch-icon" href="IMG_0526.png">
   <meta name="apple-mobile-web-app-title" content="Rezepte">
   
+  <!-- Verknüpfung zur neuen CSS-Datei -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -163,13 +164,14 @@
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
     <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
       <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
-      <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 8px;">📄 Das ultimative App-Handbuch</h2>
-      <div style="margin-top:10px; line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
+      <h2 style="font-size: 1.4rem; color: #3fb950; margin-bottom: 12px;">📄 App-Handbuch & Funktionen</h2>
+      <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.88rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
         <p><b style="color:var(--text);">Willkommen bei DieGartenMutti86!</b><br>Eure persönliche Ernährungs- und Rezeptzentrale – optimiert für Blutzucker-Stabilität, High-Protein und Low-Carb.</p>
         <p><b>1. Schnelle Suche & Reste-Filter:</b> Tippe Zutaten oben in das Suchfeld ein oder nutze die Buttons wie „Fleisch & Fisch“, um gezielt nach Vorräten zu filtern.</p>
-        <p><b>2. Portions-Rechner:</b> Jedes Rezept lässt sich mit + und - dynamisch von 1 bis 20 Portionen hoch- und runterskalieren.</p>
-        <p><b>3. Beilagentausch:</b> Tausche Beilagen flexibel gegen Zucchini-Nudeln, Reis oder Kartoffeln – Nährwerte und Blutzuckereffekt passen sich direkt an.</p>
-        <p><b>4. Notiz-Einkaufsliste:</b> Zutaten lassen sich mit einem Tipp direkt auf die gemeinsame Einkaufsliste setzen.</p>
+        <p><b>2. Portions-Rechner:</b> Jedes Rezept lässt sich mit + und - dynamisch von 1 bis 20 Portionen hoch- und runterskalieren. Zutaten und Kalorien passen sich automatisch an.</p>
+        <p><b>3. Beilagentausch & Nährwerte:</b> Tausche Beilagen flexibel gegen Zucchini-Nudeln, Reis oder Kartoffeln – Nährwerte und Blutzuckereffekt passen sich direkt an.</p>
+        <p><b>4. Notiz-Einkaufsliste:</b> Zutaten lassen sich mit einem Tipp direkt auf die gemeinsame Einkaufsliste setzen und zwischen euch synchronisieren.</p>
+        <p><b>5. Zyklus-Ernährung:</b> Zyklustag und Phase im Blick behalten, um die ideale Ernährung für jede Phase abzustimmen.</p>
       </div>
       <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
     </div>
@@ -190,7 +192,7 @@
           47178 Duisburg<br>
           Deutschland
         </p>
-        <p style="margin-top: 10px;"><b>Kontakt:</b></p>
+        <p style="margin-top: 12px;"><b>Kontakt:</b></p>
         <p style="color: var(--text);">
           Telefon: 0152 03397547<br>
           E-Mail: marcelkometz@icloud.com
