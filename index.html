@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* Aufgeräumtes, großzügiges Layout für die Schnellstart-Leiste */
+    /* Großzügige, daumenfreundliche Schnellstart-Leiste */
     .quick-actions-bar {
       display: flex;
       flex-direction: column;
@@ -37,11 +37,9 @@
       justify-content: center;
       gap: 8px;
       box-shadow: 0 4px 14px rgba(163, 113, 247, 0.2);
-      transition: transform 0.1s ease;
     }
-    .chef-hero-btn:active {
-      transform: scale(0.98);
-    }
+    .chef-hero-btn:active { transform: scale(0.98); }
+
     .quick-sub-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -62,8 +60,24 @@
       color: var(--text, #e6edf3);
       cursor: pointer;
     }
-    .quick-sub-grid .quick-btn:active {
-      transform: scale(0.97);
+    .quick-sub-grid .quick-btn:active { transform: scale(0.97); }
+
+    /* Stilvolles Read.txt Terminal-Design wie in der Anzucht-App */
+    .read-txt-pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: #d1d5db;
+      background: #0f1419;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 68vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0;
     }
   </style>
 </head>
@@ -75,16 +89,16 @@
     <div class="sync-status" id="syncStatus">⚡ Supabase verbunden</div>
   </header>
 
-  <!-- Großzügiges, übersichtliches Menü oben -->
+  <!-- Aufgeräumtes Hauptmenü oben -->
   <div class="quick-actions-bar">
     <button onclick="openChefModal()" class="chef-hero-btn">
       <span>👨‍🍳</span>
       <span>KI-Chef (Live-Google Helfer)</span>
     </button>
     <div class="quick-sub-grid">
-      <button onclick="openGartenApp()" class="quick-btn highlight" style="color:#3fb950; border-color: rgba(63, 185, 80, 0.4); background: rgba(63, 185, 80, 0.12);">🌱 Garten-App</button>
+      <button onclick="openGartenApp()" class="quick-btn" style="color:#3fb950; border-color: rgba(63, 185, 80, 0.4); background: rgba(63, 185, 80, 0.12);">🌱 Garten-App</button>
       <button onclick="openEierModal()" class="quick-btn" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.12);">🥚 Eier-Timer</button>
-      <button onclick="openReadmeModal()" class="quick-btn">📄 Read-Handbuch</button>
+      <button onclick="openReadmeModal()" class="quick-btn" style="border-color: #3fb950; color: #3fb950; background: rgba(63, 185, 80, 0.12);">📄 Read.txt</button>
       <button onclick="openImpressumModal()" class="quick-btn">⚖️ Impressum</button>
     </div>
   </div>
@@ -223,31 +237,33 @@
     </div>
   </div>
 
-  <!-- Vollständiges Read-Handbuch -->
+  <!-- ==================================================== -->
+  <!-- 📄 READ.TXT TERMINAL-VIEWER (WIE IN DER GARTEN-APP)  -->
+  <!-- ==================================================== -->
   <div class="modal-backdrop" id="readmeBackdrop" onclick="closeReadmeModal(event)">
-    <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeReadmeModalForce()">&times;</button>
-      <h2 style="font-size: 1.35rem; color: #3fb950; margin-bottom: 12px;">📄 App-Handbuch & Funktionen</h2>
-      <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.88rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
-        <p><b style="color:var(--text);">Willkommen bei DieGartenMutti86!</b><br>Eure persönliche Ernährungs- und Rezeptzentrale – optimiert für Blutzucker-Stabilität, High-Protein und Low-Carb.</p>
-        <p style="margin-top: 8px;"><b>1. Schnelle Suche & Reste-Filter:</b> Tippe Zutaten oben in das Suchfeld ein oder nutze die Buttons wie „Fleisch & Fisch“, um gezielt nach Vorräten zu filtern.</p>
-        <p style="margin-top: 8px;"><b>2. Portions-Rechner:</b> Jedes Rezept lässt sich mit + und - dynamisch von 1 bis 20 Portionen hoch- und runterskalieren. Zutaten und Kalorien passen sich automatisch an.</p>
-        <p style="margin-top: 8px;"><b>3. Beilagentausch & Nährwerte:</b> Tausche Beilagen flexibel gegen Zucchini-Nudeln, Reis oder Kartoffeln – Nährwerte und Blutzuckereffekt passen sich direkt an.</p>
-        <p style="margin-top: 8px;"><b>4. Notiz-Einkaufsliste:</b> Zutaten lassen sich mit einem Tipp direkt auf die gemeinsame Einkaufsliste setzen und zwischen euch synchronisieren.</p>
-        <p style="margin-top: 8px;"><b>5. Zyklus-Ernährung:</b> Zyklustag und Phase im Blick behalten, um die ideale Ernährung für jede Phase abzustimmen.</p>
-        <p style="margin-top: 8px;"><b>6. KI-Küchenchef:</b> Beantwortet mit Google-Live-Suche spontane Fragen zu Garzeiten, Zutatentausch und Reste-Verwertung.</p>
+    <div class="modal-sheet" id="readmeSheet" onclick="event.stopPropagation()" style="max-height: 86vh; display: flex; flex-direction: column; padding: 16px;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 1.3rem; margin: 0; color: #3fb950; display: flex; align-items: center; gap: 8px;">
+          <span>📄</span><span>Read.txt</span>
+        </h2>
+        <button onclick="closeReadmeModalForce()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border, #333); color: var(--text, #fff); font-size: 1.15rem; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
       </div>
-      <button class="btn-save" style="margin-top:18px;" onclick="closeReadmeModalForce()">Schließen</button>
+
+      <pre id="readTxtContent" class="read-txt-pre">⏳ Lade Read.txt vom Server...</pre>
     </div>
   </div>
 
   <!-- Rechtssicheres Impressum -->
   <div class="modal-backdrop" id="impressumBackdrop" onclick="closeImpressumModal(event)">
-    <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()">
-      <button class="close-sheet" onclick="closeImpressumModalForce()">&times;</button>
-      <h2>⚖️ Impressum</h2>
-      <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; max-height: 65vh; overflow-y: auto; padding-right: 8px;">
-        <p style="color: #da3633; border: 1px solid #da3633; padding: 12px; border-radius: 8px; background: rgba(218, 54, 51, 0.1); margin-bottom: 16px;">
+    <div class="modal-sheet" id="impressumSheet" onclick="event.stopPropagation()" style="max-height: 86vh; display: flex; flex-direction: column; padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 1.3rem; margin: 0;">⚖️ Impressum</h2>
+        <button onclick="closeImpressumModalForce()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border, #333); color: var(--text, #fff); font-size: 1.15rem; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
+      </div>
+      
+      <div style="line-height: 1.6; color: var(--text-muted); font-size: 0.9rem; overflow-y: auto; padding-right: 6px;">
+        <p style="color: #da3633; border: 1px solid rgba(218,54,51,0.3); padding: 12px; border-radius: 8px; background: rgba(218, 54, 51, 0.08); margin-bottom: 16px;">
           <b>WICHTIGER HINWEIS: Diese Web-Applikation ist ein reines Hobby-Projekt und dient ausschließlich der privaten, familiären Nutzung.</b>
         </p>
         <p><b>Angaben gemäß § 5 DDG:</b></p>
@@ -263,7 +279,6 @@
           E-Mail: marcelkometz@icloud.com
         </p>
       </div>
-      <button class="btn-save" style="margin-top:18px;" onclick="closeImpressumModalForce()">Schließen</button>
     </div>
   </div>
 
@@ -276,18 +291,16 @@
   </div>
 
   <!-- ==================================================== -->
-  <!-- 👨‍🍳 KI-CHEF MODAL (X JETZT FEST OBEN RECHTS)          -->
+  <!-- 👨‍🍳 KI-CHEF MODAL (X OBEN RECHTS)                   -->
   <!-- ==================================================== -->
   <div class="modal-backdrop" id="chefBackdrop" onclick="closeChefModal(event)">
-    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px; position: relative;">
+    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; padding: 16px;">
       
-      <!-- Saubere Kopfzeile: Titel links, Schließen-X rechts -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <h2 style="font-size: 1.25rem; margin: 0; color: #a371f7;">👨‍🍳 KI-Chef (Live-Google)</h2>
         <button onclick="closeChefModalForce()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border, #333); color: var(--text, #fff); font-size: 1.15rem; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">✕</button>
       </div>
       
-      <!-- Dropdown-Schnellauswahl -->
       <select id="chefTopicSelect" onchange="applyChefTopic(this)" style="background: var(--card-sub, #1f2328); color: var(--text, #fff); border: 1px solid var(--border, #333); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-bottom: 10px; outline: none; width: 100%;">
         <option value="">💡 Themen-Schnellauswahl...</option>
         <option value="Welche gesunde Low-Carb Alternative gibt es für ">🔄 Zutat ersetzen (Low-Carb)</option>
@@ -340,8 +353,36 @@
   <script src="config.js"></script>
   <script src="app.js"></script>
 
-  <!-- Eigenständiges KI-Chef Skript direkt im Dokument -->
+  <!-- Read.txt Live-Loader & KI-Chef Skript -->
   <script>
+    // Lädt beim Klick auf Read direkt deine Read.txt vom Server
+    async function openReadmeModal() {
+      const modal = document.getElementById('readmeBackdrop');
+      if (modal) {
+        modal.classList.add('active');
+        if (typeof lockScroll === 'function') lockScroll();
+      }
+      const pre = document.getElementById('readTxtContent');
+      if (pre) {
+        try {
+          const resp = await fetch('Read.txt?v=' + Date.now());
+          if (resp.ok) {
+            pre.innerText = await resp.text();
+          } else {
+            // Fallback für Dateinamen in Kleinbuchstaben
+            const respLower = await fetch('read.txt?v=' + Date.now());
+            if (respLower.ok) {
+              pre.innerText = await respLower.text();
+            } else {
+              pre.innerText = "Hinweis: Bitte erstelle die Datei 'Read.txt' auf GitHub im Hauptverzeichnis.";
+            }
+          }
+        } catch(e) {
+          pre.innerText = "Fehler beim Laden von Read.txt.";
+        }
+      }
+    }
+
     let chefHistory = [];
     let chefMsgId = 0;
 
