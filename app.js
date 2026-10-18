@@ -334,6 +334,7 @@ function onSearchManual() {
 
 function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('clearSearchBtn').style.display = 'none'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); filterRecipes(); }
 
+// Saubere Übersichtskarte OHNE Absturzfehler
 function buildCardHtml(r) {
   const total = calculateTotalNutri(r, 'keine', 1); 
   const isFav = favorites.includes(String(r.id));
@@ -396,6 +397,7 @@ function updatePortionOrSide(recipeId, changePortion = 0) {
   document.getElementById(`ingredientsBox-${recipeId}`).innerText = generateScaledIngredients(currentZutaten, currentSelectedPortions);
 }
 
+// Detail-Ansicht MIT Vorlese-Knopf
 function openDetails(recipeId) {
   const r = recipes.find(x => String(x.id) === String(recipeId)); if (!r) return;
   currentSelectedPortions = 1; const safeId = escapeHtml(r.id);
