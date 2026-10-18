@@ -50,11 +50,11 @@ async function checkAdmin() {
   }
 
   const saved = localStorage.getItem('gartenAdminPin');
-  if (saved === realPin) return true; // Du bist bereits eingeloggt!
+  if (saved === realPin) return true;
   
   const input = prompt('🔒 Geschützter Bereich! Bitte Admin-Passwort eingeben:');
   if (input === realPin) {
-    localStorage.setItem('gartenAdminPin', realPin); // Speichert es für dich ab
+    localStorage.setItem('gartenAdminPin', realPin);
     return true;
   }
   alert('❌ Falsches Passwort! Zugriff verweigert.');
@@ -229,7 +229,8 @@ function getScoreClass(score) {
 }
 
 async function loadRecipesFromSupabase() {
-  const status = document.getElementById('syncStatus'); status.innerText = '⏳ Lade...';
+  const status = document.getElementById('syncStatus'); 
+  if (status) status.innerText = '⏳ Lade...';
   try {
     const { data, error } = await supabaseClient.from('Rezepte').select('*').order('id', { ascending: true });
     if (error) throw error;
@@ -248,9 +249,11 @@ async function loadRecipesFromSupabase() {
         };
         rec.mealType = getMealType(rec); return rec;
       });
-      status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
+      if (status) status.innerText = `⚡ ${recipes.length} Rezepte synchronisiert`;
     }
-  } catch (err) { status.innerText = '⚡ Offline-Modus aktiv'; }
+  } catch (err) { 
+    if (status) status.innerText = '⚡ Offline-Modus aktiv'; 
+  }
   filterRecipes();
 }
 
@@ -332,7 +335,8 @@ function onSearchManual() {
 function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('clearSearchBtn').style.display = 'none'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active')); filterRecipes(); }
 
 function buildCardHtml(r) {
-  const total = calculateTotalNutri(r, 'keine', 1); const isFav = favorites.includes(String(r.id));
+  const total = calculateTotalNutri(r, 'keine', 1); 
+  const isFav = favorites.includes(String(r.id));
   const imageOrEmoji = r.image_url 
     ? `<div class="card-icon" style="background-image: url('${r.image_url}'); background-size: cover; background-position: center; border: 1px solid var(--border);"></div>`
     : `<div class="card-icon">${escapeHtml(r.emoji || '🍲')}</div>`;
@@ -807,7 +811,6 @@ function toggleRecipeReadAloud(recipeId) {
   const r = recipes.find(x => String(x.id) === String(recipeId));
   if (!r) return;
 
-  // Text für die Sprachausgabe zusammenstellen
   let textToRead = `${r.title}. `;
   if (r.prep) textToRead += `Vorbereitung: ${r.prep}. `;
   if (r.stoveStep) textToRead += `Auf dem Herd: ${r.stoveStep}. `;
@@ -818,7 +821,7 @@ function toggleRecipeReadAloud(recipeId) {
   const clean = textToRead.replace(/[*#_`•]/g, '').trim();
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = 'de-DE';
-  utterance.rate = 0.98; // Etwas ruhigeres Küchentempo
+  utterance.rate = 0.98;
 
   utterance.onend = () => {
     recipeSpeechActive = false;
