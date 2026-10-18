@@ -447,7 +447,12 @@ function openDetails(recipeId) {
     <div class="ingredients-box" id="ingredientsBox-${safeId}">${escapeHtml(generateScaledIngredients(displayZutaten, currentSelectedPortions))}</div>
     <button class="whatsapp-btn" onclick="shareWhatsApp('${safeId}')">📲 Einkaufsliste per WhatsApp senden</button>
     <button class="add-notes-btn" onclick="addIngredientsToNotes('${safeId}')">📝 Auf unsere Notiz-Einkaufsliste setzen</button>
-    <div class="section-title">👩‍🍳 Zubereitung:</div>
+    
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>👩‍🍳 Zubereitung:</span>
+      <button id="readRecipeBtn" class="add-notes-btn" style="width:auto; margin:0; padding:6px 12px; background:#238636; font-size:0.8rem;" onclick="toggleRecipeReadAloud('${safeId}')">🔊 Vorlesen</button>
+    </div>
+    
     <div class="step-section"><h4>🔪 Vorbereitung / Zubereitung</h4><p id="prepText-${safeId}">${escapeHtml(displayPrep)}</p></div>
     ${(!vars && r.stoveStep) ? `<div class="step-section"><h4>🍳 Herd</h4><p>${escapeHtml(r.stoveStep)}</p></div>` : ''}
     ${(!vars && r.ovenStep) ? `<div class="step-section"><h4>🔥 Backofen</h4><p>${escapeHtml(r.ovenStep)}</p></div>` : ''}
@@ -492,7 +497,14 @@ function shareWhatsApp(recipeId) {
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-function closeSheetForce() { document.getElementById('modalBackdrop').classList.remove('active'); unlockScroll(); }
+function closeSheetForce() { 
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    recipeSpeechActive = false;
+  }
+  document.getElementById('modalBackdrop').classList.remove('active'); 
+  unlockScroll(); 
+}
 function closeSheet(e) { if (e.target.id === 'modalBackdrop') closeSheetForce(); }
 function closeReadmeModal(e) { if (e.target.id === 'readmeBackdrop') closeReadmeModalForce(); }
 function closeImpressumModal(e) { if (e.target.id === 'impressumBackdrop') closeImpressumModalForce(); }
@@ -750,7 +762,7 @@ async function loadNotesFromSupabase() {
   const { data } = await supabaseClient.from('Notizen').select('*').order('id', { ascending: false });
   const visible = (data || []).filter(n => n.author !== 'SYSTEM_GEMINI_KEY' && n.author !== 'SYSTEM_ADMIN_PIN');
   document.getElementById('notesList').innerHTML = visible.length === 0 ? '<div style="text-align:center; padding:20px;">Keine Notizen.</div>' : visible.map(n => `
-    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id}, ${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author||'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
+    <div class="note-card ${n.is_done ? 'done' : ''}"><div class="note-content" onclick="toggleNoteDone(${n.id},${n.is_done})" style="cursor:pointer;"><span class="note-author-badge note-author-${(n.author\vert{}\vert{}'').toLowerCase()}">${escapeHtml(n.author)}</span><div class="note-text">${escapeHtml(n.content)}</div></div><div style="display:flex; gap:6px;"><button class="note-btn-action" onclick="toggleNoteDone(${n.id}, ${n.is_done})">${n.is_done ? '↩️' : '✅'}</button><button class="note-btn-action" onclick="deleteNote(${n.id})">🗑️</button></div></div>
   `).join('');
 }
 async function toggleNoteDone(id, currentStatus) { await supabaseClient.from('Notizen').update({ is_done: !currentStatus }).eq('id', id); loadNotesFromSupabase(); }
@@ -766,6 +778,55 @@ function setupRealtimeSync() {
   supabaseClient.channel('public:Notizen').on('postgres_changes', { event: '*', schema: 'public', table: 'Notizen' }, payload => {
     if (document.getElementById('notesSection').style.display === 'flex') loadNotesFromSupabase();
   }).subscribe();
+}
+
+// ==========================================
+// 🔊 SPRACHAUSGABE FÜR REZEPTE
+// ==========================================
+let recipeSpeechActive = false;
+
+function toggleRecipeReadAloud(recipeId) {
+  if (!('speechSynthesis' in window)) {
+    alert('Sprachausgabe wird von diesem Browser nicht unterstützt.');
+    return;
+  }
+
+  const btn = document.getElementById('readRecipeBtn');
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
+    return;
+  }
+
+  const r = recipes.find(x => String(x.id) === String(recipeId));
+  if (!r) return;
+
+  let textToRead = `${r.title}. `;
+  if (r.prep) textToRead += `Vorbereitung: ${r.prep}. `;
+  if (r.stoveStep) textToRead += `Auf dem Herd: ${r.stoveStep}. `;
+  if (r.ovenStep) textToRead += `Im Backofen: ${r.ovenStep}. `;
+  if (r.airfryerStep) textToRead += `Im Airfryer: ${r.airfryerStep}. `;
+  if (r.tipps) textToRead += `Tipp: ${r.tipps}`;
+
+  const clean = textToRead.replace(/[*#_`•]/g, '').trim();
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.lang = 'de-DE';
+  utterance.rate = 0.98;
+
+  utterance.onend = () => {
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
+  };
+  utterance.onerror = () => {
+    recipeSpeechActive = false;
+    if (btn) btn.innerHTML = '🔊 Vorlesen';
+  };
+
+  recipeSpeechActive = true;
+  if (btn) btn.innerHTML = '⏹️ Stop';
+  window.speechSynthesis.speak(utterance);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
