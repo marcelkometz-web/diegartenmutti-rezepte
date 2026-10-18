@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>DieGartenMutti86 – Rezepte</title>
   
   <link rel="icon" href="IMG_0526.png" type="image/png">
@@ -78,6 +78,40 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       margin: 0;
+    }
+
+    /* Vollbild-Backdrop für Gemini */
+    #chefBackdrop.active {
+      display: flex !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 99999;
+      touch-action: none;
+    }
+
+    /* Das Gemini-Modal: Passt sich dynamisch per JS an die Tastatur an */
+    #chefSheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 650px;
+      margin: 0 auto;
+      background: var(--bg, #161b22);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      border: 1.5px solid rgba(163, 113, 247, 0.4);
+      border-bottom: none;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.8);
+      transition: height 0.15s ease-out;
     }
   </style>
 </head>
@@ -292,10 +326,10 @@
   </div>
 
   <!-- ================================================================= -->
-  <!-- ✨ GROSSES GEMINI VOLLBILD-MODAL (92% HOCH, GERÄUMIG & FEST)     -->
+  <!-- ✨ GEMINI MODAL MIT DYNAMISCHER TASTATUR-ANPASSUNG (IOS-OPTIMIERT) -->
   <!-- ================================================================= -->
   <div class="modal-backdrop" id="chefBackdrop" onclick="closeChefModal(event)">
-    <div class="modal-sheet" id="chefSheet" onclick="event.stopPropagation()" style="height: 92dvh !important; max-height: 92dvh !important; display: flex !important; flex-direction: column !important; padding: 0 !important; overflow: hidden !important;">
+    <div id="chefSheet" onclick="event.stopPropagation()">
       
       <!-- Fester oberer Bereich -->
       <div style="padding: 14px 16px 10px 16px; background: var(--card-sub, #1f2328); border-bottom: 1px solid var(--border, rgba(255,255,255,0.1)); flex-shrink: 0;">
@@ -327,15 +361,15 @@
       </div>
 
       <!-- Großer, frei scrollbarer Chat-Mittelteil -->
-      <div id="chefChatBox" style="flex: 1 !important; overflow-y: auto !important; padding: 14px 16px !important; display: flex !important; flex-direction: column !important; gap: 12px !important; background: rgba(0,0,0,0.18) !important; -webkit-overflow-scrolling: touch !important;">
+      <div id="chefChatBox" style="flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.18); -webkit-overflow-scrolling: touch;">
         <div style="max-width: 88%; padding: 12px 16px; border-radius: 14px; font-size: 0.92rem; line-height: 1.48; background: var(--card-sub, #1f2328); border: 1px solid var(--border, #333); border-bottom-left-radius: 2px;">
           Hallo Marcel & Ramona! ✨<br><br>
           Ich bin <b>Gemini</b> mit echter Google-Live-Suche. Wählt oben euer Modell und stellt mir eure Frage!
         </div>
       </div>
 
-      <!-- Fester unterer Eingabebereich -->
-      <div style="padding: 10px 16px 14px 16px; background: var(--card-sub, #1f2328); border-top: 1px solid var(--border, rgba(255,255,255,0.1)); flex-shrink: 0;">
+      <!-- Fester unterer Eingabebereich direkt über der Tastatur -->
+      <div style="padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px; background: var(--card-sub, #1f2328); border-top: 1px solid var(--border, rgba(255,255,255,0.1)); flex-shrink: 0;">
         <div style="display: flex; gap: 8px;">
           <input type="text" id="chefUserInput" placeholder="Frage an Gemini stellen..." style="flex: 1; background: var(--bg, #161b22); border: 1.5px solid var(--border, #444); border-radius: 10px; color: var(--text, #fff); padding: 12px 14px; font-size: 0.95rem; outline: none;" onkeydown="if(event.key==='Enter') sendChefAiMessage()">
           <button onclick="sendChefAiMessage()" style="background: #a371f7; border: none; color: #fff; border-radius: 10px; padding: 0 18px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">➤</button>
@@ -373,7 +407,7 @@
   <script src="config.js"></script>
   <script src="app.js"></script>
 
-  <!-- Skripte für Read.txt, Gemini KI, WakeLock & Haptik -->
+  <!-- Skripte für Read.txt, Gemini KI, WakeLock, Haptik & iOS-Keyboard-Handling -->
   <script>
     async function openReadmeModal() {
       const modal = document.getElementById('readmeBackdrop');
@@ -404,26 +438,60 @@
     let chefHistory = [];
     let chefMsgId = 0;
 
+    // Passt die Modalhöhe dynamisch an, wenn die Tastatur aufpoppt
+    function adjustChefModalForKeyboard() {
+      const sheet = document.getElementById('chefSheet');
+      const backdrop = document.getElementById('chefBackdrop');
+      if (!sheet || !backdrop || !backdrop.classList.contains('active')) return;
+
+      if (window.visualViewport) {
+        const vh = window.visualViewport.height;
+        const vTop = window.visualViewport.offsetTop;
+        sheet.style.height = `${vh}px`;
+        sheet.style.transform = `translateY(${vTop}px)`;
+      } else {
+        sheet.style.height = '92dvh';
+      }
+    }
+
     function openChefModal() {
       const el = document.getElementById('chefBackdrop');
       if (el) {
         el.classList.add('active');
         document.body.style.overflow = 'hidden';
+        adjustChefModalForKeyboard();
+        setTimeout(() => {
+          const box = document.getElementById('chefChatBox');
+          if (box) box.scrollTop = box.scrollHeight;
+        }, 150);
       }
     }
 
     function closeChefModalForce() {
       const el = document.getElementById('chefBackdrop');
+      const sheet = document.getElementById('chefSheet');
       if (el) {
         el.classList.remove('active');
         document.body.style.overflow = '';
       }
+      if (sheet) {
+        sheet.style.height = '';
+        sheet.style.transform = '';
+      }
+      const input = document.getElementById('chefUserInput');
+      if (input) input.blur();
     }
 
     function closeChefModal(e) {
       if (e && e.target && e.target.id === 'chefBackdrop') {
         closeChefModalForce();
       }
+    }
+
+    // Hört auf das Öffnen und Schließen der virtuellen iOS-Tastatur
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', adjustChefModalForKeyboard);
+      window.visualViewport.addEventListener('scroll', adjustChefModalForKeyboard);
     }
 
     function applyChefTopic(sel) {
@@ -549,7 +617,7 @@
       }
     }
 
-    // WakeLock & Haptik-Steuerung (Doppel-Knock)
+    // WakeLock & Haptik-Steuerung
     let appWakeLock = null;
 
     async function enableWakeLock() {
@@ -569,7 +637,7 @@
     function triggerHaptic() {
       if ('vibrate' in navigator) {
         try {
-          navigator.vibrate([35, 25, 35]); // Doppel-Knock Impuls
+          navigator.vibrate([35, 25, 35]);
         } catch (e) {}
       }
     }
