@@ -593,16 +593,21 @@
         observer.observe(recipeModal, { attributes: true, attributeFilter: ['class'] });
       }
 
-// Statt 12 ms -> 45 ms für einen spürbareren Stoß
-function triggerHaptic(ms = 45) {
-  if ('vibrate' in navigator) {
-    try {
-      navigator.vibrate(ms);
-    } catch (e) {}
-  }
-}
-      });
+    function triggerHaptic() {
+      if ('vibrate' in navigator) {
+        try {
+          navigator.vibrate([35, 25, 35]);
+        } catch (e) {}
+      }
+    }
+
+    // Lauscht auf Knopfdruck und löst die Vibration aus
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.portion-btn, .fav-btn-card, .quick-btn, .chef-hero-btn, .nav-btn, .note-btn-action, .cat-btn, .btn-add-compact')) {
+        triggerHaptic();
+      }
     });
-  </script>
+  });
+</script>
 </body>
 </html>
