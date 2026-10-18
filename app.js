@@ -617,7 +617,7 @@ async function generateWithGemini() {
     return;
   }
 
-  let sysPrompt = `Du bist Spitzenkoch für Low-Carb. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
+  let sysPrompt = `Du bist Spitzenkoch mit 3 Sterne du bist experte in Ernährung und fürs Abnehmen. Du denksr auch dabei an die Gesundheit Du bist Spezialist für Low-Carb und Hi Protein Gerichte. Erstelle ein Rezept normiert auf EXAKT 1 PORTION. Antworte AUSSCHLIESSLICH als JSON: {"title": "Name", "emoji": "🍲", "score": "A", "mealCat": "fruehstueck|mittag|abend|snacks", "kcal": 385, "prot": 38, "kh": 7, "sugar": 2, "fat": 15, "airfryer": false, "ingredients": "zutat1, zutat2", "zutaten_liste": "• 160 g Zutat 1\\n• 150 g Zutat 2", "prep": "Prep...", "stove_step": "Herd...", "oven_step": "", "airfryer_step": "", "doc_check": "Doc Check...", "tipps": "Tipp..."}`;
   let contentParts = [{ text: sysPrompt + "\n\nRezeptwunsch: " + (promptText || 'Erstelle ein Rezept aus diesem Foto.') }];
   
   if (capturedBase64Image) {
